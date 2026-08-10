@@ -773,6 +773,31 @@
     line-height: 1.7;
     color: var(--muted);
   }
+  .gate-agreement {
+    margin: 12px 0;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .gate-agreement summary {
+    cursor: pointer;
+    color: var(--red);
+    font-weight: 700;
+  }
+  .agreement-text {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+  .agreement-text h3 {
+    margin: 10px 0 4px;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .agreement-text p { margin: 0 0 6px; }
   .gate-agree {
     display: flex;
     align-items: flex-start;
@@ -1090,7 +1115,28 @@
       <p>本页用于传统文化与象数符号的概念研究。所有干支、星图、系统映射均为“拓展面候选”，不构成预测、医疗、法律、投资或重大决策依据。</p>
       <p>本地样本记录仅保存在当前浏览器，不上传，不要求填写真实姓名与联系方式。请理性使用，勿据此作出重要决定。</p>
       <p>本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。</p>
-      <p>进入即视为已阅读并同意《颐真书房用户协议与免责声明》：本站仅做文化研究，不作决策依据；不收集隐私；内容不可直接商用。<a href="AGREEMENT.md" target="_blank">查看全文</a></p>
+      <details class="gate-agreement">
+        <summary>展开《颐真书房用户协议与免责声明》全文</summary>
+        <div class="agreement-text">
+          <h3>一、定位</h3>
+          <p>本网站用于中国古天文、传统典籍、术数与符号体系的文化研究与学习交流。所有内容均属于“拓展面候选”，不构成对现实事务的结论。</p>
+          <h3>二、非决策依据</h3>
+          <p>本网站内容不构成医疗、法律、投资、心理或其他专业建议；使用者应独立思辨，自行取舍，因采信相关内容作出的决定及其后果自行承担。</p>
+          <h3>三、验证边界</h3>
+          <p>未经过原文版本锚定、历法与时辰校准、真实样本回填的盘面和断语，不视为已验证结论。</p>
+          <h3>四、账号与发布</h3>
+          <p>当前公开版无需注册，不要求填写姓名、电话、微信号或住址；未来开放投稿时，使用者须对发布内容负责。</p>
+          <h3>五、隐私</h3>
+          <p>本地样本记录仅保存在当前浏览器中，不上传、不采集、不售出；如未来需要收集邮箱，将仅用于安全通知并在收集页单独说明。</p>
+          <h3>六、内容管理</h3>
+          <p>本网站保留对违规内容进行提示、隐藏或删除的权利；涉及违法内容将依法处理。</p>
+          <h3>七、版权与引用</h3>
+          <p>原创内容按许可规则授权；引用公开典籍与第三方资料的部分，版权归原作者所有；用户提供的素材保留原提供者权益。</p>
+          <h3>八、风险与更新</h3>
+          <p>本网站按“现状”提供，不对完整性、准确性或持续性作保证；重大变更会在页首或协议门中说明。</p>
+        </div>
+      </details>
+      <p>进入即视为已阅读并同意上述协议。</p>
       <label class="gate-agree"><input type="checkbox" id="gateAgree"> 我已阅读并同意上述说明</label>
       <button type="button" class="gate-enter" id="gateEnter" disabled>进入作品</button>
       <p class="gate-note">未同意前不会展示作品内容</p>
