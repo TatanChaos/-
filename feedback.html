@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>意见与讨论 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --paper: #f7f2e6;
+    --ink-deep: #1e2d2a;
+    --gold: #b08b4a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    color: var(--paper);
+    border-bottom: 3px solid var(--gold);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .back { color: #c7d3cd; font-size: 12px; text-decoration: none; border: 1px solid rgba(247,242,230,.28); padding: 6px 10px; }
+  .back:hover { color: var(--paper); border-color: var(--gold); }
+  main {
+    flex: 1;
+    width: min(100%, 760px);
+    margin: 0 auto;
+    padding: 24px 18px 30px;
+  }
+  .intro h2 { margin: 0 0 8px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; font-size: 28px; letter-spacing: .1em; }
+  .intro p { margin: 0; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .form-panel {
+    margin-top: 18px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+  }
+  label { display: block; margin-bottom: 14px; font-size: 13px; font-weight: 700; }
+  select, textarea {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    background: #fffdf8;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+  }
+  textarea { min-height: 150px; resize: vertical; line-height: 1.7; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  button {
+    padding: 10px 16px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button.secondary { background: transparent; color: var(--red); }
+  .hint { margin: 12px 0 0; font-size: 11px; line-height: 1.7; color: var(--muted); }
+  .rules { margin-top: 18px; padding: 16px; background: var(--amber-soft); border-left: 4px solid var(--amber); }
+  .rules h2 { margin: 0 0 8px; font-size: 15px; }
+  .rules ul { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.9; color: var(--muted); }
+  footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px dashed var(--line);
+  }
+  footer a { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div>
+        <h1>颐真书房 · 意见与讨论</h1>
+        <p>只说问题，不收集隐私</p>
+      </div>
+    </div>
+    <a class="back" href="门户/index.html">返回</a>
+  </header>
+  <main>
+    <section class="intro">
+      <h2>你在哪一步卡住了？</h2>
+      <p>不管是看不懂、觉得不准、发现错字，还是想要某个功能，都可以写下来。内容越具体，越容易被处理。</p>
+    </section>
+    <form class="form-panel" id="feedbackForm">
+      <label>
+        意见类型
+        <select id="feedbackType">
+          <option>内容错误</option>
+          <option>体验建议</option>
+          <option>功能需求</option>
+          <option>其他</option>
+        </select>
+      </label>
+      <label>
+        意见内容
+        <textarea id="feedbackBody" required placeholder="例如：十二地支详解里，XX 的方位写错了；或者：希望沙盘能支持输入公历时间。"></textarea>
+      </label>
+      <div class="actions">
+        <button type="button" id="copyBtn">复制意见</button>
+        <button type="button" class="secondary" id="issueBtn">打开 GitHub Issue</button>
+        <button type="button" class="secondary" id="discussBtn">打开 GitHub 讨论</button>
+      </div>
+      <p class="hint">公开提交走 GitHub Issue。仓库地址发布前会换成新用户名；当前不收集姓名、手机号、微信号或住址。</p>
+    </form>
+    <section class="rules">
+      <h2>我们不收什么</h2>
+      <ul>
+        <li>不要求填写真实姓名、手机号、微信号或住址。</li>
+        <li>不收集隐私，不接受“帮我算命/改运”类请求。</li>
+        <li>涉及医疗、法律、投资等重大决策的问题，请找专业人员。</li>
+      </ul>
+    </section>
+  </main>
+  <footer>
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="AGREEMENT.md" target="_blank">用户协议</a> · <a href="LICENSE" target="_blank">许可说明</a>
+  </footer>
+  <script>
+    // 发布前把这里换成新仓库地址
+    const REPO_BASE = "https://github.com/TatanChaos/-/issues/new";
+    const DISCUSS_BASE = "https://github.com/TatanChaos/-/discussions";
+    const bodyInput = document.getElementById("feedbackBody");
+    const typeInput = document.getElementById("feedbackType");
+    function getText() {
+      const type = typeInput.value;
+      const body = bodyInput.value.trim();
+      return { type, body };
+    }
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const { type, body } = getText();
+      if (!body) { alert("请先填写意见内容"); return; }
+      const text = `[${type}]\n${body}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("已复制");
+      } catch (e) {
+        alert("复制失败，请手动复制");
+      }
+    });
+    document.getElementById("issueBtn").addEventListener("click", () => {
+      const { type, body } = getText();
+      if (!body) { alert("请先填写意见内容"); return; }
+      const title = `[${type}] ${body.slice(0, 30)}`;
+      const url = REPO_BASE + "?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body);
+      window.open(url, "_blank");
+    });
+    document.getElementById("discussBtn").addEventListener("click", () => {
+      window.open(DISCUSS_BASE, "_blank");
+    });
+  </script>
+</body>
+</html>

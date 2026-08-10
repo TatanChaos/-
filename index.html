@@ -1,0 +1,1631 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>符号映射沙盘</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #f4f2ec;
+    --surface: #fffdf8;
+    --ink: #24241f;
+    --muted: #6f6d63;
+    --line: #d8d3c7;
+    --teal: #0f766e;
+    --teal-soft: #d9f0ec;
+    --amber: #c77700;
+    --amber-soft: #faeed8;
+    --red: #b43a2f;
+    --red-soft: #f6e2de;
+    --radius: 8px;
+    --shadow: 0 1px 2px rgba(30, 30, 20, .06);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    letter-spacing: 0;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .mark {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius);
+    background: var(--teal);
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .brand h1 { margin: 0; font-size: 18px; line-height: 1.25; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+  .layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .symbol-list {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 10px;
+    min-height: 0;
+  }
+  .list-head {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 6px 10px;
+    color: var(--ink);
+  }
+  .symbol-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .symbol-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .symbol-btn:hover { border-color: var(--teal); }
+  .symbol-btn[aria-pressed="true"] {
+    background: var(--teal-soft);
+    border-color: var(--teal);
+    color: #0b4f4a;
+  }
+  .symbol-btn .zhi { font-weight: 800; font-size: 16px; }
+  .symbol-btn .small { font-size: 11px; color: var(--muted); }
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+    gap: 14px;
+    align-items: start;
+  }
+  .detail, .map-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .detail { padding: 16px; min-height: 0; }
+  .detail-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .detail-head h2 { margin: 0; font-size: 24px; line-height: 1.2; }
+  .detail-head .tagline { font-size: 13px; color: var(--muted); }
+  .subnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .subnav-btn {
+    font: inherit;
+    font-size: 12px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .subnav-btn:hover { border-color: var(--teal); }
+  .subnav-btn[aria-pressed="true"] {
+    background: var(--teal-soft);
+    border-color: var(--teal);
+    color: #0b4f4a;
+  }
+  .detail-section { margin-top: 12px; }
+  .rows { margin-top: 12px; display: grid; gap: 10px; }
+  .row {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+  }
+  .row .label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+  .row .value { font-size: 14px; line-height: 1.55; word-break: break-word; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .badge {
+    font-size: 11px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .badge.teal { color: #0b5f58; background: var(--teal-soft); border-color: #9fd6cd; }
+  .badge.amber { color: #8a5200; background: var(--amber-soft); border-color: #e6c58f; }
+  .badge.red { color: #8f2d24; background: var(--red-soft); border-color: #e3b7af; }
+  .map-panel { padding: 12px; }
+  .map-panel h3 {
+    margin: 2px 2px 8px;
+    font-size: 14px;
+  }
+  .wheel-wrap { width: 100%; }
+  svg { width: 100%; height: auto; display: block; }
+  .edge { stroke: var(--line); stroke-width: 1.5; }
+  .edge.six { stroke: var(--amber); stroke-opacity: .45; }
+  .edge.six.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
+  .edge.three { stroke: var(--teal); stroke-opacity: .42; }
+  .edge.three.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
+  .edge.chong { stroke: #4f6b8a; stroke-opacity: .45; }
+  .edge.hai { stroke: #b0563f; stroke-opacity: .45; }
+  .edge.xing { stroke: #5b7f4f; stroke-opacity: .45; }
+  .edge.chong.active, .edge.hai.active, .edge.xing.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
+  .edge.five { stroke: var(--teal); stroke-opacity: .55; }
+  .edge.five.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
+  .relation-controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .rel-btn {
+    font: inherit;
+    font-size: 12px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .rel-btn:hover { border-color: var(--teal); }
+  .rel-btn[aria-pressed="true"] {
+    background: var(--teal-soft);
+    border-color: var(--teal);
+    color: #0b4f4a;
+  }
+  .mode-switch {
+    display: flex;
+    gap: 6px;
+    margin: 0 6px 10px;
+  }
+  .mode-btn {
+    flex: 1;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .mode-btn:hover { border-color: var(--teal); }
+  .mode-btn[aria-pressed="true"] {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .node { cursor: pointer; }
+  .node circle {
+    fill: var(--surface);
+    stroke: var(--line);
+    stroke-width: 1.5;
+    transition: fill .15s ease;
+  }
+  .node:hover circle, .node.active circle { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 2.5; }
+  .node text {
+    fill: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+    pointer-events: none;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 14px; height: 3px; display: inline-block; }
+  .selected-readout {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .selected-readout .sr-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .selected-readout .sr-head strong { font-size: 16px; }
+  .selected-readout .sr-head span { color: var(--muted); }
+  .selected-readout .sr-row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .selected-readout .sr-row:last-child { border-bottom: 0; }
+  .selected-readout .sr-row span { color: var(--muted); }
+  .selected-readout .sr-row b { font-weight: 600; }
+  .term-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .term-btn {
+    font: inherit;
+    font-size: 11px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .term-btn:hover { border-color: var(--teal); color: #0b4f4a; }
+  .term-readout {
+    margin-top: 8px;
+    min-height: 34px;
+    padding: 9px 11px;
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .footnote {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: #0b5f58;
+    font-weight: 700;
+  }
+  .notes {
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .notes summary {
+    padding: 9px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--teal);
+    user-select: none;
+  }
+  .note-form {
+    display: grid;
+    gap: 8px;
+    padding: 0 10px 10px;
+  }
+  .note-form textarea {
+    width: 100%;
+    min-height: 64px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: #fff;
+    line-height: 1.5;
+  }
+  .note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .note-btn {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .note-btn.primary {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .note-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 10px 10px;
+    display: grid;
+    gap: 8px;
+    max-height: 240px;
+    overflow: auto;
+  }
+  .note-item {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 30px 8px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: #fff;
+  }
+  .note-item.empty {
+    color: var(--muted);
+    border-style: dashed;
+  }
+  .note-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .note-del {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .note-del:hover { color: var(--red); background: var(--red-soft); }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
+    .workspace { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .topbar { flex-direction: column; align-items: flex-start; }
+    .status { white-space: normal; }
+    .symbol-buttons { grid-template-columns: repeat(2, 1fr); }
+    .row { grid-template-columns: 70px minmax(0, 1fr); }
+    .detail-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .detail-head h2 { font-size: 20px; }
+  }
+</style>
+<style>
+  /* 古风覆盖层：宣纸为底，墨色为骨，朱砂与松绿点睛 */
+  :root {
+    --bg: #edf0ea;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --teal: #1f4a44;
+    --teal-soft: #dce9e2;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --radius: 6px;
+    --shadow: 0 1px 3px rgba(40, 35, 25, .08);
+    --paper: #f7f2e6;
+    --ink-deep: #1e2d2a;
+    --gold: #b08b4a;
+  }
+  body {
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    background-color: #e9ece4;
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+  }
+  body::before { display: none; }
+  body::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 220px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .55;
+    background-image: url("assets/clouds.svg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+  }
+  .topbar {
+    position: relative;
+    z-index: 1;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .brand h1 {
+    color: var(--paper);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    letter-spacing: .08em;
+  }
+  .brand p { color: #c7d3cd; }
+  .mark {
+    display: block;
+    overflow: hidden;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+  .mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .status { color: #c7d3cd; }
+  .dot { background: #d9b45e; }
+  .layout {
+    position: relative;
+    z-index: 1;
+    padding: 18px;
+    gap: 16px;
+    max-width: 1240px;
+  }
+  .symbol-list {
+    background: var(--ink-deep);
+    border-color: #35584f;
+    color: var(--paper);
+    box-shadow: none;
+  }
+  .list-head {
+    color: #e6d5a8;
+    border-bottom: 1px solid #3f5c53;
+  }
+  .mode-switch { margin: 0 4px 12px; }
+  .mode-btn {
+    background: transparent;
+    border-color: #496b61;
+    color: #c7d3cd;
+  }
+  .mode-btn:hover { border-color: var(--gold); color: var(--paper); }
+  .mode-btn[aria-pressed="true"] {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #242317;
+  }
+  .symbol-buttons { gap: 8px; }
+  .symbol-btn {
+    background: #2a4a44;
+    border-color: #41665c;
+    color: var(--paper);
+  }
+  .symbol-btn:hover {
+    background: #31544d;
+    border-color: var(--gold);
+  }
+  .symbol-btn[aria-pressed="true"] {
+    background: #f3e6c8;
+    border-color: var(--gold);
+    color: #1e2d2a;
+  }
+  .symbol-btn .small { color: #a8bcb3; }
+  .symbol-btn[aria-pressed="true"] .small { color: #5f5640; }
+  .workspace { gap: 16px; }
+  .detail, .map-panel {
+    background: var(--surface);
+    border-color: var(--line);
+    box-shadow: var(--shadow);
+  }
+  .detail { border-top: 4px solid var(--red); }
+  .detail-head {
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid var(--red);
+    padding-left: 12px;
+  }
+  .detail-head h2 {
+    color: var(--ink-deep);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    letter-spacing: .05em;
+  }
+  .detail-head .tagline { color: var(--amber); }
+  .subnav { border-bottom: 1px solid var(--line); }
+  .subnav-btn {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--muted);
+  }
+  .subnav-btn[aria-pressed="true"] {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .row .label { color: var(--amber); }
+  .row .value { color: var(--ink); }
+  .badge.teal {
+    color: #155149;
+    background: var(--teal-soft);
+    border-color: #a9c9bd;
+  }
+  .badge.amber {
+    color: #6d471c;
+    background: var(--amber-soft);
+    border-color: #dcbf8f;
+  }
+  .badge.red {
+    color: #822f29;
+    background: var(--red-soft);
+    border-color: #dfb5ad;
+  }
+  .map-panel {
+    position: relative;
+    overflow: hidden;
+    background: #f8f3e8;
+    border: 1px solid #b3a184;
+  }
+  .map-panel h3 {
+    color: var(--ink-deep);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+  }
+  .map-panel h3::before { content: "〖"; color: var(--red); }
+  .map-panel h3::after { content: "〗"; color: var(--red); }
+  .wheel-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #efe7d6;
+    border: 1px solid #e0d6bf;
+    border-radius: var(--radius);
+    padding: 6px;
+  }
+  .wheel-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url("assets/star-chart-user-v2.jpg") center / 100% 100% no-repeat;
+    opacity: .88;
+    pointer-events: none;
+  }
+  .wheel-wrap > svg {
+    position: relative;
+    z-index: 1;
+  }
+  .chart-source {
+    margin: 6px 2px 0;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+  .edge { stroke: #8a8779; stroke-opacity: .35; }
+  .edge.six { stroke: #a97030; stroke-opacity: .5; }
+  .edge.three { stroke: #2d6a62; stroke-opacity: .5; }
+  .edge.chong { stroke: #4f6b8a; stroke-opacity: .55; }
+  .edge.hai { stroke: #a04f3d; stroke-opacity: .5; }
+  .edge.xing { stroke: #5b7f4f; stroke-opacity: .55; }
+  .edge.five { stroke: #2d6a62; stroke-opacity: .6; }
+  .node circle {
+    fill: #fdfaf2;
+    stroke: #6f6a59;
+  }
+  .node:hover circle, .node.active circle {
+    fill: #f3e6c8;
+    stroke: var(--red);
+  }
+  .node text { fill: var(--ink-deep); }
+  .legend { color: var(--muted); }
+  .footnote {
+    color: var(--muted);
+    border-top: 1px dashed var(--line);
+    padding-top: 10px;
+  }
+  .count-badge {
+    background: var(--red);
+    color: #fff;
+  }
+  .notes { background: #f4efe2; border-color: var(--line); }
+  .notes summary { color: var(--teal); }
+  .note-form textarea {
+    background: #fffdf6;
+    border-color: var(--line);
+  }
+  .note-btn.primary {
+    background: var(--red);
+    border-color: var(--red);
+  }
+  .note-item { background: #fffdf6; }
+  .note-del:hover { color: var(--red); background: var(--red-soft); }
+  .topbar { padding: 15px 18px 12px; flex-wrap: wrap; }
+  .status { white-space: normal; }
+  .notice {
+    position: relative;
+    z-index: 1;
+    width: calc(100% - 36px);
+    max-width: 1240px;
+    margin: 12px auto 0;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .notice h2 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--red);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    letter-spacing: .1em;
+  }
+  .notice p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .notice strong { color: var(--ink-deep); }
+  body.gate-open { overflow: hidden; }
+  .gate[hidden] { display: none; }
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(30, 45, 42, .74);
+    backdrop-filter: blur(2px);
+  }
+  .gate-card {
+    width: min(100%, 560px);
+    max-height: calc(100vh - 36px);
+    overflow: auto;
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 40px rgba(20, 25, 20, .28);
+  }
+  .gate-seal {
+    width: 44px;
+    height: 44px;
+    display: block;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+  .gate-seal img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gate-card h2 {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 20px;
+    color: var(--ink-deep);
+  }
+  .gate-card p {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .gate-agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 14px 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .gate-agree input {
+    margin-top: 2px;
+    accent-color: var(--red);
+  }
+  .gate-enter {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--red);
+    border-radius: var(--radius);
+    background: var(--red);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .gate-enter:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+  .gate-note {
+    margin: 10px 0 0;
+    font-size: 11px;
+    text-align: center;
+  }
+  .topbar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: repeating-linear-gradient(90deg, var(--red) 0 12px, var(--gold) 12px 18px, transparent 18px 30px);
+  }
+  .symbol-list {
+    border: 1px solid #35584f;
+    box-shadow: inset 0 0 0 1px #182a27, 0 2px 8px rgba(18, 28, 25, .16);
+  }
+  .list-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: .08em;
+  }
+  .list-head::before { content: "▍"; color: var(--red); }
+  .detail { position: relative; overflow: hidden; }
+  .detail-head { align-items: center; }
+  .title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .seal-note {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--red);
+    border-radius: 4px;
+    background: var(--red-soft);
+    color: var(--red);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 10px;
+    line-height: 1.15;
+    letter-spacing: .08em;
+    box-shadow: inset 0 0 0 1px #f6e2dc;
+  }
+  .chapter-note {
+    flex: 0 0 auto;
+    height: 66px;
+    writing-mode: vertical-rl;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 11px;
+    letter-spacing: .24em;
+    color: var(--amber);
+    border-left: 1px solid var(--line);
+    padding-left: 8px;
+  }
+  .map-panel { position: relative; }
+  .map-panel h3 { letter-spacing: .14em; }
+  .wheel-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 7%;
+    z-index: 2;
+    border: 1px solid rgba(143, 92, 43, .18);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .classic-quote {
+    margin: 12px 0 0;
+    padding: 8px 10px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-align: center;
+  }
+  .classic-quote span {
+    color: var(--amber);
+    font-size: 10px;
+    margin-left: 6px;
+  }
+  .legend { margin-top: 10px; }
+  .footnote { font-size: 11px; }
+  .license-note {
+    position: relative;
+    z-index: 1;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 12px 18px 26px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+  }
+  .license-note strong { color: var(--ink-deep); }
+  .license-note a { color: var(--red); text-decoration: underline; }
+  @media (max-width: 860px) {
+    .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .status { white-space: normal; }
+    .symbol-buttons { grid-template-columns: repeat(2, 1fr); }
+    .detail-head h2 { font-size: 20px; }
+    .detail-head { flex-direction: column; align-items: flex-start; }
+    .chapter-note {
+      writing-mode: horizontal-tb;
+      height: auto;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      padding: 6px 0 0;
+    }
+    .seal-note { width: 30px; height: 30px; }
+  }
+</style>
+<style>
+  /* 笺注排版收口：去掉工具感，按书卷分节 */
+  .detail {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+    box-shadow: none;
+  }
+  .detail-head {
+    padding: 8px 0 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .detail-head h2 {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 26px;
+    letter-spacing: .06em;
+  }
+  .detail-head .tagline {
+    font-size: 12px;
+    letter-spacing: .08em;
+  }
+  .subnav {
+    gap: 0;
+    margin-top: 14px;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .subnav-btn {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 7px 14px;
+    font-size: 12px;
+    letter-spacing: .08em;
+  }
+  .subnav-btn:hover {
+    border-bottom-color: var(--teal);
+  }
+  .subnav-btn[aria-pressed="true"] {
+    background: transparent;
+    color: var(--red);
+    border-bottom-color: var(--red);
+  }
+  .detail-section { margin-top: 6px; }
+  .rows { gap: 0; }
+  .row {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  .row .label {
+    padding-top: 3px;
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+  .row .value {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #2a2d26;
+  }
+  .badges {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+  .badge {
+    border-radius: 2px;
+    font-size: 10px;
+    letter-spacing: .06em;
+  }
+  .chapter-note {
+    font-size: 12px;
+    letter-spacing: .3em;
+    color: var(--red);
+  }
+  @media (max-width: 520px) {
+    .detail-head h2 { font-size: 21px; }
+    .row { grid-template-columns: 70px minmax(0, 1fr); }
+    .subnav-btn { padding: 7px 10px; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark"><img src="assets/logo.svg" alt="颐真 · 象数"></div>
+      <div>
+        <h1>符号映射沙盘</h1>
+        <p>象数推演 · 现代系统映射 · 不作计算依据</p>
+      </div>
+    </div>
+    <div class="status"><span class="dot"></span><span>六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
+  </header>
+  <section class="notice" role="note" aria-label="使用声明">
+    <h2>声明 · 文化研究工具</h2>
+    <p>本页用于传统文化与象数符号的概念研究，所有干支、星图、系统映射均为<strong>拓展面候选</strong>，不构成预测、医疗、法律、投资或重大决策依据。本地样本记录仅保存在当前浏览器，不上传，不要求填写真实姓名与联系方式。请理性使用，勿据此作出重要决定。</p>
+  </section>
+  <main class="layout">
+  <aside class="symbol-list" aria-label="地支列表">
+      <div class="list-head">象数目录 · 选择符号</div>
+      <div class="mode-switch" id="modeSwitch" role="group" aria-label="符号体系">
+        <button type="button" class="mode-btn" data-mode="zhi" aria-pressed="true">地支</button>
+        <button type="button" class="mode-btn" data-mode="gan" aria-pressed="false">天干</button>
+      </div>
+      <div id="symbolButtons" class="symbol-buttons"></div>
+    </aside>
+    <section class="workspace">
+      <article class="detail" id="detail" aria-live="polite"></article>
+      <div class="map-panel">
+        <h3 id="wheelTitle">地支象数圆图</h3>
+        <p class="chart-source">背景：星宫图 · 用户提供 · 本地内测</p>
+        <div id="relationControls" class="relation-controls" aria-label="地支关系类型"></div>
+        <div class="wheel-wrap">
+          <svg id="wheel" viewBox="0 0 560 560" role="img" aria-label="十二地支映射轮盘"></svg>
+        </div>
+        <div class="legend">
+          <span><i style="background:#0f766e"></i>三合群</span>
+          <span><i style="background:#c77700"></i>六合连线</span>
+          <span><i style="background:#4f6b8a"></i>六冲</span>
+          <span><i style="background:#b0563f"></i>六害</span>
+          <span><i style="background:#5b7f4f"></i>三刑</span>
+          <span><i style="background:#b43a2f"></i>当前符号</span>
+        </div>
+        <div id="selectedReadout" class="selected-readout" aria-live="polite"></div>
+        <div class="term-strip" aria-label="术语解释">
+          <button type="button" class="term-btn" data-term="six">六合</button>
+          <button type="button" class="term-btn" data-term="three">三合</button>
+          <button type="button" class="term-btn" data-term="chong">六冲</button>
+          <button type="button" class="term-btn" data-term="hai">六害</button>
+          <button type="button" class="term-btn" data-term="xing">三刑</button>
+          <button type="button" class="term-btn" data-term="chujian">象数初笺</button>
+          <button type="button" class="term-btn" data-term="candidate">拓展面候选</button>
+        </div>
+        <div id="termReadout" class="term-readout" aria-live="polite">点一个词，看它的结构解释。</div>
+        <blockquote class="classic-quote">观象玩辞，观变玩占 <span>《周易·系辞》</span></blockquote>
+        <details class="notes" id="notesPanel">
+          <summary>推演随录 · <span id="notesSummary">0 条草稿</span></summary>
+          <form class="note-form" id="noteForm">
+            <textarea id="noteInput" rows="3" placeholder="记下现实观察：时间、场景、现象、结果"></textarea>
+            <div class="note-actions">
+              <button type="submit" class="note-btn primary">记录当前符号</button>
+              <button type="button" class="note-btn" id="noteClear">清空</button>
+            </div>
+          </form>
+          <ul class="note-list" id="noteList"></ul>
+        </details>
+      </div>
+      <div class="footnote">
+        本页面为传统文化符号研究工具，全部内容按“拓展面候选”处理，不作判断依据，不构成任何专业建议；可验证假设需要真实数据回填。
+      </div>
+    </section>
+  </main>
+  <footer class="license-note">
+    <strong>使用限制</strong>：本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。所有干支、星图、系统映射均为拓展面候选，不作决策依据。
+    <br>
+    补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="LICENSE" target="_blank">LICENSE</a>。古三式内测入口：<a href="sanshi/index.html">太乙 · 奇门 · 六壬</a>。意见征集：<a href="feedback.html">点这里</a>。
+  </footer>
+  <div class="gate" id="agreementGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate-card">
+      <div class="gate-seal" aria-hidden="true"><img src="assets/logo.svg" alt=""></div>
+      <h2 id="gateTitle">进入前请确认</h2>
+      <p>本页用于传统文化与象数符号的概念研究。所有干支、星图、系统映射均为“拓展面候选”，不构成预测、医疗、法律、投资或重大决策依据。</p>
+      <p>本地样本记录仅保存在当前浏览器，不上传，不要求填写真实姓名与联系方式。请理性使用，勿据此作出重要决定。</p>
+      <p>本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。</p>
+      <p>进入即视为已阅读并同意《颐真书房用户协议与免责声明》：本站仅做文化研究，不作决策依据；不收集隐私；内容不可直接商用。<a href="AGREEMENT.md" target="_blank">查看全文</a></p>
+      <label class="gate-agree"><input type="checkbox" id="gateAgree"> 我已阅读并同意上述说明</label>
+      <button type="button" class="gate-enter" id="gateEnter" disabled>进入作品</button>
+      <p class="gate-note">未同意前不会展示作品内容</p>
+    </div>
+  </div>
+<script>
+  const DATA = {
+    "子": { zhi: "子", name: "水 · 种子 · 子时", cang: "癸", dir: "正北", hour: "23:00-01:00", animal: "鼠", month: "大雪-小寒", rel: "六合丑 / 六冲午 / 三合申子辰 / 六害未 / 三刑子卯", func: "流动、潜藏、初始", system: "数据流、增量输入、基因信息", hypothesis: "输入端越活跃，系统后续越多样", edge: "流动不是消失，是还没定形。" },
+    "丑": { zhi: "丑", name: "土 · 金库 · 丑时", cang: "己癸辛", dir: "东北", hour: "01:00-03:00", animal: "牛", month: "小寒-立春", rel: "六合子 / 六冲未 / 三合巳酉丑 / 六害午 / 三刑丑戌未", func: "收纳、冷储", system: "冷存储、档案库、底层设施", hypothesis: "冷数据沉淀越多，系统越稳但越慢", edge: "越稳的库，越难被快速唤醒。" },
+    "寅": { zhi: "寅", name: "木 · 生发 · 寅时", cang: "甲丙戊", dir: "东北", hour: "03:00-05:00", animal: "虎", month: "立春-惊蛰", rel: "六合亥 / 六冲申 / 三合寅午戌 / 六害巳 / 三刑寅巳申", func: "启动、生发", system: "创新引擎、启动器、新协议", hypothesis: "新入口出现时，系统结构最易变化", edge: "启动处最弱，也最可能改变全局。" },
+    "卯": { zhi: "卯", name: "木 · 繁茂 · 卯时", cang: "乙", dir: "正东", hour: "05:00-07:00", animal: "兔", month: "惊蛰-清明", rel: "六合戌 / 六冲酉 / 三合亥卯未 / 六害辰 / 三刑子卯", func: "并行、扩散", system: "并发进程、内容生产、生态增长", hypothesis: "并发越高，短期产出越多，越易失序", edge: "繁茂是信号，也是噪声的来源。" },
+    "辰": { zhi: "辰", name: "土 · 水库 · 辰时", cang: "戊乙癸", dir: "东南", hour: "07:00-09:00", animal: "龙", month: "清明-立夏", rel: "六合酉 / 六冲戌 / 三合申子辰 / 六害卯 / 自刑", func: "大库、蓄水", system: "云存储、缓存池、蓄水池", hypothesis: "缓存充足时系统平滑，缓存被冲时波动", edge: "最大的库，往往藏在最平的地表下。" },
+    "巳": { zhi: "巳", name: "火 · 信息 · 巳时", cang: "丙戊庚", dir: "东南", hour: "09:00-11:00", animal: "蛇", month: "立夏-芒种", rel: "六合申 / 六冲亥 / 三合巳酉丑 / 六害寅 / 三刑寅巳申", func: "连接、发热", system: "网络流量、即时通讯、热数据", hypothesis: "连接密度越高，信息传播越快", edge: "热度不是能量本身，是能量被看见。" },
+    "午": { zhi: "午", name: "火 · 高峰 · 午时", cang: "丁己", dir: "正南", hour: "11:00-13:00", animal: "马", month: "芒种-小暑", rel: "六合未 / 六冲子 / 三合寅午戌 / 六害丑 / 自刑", func: "显象、峰值", system: "热榜、直播、峰值计算", hypothesis: "峰值过后热度衰减最快", edge: "最高点只是瞬间，结构决定回落。" },
+    "未": { zhi: "未", name: "土 · 木库 · 未时", cang: "己丁乙", dir: "西南", hour: "13:00-15:00", animal: "羊", month: "小暑-立秋", rel: "六合午 / 六冲丑 / 三合亥卯未 / 六害子 / 三刑丑戌未", func: "成果沉淀", system: "作品库、知识库、归档", hypothesis: "沉淀越多，越容易形成长期资产", edge: "未完成不是结果，未归档才是。" },
+    "申": { zhi: "申", name: "金 · 传送 · 申时", cang: "庚壬戊", dir: "西南", hour: "15:00-17:00", animal: "猴", month: "立秋-白露", rel: "六合巳 / 六冲寅 / 三合申子辰 / 六害亥 / 三刑寅巳申", func: "规则、传输", system: "协议、流程、制度", hypothesis: "规则越清晰，系统越可复制", edge: "规则是传送，也是过滤。" },
+    "酉": { zhi: "酉", name: "金 · 精密 · 酉时", cang: "辛", dir: "正西", hour: "17:00-19:00", animal: "鸡", month: "白露-寒露", rel: "六合辰 / 六冲卯 / 三合巳酉丑 / 六害戌 / 自刑", func: "加工、精炼", system: "编译器、芯片、精加工", hypothesis: "精密层出错成本最高", edge: "越精密，越怕一个极小的偏差。" },
+    "戌": { zhi: "戌", name: "火库 · 戌时", cang: "戊辛丁", dir: "西北", hour: "19:00-21:00", animal: "狗", month: "寒露-立冬", rel: "六合卯 / 六冲辰 / 三合寅午戌 / 六害酉 / 三刑丑戌未", func: "平台、收束", system: "平台池、用户池、闭环", hypothesis: "池子越大，封闭越强，开库冲击越大", edge: "平台是库，也是锁。" },
+    "亥": { zhi: "亥", name: "水 · 源头 · 亥时", cang: "壬甲", dir: "西北", hour: "21:00-23:00", animal: "猪", month: "立冬-大雪", rel: "六合寅 / 六冲巳 / 三合亥卯未 / 六害申 / 自刑", func: "混沌、潜在", system: "原始数据、未分化需求", hypothesis: "混沌层越深，越难直接量化", edge: "源头不清晰，下游却全部受它影响。" }
+  };
+  const GAN_DATA = {
+    "甲": { gan: "甲", name: "阳木 · 主干 · 东方", yin: "阳", wuxing: "木", dir: "东方", image: "参天大树、主干", he: "甲己合土", func: "起步、领导、支撑", system: "主线程、框架、根目录", hypothesis: "主干越清晰，分支越容易生长", edge: "它不是最高的树，是最早立的柱。" },
+    "乙": { gan: "乙", name: "阴木 · 藤蔓 · 东方", yin: "阴", wuxing: "木", dir: "东方", image: "花草藤蔓、连接", he: "乙庚合金", func: "连接、适应、迂回", system: "插件、适配层、边缘接口", hypothesis: "连接层越柔，系统越能应对变化", edge: "不硬碰，却能绕过去。" },
+    "丙": { gan: "丙", name: "阳火 · 太阳 · 南方", yin: "阳", wuxing: "火", dir: "南方", image: "太阳、显象", he: "丙辛合水", func: "显象、传播、爆发", system: "曝光、广播、热榜", hypothesis: "传播越快，衰减也越快", edge: "被看见的那一刻，就是它最盛的时候。" },
+    "丁": { gan: "丁", name: "阴火 · 灯烛 · 南方", yin: "阴", wuxing: "火", dir: "南方", image: "灯烛、持续", he: "丁壬合木", func: "持续、精细、点亮局部", system: "后台服务、指示灯、常驻进程", hypothesis: "持续输出比瞬时爆发更耐消耗", edge: "它不是太阳，但能照亮一处黑暗。" },
+    "戊": { gan: "戊", name: "阳土 · 高山 · 中央", yin: "阳", wuxing: "土", dir: "中央", image: "高山、承载", he: "戊癸合火", func: "承载、屏障、底座", system: "数据库、基础设施、平台底座", hypothesis: "底座越稳，上层越敢变化", edge: "不动，是它最大的动作。" },
+    "己": { gan: "己", name: "阴土 · 田园 · 中央", yin: "阴", wuxing: "土", dir: "中央", image: "田园、滋养", he: "甲己合土", func: "培育、维护、沉淀", system: "缓存、内容沉淀、运营维护", hypothesis: "沉淀越多，越需要定期整理", edge: "它不显眼，但所有生长都从它身上来。" },
+    "庚": { gan: "庚", name: "阳金 · 刀剑 · 西方", yin: "阳", wuxing: "金", dir: "西方", image: "刀剑、变革", he: "乙庚合金", func: "切割、重构、规则执行", system: "编译器、迁移工具、重构脚本", hypothesis: "切割越准，系统越轻；切错则成本最高", edge: "刀越快，越要小心伤到自己。" },
+    "辛": { gan: "辛", name: "阴金 · 珠玉 · 西方", yin: "阴", wuxing: "金", dir: "西方", image: "珠玉、精炼", he: "丙辛合水", func: "精加工、审美、收敛", system: "芯片、精密工艺、界面打磨", hypothesis: "精密层出错成本最高", edge: "它不是砍下去的力量，是刻出来的细节。" },
+    "壬": { gan: "壬", name: "阳水 · 江河 · 北方", yin: "阳", wuxing: "水", dir: "北方", image: "江河、流动", he: "丁壬合木", func: "流动、分发、连接全域", system: "数据流、网络、流量分发", hypothesis: "流量越大，越需要堤岸", edge: "水能载舟，也能冲垮旧结构。" },
+    "癸": { gan: "癸", name: "阴水 · 雨露 · 北方", yin: "阴", wuxing: "水", dir: "北方", image: "雨露、渗透", he: "戊癸合火", func: "渗透、润滑、细粒度扩散", system: "渗透测试、埋点、润化层", hypothesis: "细粒度渗透比大规模冲击更持久", edge: "不声不响，却已经进到内部。" }
+  };
+  const VERIFY_ZHI = {
+    "子": "记录输入源新增与系统多样性的关系，观察一段时间内新增事件或字段数量。",
+    "丑": "对比冷数据归档前后，系统响应速度与稳定性是否变化。",
+    "寅": "记录新项目或新入口启动后，系统结构在多久内发生变化。",
+    "卯": "对比并发数提升前后，产出量与错误率是否同步上升。",
+    "辰": "对比缓存充足与清空前后，系统波动是否明显不同。",
+    "巳": "记录连接密度上升时，信息传播速度与噪声是否同步增长。",
+    "午": "记录热榜或峰值出现后，流量衰减曲线的实际形状。",
+    "未": "对比成果归档前后，长期复用率是否提高。",
+    "申": "对比规则明确前后，交接效率与可复制性是否提升。",
+    "酉": "记录精密层每次改动带来的故障率或返工成本。",
+    "戌": "对比平台开放期与封闭期，用户活跃度和外部冲击是否不同。",
+    "亥": "记录混沌需求被结构化前后的转化率变化。"
+  };
+  const VERIFY_GAN = {
+    "甲": "记录主干确定前后，分支增长速度是否变快。",
+    "乙": "对比适配层变化时，系统稳定性是否受到影响。",
+    "丙": "记录曝光峰值出现后的留存与衰减曲线。",
+    "丁": "对比持续输出与脉冲式输出的长期效果。",
+    "戊": "对比底座扩容前后，上层变更频率是否更安全。",
+    "己": "对比定期沉淀与整理前后，检索效率是否提升。",
+    "庚": "记录重构前后，系统复杂度与缺陷率是否下降。",
+    "辛": "记录精加工前后，错误率与用户感知是否改善。",
+    "壬": "记录流量增大时，系统是否需要堤岸或限流。",
+    "癸": "记录细粒度渗透后，长期影响是否比一次性冲击更持久。"
+  };
+  const EXAMPLE_ZHI = {
+    "子": "数据采集管道、实时输入流",
+    "丑": "冷备份库、档案室",
+    "寅": "新产品冷启动、Git init",
+    "卯": "多线程任务、内容批量生产",
+    "辰": "缓存池、云盘",
+    "巳": "热搜、即时通讯、API 调用",
+    "午": "直播峰值、活动上线",
+    "未": "知识库归档、作品集",
+    "申": "标准协议、审批流",
+    "酉": "编译器、芯片流片",
+    "戌": "平台生态、会员闭环",
+    "亥": "原始日志、需求池"
+  };
+  const EXAMPLE_GAN = {
+    "甲": "项目主分支、系统内核",
+    "乙": "插件系统、兼容层",
+    "丙": "品牌曝光、宣发",
+    "丁": "客服后台、夜间值班",
+    "戊": "云底座、数据库",
+    "己": "缓存维护、内容运营",
+    "庚": "代码重构、迁移脚本",
+    "辛": "界面打磨、精密制造",
+    "壬": "流量分发、数据管道",
+    "癸": "渗透测试、埋点"
+  };
+  const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+  const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+  const SIX = [["子", "丑"], ["寅", "亥"], ["卯", "戌"], ["辰", "酉"], ["巳", "申"], ["午", "未"]];
+  const THREE = [["申", "子", "辰"], ["亥", "卯", "未"], ["寅", "午", "戌"], ["巳", "酉", "丑"]];
+  const CHONG = [["子", "午"], ["丑", "未"], ["寅", "申"], ["卯", "酉"], ["辰", "戌"], ["巳", "亥"]];
+  const HAI = [["子", "未"], ["丑", "午"], ["寅", "巳"], ["卯", "辰"], ["申", "亥"], ["酉", "戌"]];
+  const XING = [["寅", "巳", "申"], ["丑", "戌", "未"], ["子", "卯"]];
+  const WUHE = [["甲", "己"], ["乙", "庚"], ["丙", "辛"], ["丁", "壬"], ["戊", "癸"]];
+  const REL_LABELS = { six: "六合", three: "三合", chong: "六冲", hai: "六害", xing: "三刑" };
+  const REL_EXPLAIN = {
+    "子丑六合": "输入与冷库对接：增量数据进入归档层，像采集端与备份端配合。",
+    "寅亥六合": "启动器与源头暗合：新入口连接未分化需求，像新产品接住原始数据。",
+    "卯戌六合": "并发生产与平台闭环：内容批量产出，最终收进平台池。",
+    "辰酉六合": "缓存池与精密层配合：快速取用与精细加工互相补位。",
+    "巳申六合": "连接层与规则层配合：即时通讯/API 与协议流程协同。",
+    "午未六合": "峰值与成果沉淀：热点结束后的流量被整理成长期资产。",
+    "申子辰三合": "规则、输入、缓存形成流程同盟：先有协议，再进数据，再暂存。",
+    "亥卯未三合": "源头、并发、成果库形成增长同盟：需求进入，批量生产，最后归档。",
+    "寅午戌三合": "启动、峰值、平台形成爆发闭环：新入口推到高点，再收进平台。",
+    "巳酉丑三合": "连接、精加工、冷库形成精密闭环：传输、打磨、沉淀。",
+    "子午六冲": "输入与峰值直接冲突：入口数据与最大曝光抢资源。",
+    "丑未六冲": "冷库与成果库冲突：档案层和作品库抢同一块存储。",
+    "寅申六冲": "启动与规则冲突：新入口挑战既有协议。",
+    "卯酉六冲": "并发与精加工冲突：批量生产与高精度流程难以同时拉满。",
+    "辰戌六冲": "缓存池与平台池冲突：快速缓存与封闭平台互相排挤。",
+    "巳亥六冲": "连接与源头冲突：热连接压制未分化需求。",
+    "子未六害": "输入与沉淀暗中消耗：一边进数据，一边归档，互相拖慢。",
+    "丑午六害": "冷库与峰值暗中消耗：归档层拖住高峰响应。",
+    "寅巳六害": "启动与连接暗中消耗：新入口被热连接分走注意力。",
+    "卯辰六害": "并发与缓存暗中消耗：批量生产把缓存冲得忽高忽低。",
+    "申亥六害": "规则与源头暗中消耗：制度过早压缩混沌需求。",
+    "酉戌六害": "精加工与平台暗中消耗：打磨细节被平台规模挤占。",
+    "寅巳申三刑": "启动、连接、规则三者互相卡：创新、热连接、制度互相拉扯。",
+    "丑戌未三刑": "冷库、平台、成果库三者互相压：存储、封闭、归档互相挤压。",
+    "子卯三刑": "输入与并发互相伤：入口太快会打乱并行任务。",
+    "自刑": "同一结构过度内耗：自己积累的规则反过来卡住自己。"
+  };
+  const TERM_EXPLAIN = {
+    six: "六合 = 协作对接：像两个模块顺利接上。",
+    three: "三合 = 同盟组合：像三人小组形成稳定结构。",
+    chong: "六冲 = 直接对立：像两个模块抢同一份资源。",
+    hai: "六害 = 暗中消耗：像看不见的隐性摩擦。",
+    xing: "三刑 = 结构性摩擦：像制度本身造成的卡点。",
+    chujian: "象数初笺 = 第一轮批注稿，不是定稿。",
+    candidate: "拓展面候选 = 未定论假设，真实样本回填前不视为已验证。"
+  };
+  let activeRel = { six: true, three: true, chong: true, hai: true, xing: true };
+  let mode = "zhi";
+  let selectedZhi = "戌";
+  let selectedGan = "甲";
+  let detailTab = "overview";
+  const STATE_KEY = "symbol-sandbox-state-v1";
+  const NOTE_KEY = "symbol-sandbox-notes-v1";
+
+  function pos(zhi) {
+    const i = ZHI.indexOf(zhi);
+    const angle = -90 + i * 30;
+    const r = 215;
+    const rad = angle * Math.PI / 180;
+    return { x: 280 + r * Math.cos(rad), y: 280 + r * Math.sin(rad) };
+  }
+
+  function ganPos(g) {
+    const i = GAN.indexOf(g);
+    const angle = -90 + i * 36;
+    const r = 215;
+    const rad = angle * Math.PI / 180;
+    return { x: 280 + r * Math.cos(rad), y: 280 + r * Math.sin(rad) };
+  }
+
+  function currentSelected() {
+    return mode === "zhi" ? selectedZhi : selectedGan;
+  }
+
+  function currentData() {
+    return mode === "zhi" ? DATA[selectedZhi] : GAN_DATA[selectedGan];
+  }
+
+  function renderSelectedReadout() {
+    const el = document.getElementById("selectedReadout");
+    if (!el) return;
+    const key = currentSelected();
+    const d = currentData();
+    const example = mode === "zhi" ? (EXAMPLE_ZHI[key] || "") : (EXAMPLE_GAN[key] || "");
+    const relation = mode === "zhi" ? d.rel : ("五合：" + d.he);
+    el.innerHTML =
+      '<div class="sr-head"><strong>' + key + '</strong><span>' + d.name + '</span></div>' +
+      '<div class="sr-row"><span>人话</span><b>' + d.edge + '</b></div>' +
+      '<div class="sr-row"><span>现代对应</span><b>' + d.system + '</b></div>' +
+      '<div class="sr-row"><span>现实例子</span><b>' + example + '</b></div>' +
+      '<div class="sr-row"><span>' + (mode === "zhi" ? "关系" : "五合") + '</span><b>' + relation + '</b></div>';
+  }
+
+  function restoreState() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STATE_KEY) || "null");
+      if (!s) return;
+      if (s.mode === "gan" || s.mode === "zhi") mode = s.mode;
+      if (ZHI.includes(s.selectedZhi)) selectedZhi = s.selectedZhi;
+      if (GAN.includes(s.selectedGan)) selectedGan = s.selectedGan;
+      if (["overview", "structure", "system", "relation", "verify", "source"].includes(s.detailTab)) detailTab = s.detailTab;
+      if (s.activeRel) {
+        Object.keys(activeRel).forEach(key => {
+          if (typeof s.activeRel[key] === "boolean") activeRel[key] = s.activeRel[key];
+        });
+      }
+    } catch {}
+  }
+
+  function persistState() {
+    try {
+      localStorage.setItem(STATE_KEY, JSON.stringify({ mode, selectedZhi, selectedGan, detailTab, activeRel }));
+    } catch {}
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function formatTime(iso) {
+    try {
+      return new Date(iso).toLocaleString("zh-CN", { hour12: false });
+    } catch {
+      return iso;
+    }
+  }
+
+  function loadNotes() {
+    try {
+      return JSON.parse(localStorage.getItem(NOTE_KEY) || "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function saveNotes(notes) {
+    try {
+      localStorage.setItem(NOTE_KEY, JSON.stringify(notes));
+    } catch {}
+    renderNotes();
+  }
+
+  function renderNotes() {
+    const notes = loadNotes();
+    const list = document.getElementById("noteList");
+    const summary = document.getElementById("notesSummary");
+    const count = document.getElementById("noteCount");
+    if (!list) return;
+    summary.textContent = notes.length + " 条草稿";
+    if (count) count.textContent = notes.length;
+    list.innerHTML = notes.map(n => `
+      <li class="note-item">
+        <div class="note-meta">${esc(n.mode === "gan" ? "天干" : "地支")} ${esc(n.symbol)} · ${esc(formatTime(n.at))}</div>
+        <div>${esc(n.text)}</div>
+        <button type="button" class="note-del" data-id="${n.id}" aria-label="删除这条记录">×</button>
+      </li>
+    `).join("") || '<li class="note-item empty">还没有记录</li>';
+    list.querySelectorAll(".note-del").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.getAttribute("data-id"));
+        saveNotes(loadNotes().filter(n => n.id !== id));
+      });
+    });
+  }
+
+  function renderModeButtons() {
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+      btn.setAttribute("aria-pressed", String(btn.getAttribute("data-mode") === mode));
+      btn.addEventListener("click", () => {
+        mode = btn.getAttribute("data-mode");
+        detailTab = "overview";
+        renderModeButtons();
+        renderButtons();
+        renderRelControls();
+        renderWheel();
+        renderDetail();
+        persistState();
+      });
+    });
+  }
+
+  function renderButtons() {
+    const wrap = document.getElementById("symbolButtons");
+    wrap.innerHTML = "";
+    const list = mode === "zhi" ? ZHI : GAN;
+    const selected = currentSelected();
+    list.forEach(key => {
+      const b = document.createElement("button");
+      b.className = "symbol-btn";
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(key === selected));
+      const d = mode === "zhi" ? DATA[key] : GAN_DATA[key];
+      b.innerHTML = '<span class="zhi">' + key + '</span><span class="small">' + d.func.split("、")[0] + '</span>';
+      b.addEventListener("click", () => select(key));
+      wrap.appendChild(b);
+    });
+  }
+
+  function renderRelControls() {
+    const wrap = document.getElementById("relationControls");
+    if (mode !== "zhi") {
+      wrap.style.display = "none";
+      return;
+    }
+    wrap.style.display = "";
+    wrap.innerHTML = "";
+    Object.keys(REL_LABELS).forEach(key => {
+      const b = document.createElement("button");
+      b.className = "rel-btn";
+      b.type = "button";
+      b.textContent = REL_LABELS[key];
+      b.setAttribute("aria-pressed", String(activeRel[key]));
+      b.addEventListener("click", () => {
+        activeRel[key] = !activeRel[key];
+        renderRelControls();
+        renderWheel();
+        persistState();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  function drawEdges(groups, cls) {
+    const svg = document.getElementById("wheel");
+    const ns = "http://www.w3.org/2000/svg";
+    groups.forEach(group => {
+      group.forEach((z, i) => {
+        if (group.length === 2 && i > 0) return;
+        const a = pos(z);
+        const b = pos(group[(i + 1) % group.length]);
+        const line = document.createElementNS(ns, "line");
+        line.setAttribute("x1", a.x); line.setAttribute("y1", a.y);
+        line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+        line.setAttribute("class", "edge " + cls);
+        line.setAttribute("data-rel", cls);
+        line.setAttribute("data-pair", [z, group[(i + 1) % group.length]].join(""));
+        svg.appendChild(line);
+      });
+    });
+  }
+
+  function renderWheel() {
+    const svg = document.getElementById("wheel");
+    svg.innerHTML = "";
+    const wheelTitle = document.getElementById("wheelTitle");
+    if (wheelTitle) wheelTitle.textContent = mode === "gan" ? "天干五合圆图" : "地支象数圆图";
+    const ns = "http://www.w3.org/2000/svg";
+    if (mode === "gan") {
+      WUHE.forEach(pair => {
+        const a = ganPos(pair[0]), b = ganPos(pair[1]);
+        const line = document.createElementNS(ns, "line");
+        line.setAttribute("x1", a.x); line.setAttribute("y1", a.y);
+        line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+        line.setAttribute("class", "edge five");
+        line.setAttribute("data-pair", pair.join(""));
+        svg.appendChild(line);
+      });
+      GAN.forEach(g => {
+        const p = ganPos(g);
+        const node = document.createElementNS(ns, "g");
+        node.setAttribute("class", "node");
+        node.setAttribute("data-key", g);
+        const c = document.createElementNS(ns, "circle");
+        c.setAttribute("cx", p.x); c.setAttribute("cy", p.y); c.setAttribute("r", 27);
+        const t = document.createElementNS(ns, "text");
+        t.setAttribute("x", p.x); t.setAttribute("y", p.y + 5);
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = g;
+        node.appendChild(c); node.appendChild(t);
+        node.addEventListener("click", () => select(g));
+        svg.appendChild(node);
+      });
+      highlightWheel();
+      return;
+    }
+    if (activeRel.six) drawEdges(SIX, "six");
+    if (activeRel.three) drawEdges(THREE, "three");
+    if (activeRel.chong) drawEdges(CHONG, "chong");
+    if (activeRel.hai) drawEdges(HAI, "hai");
+    if (activeRel.xing) drawEdges(XING, "xing");
+    ZHI.forEach(z => {
+      const p = pos(z);
+      const g = document.createElementNS(ns, "g");
+      g.setAttribute("class", "node");
+      g.setAttribute("data-key", z);
+      const c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", p.x); c.setAttribute("cy", p.y); c.setAttribute("r", 27);
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", p.x); t.setAttribute("y", p.y + 5);
+      t.setAttribute("text-anchor", "middle");
+      t.textContent = z;
+      g.appendChild(c); g.appendChild(t);
+      g.addEventListener("click", () => select(z));
+      svg.appendChild(g);
+    });
+    highlightWheel();
+  }
+
+  function highlightWheel() {
+    const svg = document.getElementById("wheel");
+    const selected = currentSelected();
+    svg.querySelectorAll(".node").forEach(n => n.classList.toggle("active", n.getAttribute("data-key") === selected));
+    svg.querySelectorAll(".edge").forEach(e => {
+      const pair = e.getAttribute("data-pair");
+      e.classList.toggle("active", pair.includes(selected));
+    });
+  }
+
+  function renderDetail() {
+    const d = currentData();
+    const el = document.getElementById("detail");
+    const headKey = mode === "zhi" ? d.zhi : d.gan;
+    const verify = mode === "zhi" ? VERIFY_ZHI[selectedZhi] : VERIFY_GAN[selectedGan];
+    const example = mode === "zhi" ? EXAMPLE_ZHI[selectedZhi] : EXAMPLE_GAN[selectedGan];
+    const relRows = mode === "zhi"
+      ? Object.keys(REL_EXPLAIN)
+          .filter(k => k.includes(selectedZhi))
+          .map(k => `<div class="row"><div class="label">${k}</div><div class="value">${REL_EXPLAIN[k]}</div></div>`)
+          .join("")
+      : "";
+    const metaHTML = mode === "zhi"
+      ? `<div class="row"><div class="label">藏干</div><div class="value">${d.cang}</div></div>
+         <div class="row"><div class="label">方位</div><div class="value">${d.dir}</div></div>
+         <div class="row"><div class="label">时辰</div><div class="value">${d.hour}</div></div>
+         <div class="row"><div class="label">生肖</div><div class="value">${d.animal}</div></div>
+         <div class="row"><div class="label">月令</div><div class="value">${d.month}</div></div>`
+      : `<div class="row"><div class="label">阴阳</div><div class="value">${d.yin}</div></div>
+         <div class="row"><div class="label">五行</div><div class="value">${d.wuxing}</div></div>
+         <div class="row"><div class="label">方位</div><div class="value">${d.dir}</div></div>
+         <div class="row"><div class="label">意象</div><div class="value">${d.image}</div></div>`;
+    const relationHTML = mode === "zhi"
+      ? `<div class="row"><div class="label">关系</div><div class="value">${d.rel}</div></div>`
+      : `<div class="row"><div class="label">五合</div><div class="value">${d.he}</div></div>`;
+    const tabs = [
+      ["overview", "象意 · 它是什么"],
+      ["structure", "体用 · 它的作用"],
+      ["system", "映射 · 现代对应"],
+      ["relation", mode === "zhi" ? "关系 · 怎么配对" : "五合"],
+      ["verify", "证验 · 怎么验证"],
+      ["source", "稽古 · 原文出处"]
+    ];
+    const sourceDoc = mode === "zhi" ? "十二地支详解_2026-08-10.md" : "十天干详解_2026-08-10.md";
+    const isLocal = (location.hostname === "127.0.0.1" || location.hostname === "localhost" || location.hostname === "0.0.0.0") && location.port === "8766";
+    const sourceLinks = isLocal
+      ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/地支关系稽古工作台_2026-08-11.md")}" target="_blank">稽古工作台</a>`
+      : `<a href="docs/${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
+    const section = {
+      overview: `<div class="rows">${metaHTML}<div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
+      structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
+      system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
+      relation: `<div class="rows">${relationHTML}<div class="row"><div class="label">含义</div><div class="value">${mode === "zhi" ? "六合=协作；三合=同盟；六冲=对立；六害=暗中消耗；三刑=结构性摩擦" : "五合=协作/化气，需看全局是否成化"}</div></div>${relRows}</div>`,
+      verify: `<div class="rows"><div class="row"><div class="label">验证方法</div><div class="value">${verify}</div></div><div class="row"><div class="label">状态</div><div class="value">待真实样本回填，未回填前不视为已验</div></div></div>`,
+      source: `<div class="rows"><div class="row"><div class="label">本地底稿</div><div class="value">${sourceLinks}</div></div><div class="row"><div class="label">原文状态</div><div class="value">六合、三合、六冲、六害、三刑已锚定《三命通会》初笺，待交叉复核</div></div><div class="row"><div class="label">建议</div><div class="value">继续查《协纪辨方书》《御定星历考原》；《渊海子平》《滴天髓》待收录后再补</div></div></div>`
+    }[detailTab];
+    el.innerHTML = `
+      <div class="detail-head">
+        <div class="title-wrap">
+          <span class="seal-note" aria-hidden="true">颐<br>真</span>
+          <div>
+            <h2>${headKey} · ${d.name}</h2>
+            <div class="tagline">${d.func}</div>
+          </div>
+        </div>
+        <span class="chapter-note" aria-hidden="true">象数初笺</span>
+      </div>
+      <div class="subnav" role="tablist" aria-label="符号详情分节">
+        ${tabs.map(t => `<button type="button" class="subnav-btn" role="tab" data-tab="${t[0]}" aria-pressed="${detailTab === t[0]}">${t[1]}</button>`).join("")}
+      </div>
+      <div class="detail-section" role="tabpanel">${section}</div>
+      <div class="badges">
+        <span class="badge teal">拓展面候选</span>
+        <span class="badge amber">待真实样本</span>
+        <span class="badge red">不作计算依据</span>
+      </div>`;
+    el.querySelectorAll(".subnav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchDetail(btn.getAttribute("data-tab")));
+    });
+    renderSelectedReadout();
+  }
+
+  function switchDetail(tab) {
+    detailTab = tab;
+    renderDetail();
+    persistState();
+  }
+
+  function select(z) {
+    if (mode === "zhi") selectedZhi = z; else selectedGan = z;
+    detailTab = "overview";
+    document.querySelectorAll(".symbol-btn").forEach(b => {
+      const pressed = b.querySelector(".zhi").textContent === z;
+      b.setAttribute("aria-pressed", String(pressed));
+    });
+    renderDetail();
+    highlightWheel();
+    persistState();
+  }
+
+  restoreState();
+  renderModeButtons();
+  renderButtons();
+  renderRelControls();
+  renderWheel();
+  renderDetail();
+  document.getElementById("noteForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("noteInput");
+    const text = input.value.trim();
+    if (!text) return;
+    const notes = loadNotes();
+    notes.unshift({ id: Date.now(), at: new Date().toISOString(), mode, symbol: currentSelected(), text });
+    saveNotes(notes);
+    input.value = "";
+  });
+  document.getElementById("noteClear").addEventListener("click", () => {
+    if (confirm("清空本地样本记录？")) saveNotes([]);
+  });
+  document.querySelectorAll(".term-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const out = document.getElementById("termReadout");
+      out.textContent = TERM_EXPLAIN[btn.getAttribute("data-term")] || "还没有解释。";
+    });
+  });
+  const gate = document.getElementById("agreementGate");
+  const gateAgree = document.getElementById("gateAgree");
+  const gateEnter = document.getElementById("gateEnter");
+  const GATE_KEY = "symbol-sandbox-gate-v1";
+  function gateAccepted() {
+    try {
+      return localStorage.getItem(GATE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+  if (gateAccepted()) {
+    gate.hidden = true;
+  } else {
+    document.body.classList.add("gate-open");
+  }
+  gateAgree.addEventListener("change", () => {
+    gateEnter.disabled = !gateAgree.checked;
+  });
+  gateEnter.addEventListener("click", () => {
+    if (!gateAgree.checked) return;
+    try {
+      localStorage.setItem(GATE_KEY, "1");
+    } catch {}
+    gate.hidden = true;
+    document.body.classList.remove("gate-open");
+  });
+  renderNotes();
+</script>
+</body>
+</html>

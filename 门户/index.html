@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>符号映射沙盘 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --paper: #f7f2e6;
+    --gold: #b08b4a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("../assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  .entry {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .entry-inner { max-width: 560px; }
+  .logo {
+    width: 76px;
+    height: 76px;
+    display: inline-block;
+  }
+  .logo img { width: 100%; height: 100%; object-fit: cover; }
+  h1 {
+    margin: 20px 0 8px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 30px;
+    letter-spacing: .12em;
+  }
+  .subtitle {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+  .btn {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 11px 24px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .btn:hover { background: #842e27; }
+  .meta {
+    margin-top: 18px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+  }
+  .footer a { text-decoration: underline; }
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(30, 45, 42, .76);
+    backdrop-filter: blur(2px);
+  }
+  .gate[hidden] { display: none; }
+  .gate-card {
+    width: min(100%, 560px);
+    max-height: calc(100vh - 36px);
+    overflow: auto;
+    padding: 22px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+    box-shadow: 0 12px 40px rgba(20, 25, 20, .28);
+  }
+  .gate-seal {
+    width: 44px;
+    height: 44px;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .gate-seal img { width: 100%; height: 100%; object-fit: cover; }
+  .gate-card h2 {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .gate-card p {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .gate-agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 14px 0 12px;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .gate-agree input { margin-top: 2px; accent-color: var(--red); }
+  .gate-enter {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .gate-enter:disabled { opacity: .45; cursor: not-allowed; }
+  .gate-note { margin: 10px 0 0; font-size: 11px; text-align: center; }
+</style>
+</head>
+<body data-gate-key="yizhen-sandbox-landing-v1">
+  <main class="entry">
+    <div class="entry-inner">
+      <div class="logo"><img src="../assets/logo.svg" alt="颐真"></div>
+      <h1>符号映射沙盘</h1>
+      <p class="subtitle">象数推演 · 现代系统映射 · 不作计算依据</p>
+      <a class="btn" href="../index.html">进入作品</a>
+      <p class="meta">内测中 · 拓展面候选 · 不构成预测、医疗、法律、投资或重大决策依据</p>
+    </div>
+  </main>
+  <footer class="footer">
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="../AGREEMENT.md" target="_blank">用户协议</a> · <a href="../LICENSE" target="_blank">许可说明</a> · <a href="../feedback.html">意见征集</a>
+  </footer>
+  <div class="gate" id="agreementGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate-card">
+      <div class="gate-seal" aria-hidden="true"><img src="../assets/logo.svg" alt=""></div>
+      <h2 id="gateTitle">进入前请确认</h2>
+      <p>本页用于传统文化与象数符号的概念研究。所有干支、星图、系统映射均为“拓展面候选”，不构成预测、医疗、法律、投资或重大决策依据。</p>
+      <p>本地样本记录仅保存在当前浏览器，不上传，不要求填写真实姓名与联系方式。请理性使用，勿据此作出重要决定。</p>
+      <p>本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。</p>
+      <p>进入即视为已阅读并同意《颐真书房用户协议与免责声明》。<a href="../AGREEMENT.md" target="_blank">查看全文</a></p>
+      <label class="gate-agree"><input type="checkbox" id="gateAgree"> 我已阅读并同意上述说明</label>
+      <button type="button" class="gate-enter" id="gateEnter" disabled>进入作品</button>
+      <p class="gate-note">未同意前不会展示作品内容</p>
+    </div>
+  </div>
+  <script src="../sanshi/gate.js"></script>
+</body>
+</html>
