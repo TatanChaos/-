@@ -124,6 +124,27 @@ body.theme-ziwei {
     repeating-linear-gradient(115deg, transparent 0 34px, rgba(197, 164, 92, .05) 34px 35px);
 }
 
+body.theme-bazi {
+  --bg: #f2e8dc;
+  --surface: #fbf6ec;
+  --ink: #3a2c1f;
+  --muted: #7a6a58;
+  --line: #c3a98a;
+  --teal: #5b6b3c;
+  --teal-soft: #e6e8d8;
+  --amber: #9a6a2f;
+  --amber-soft: #f2e0c4;
+  --red: #9f3a31;
+  --red-soft: #f3e1dc;
+  --paper: #fbf6ec;
+  --ink-deep: #3a2c1f;
+  --gold: #b78a3f;
+  background-color: #efe3d2;
+  background-image:
+    linear-gradient(rgba(239, 227, 210, .92), rgba(239, 227, 210, .96)),
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(58, 44, 31, .05) 79px 80px);
+}
+
 .topbar {
   position: relative;
   z-index: 1;
@@ -458,6 +479,10 @@ body.theme-ziwei {
 .theme-ziwei .topbar { background: #211a36; border-bottom-color: #c5a45c; }
 .theme-ziwei .chart-card { border-top-color: #9f3a31; }
 .theme-ziwei .theme-visual { background: rgba(246, 240, 226, .92); }
+
+.theme-bazi .topbar { background: #3a2c1f; border-bottom-color: #b78a3f; }
+.theme-bazi .chart-card { border-top-color: #9f3a31; }
+.theme-bazi .theme-visual { background: rgba(251, 246, 236, .94); }
 
 .chart-item .label {
   display: block;
