@@ -3,23 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>八字排盘 · 排盘1 · 颐真书房</title>
+<title>八字排盘 · 颐真书房</title>
 <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
 <link rel="stylesheet" href="../sanshi/sanshi.css">
 </head>
-<body class="theme-bazi" data-gate-key="yizhen-bazi-v1" data-live-type="bazi">
+<body class="theme-bazi" data-gate-key="yizhen-bazi-v1">
   <header class="topbar">
     <div class="brand">
       <a class="mark" href="../index.html"><img src="../assets/logo.svg" alt="颐真"></a>
       <div>
-        <h1>八字排盘 · 排盘1</h1>
+        <h1>八字排盘</h1>
         <p>颐真书房 · 排盘内测</p>
       </div>
     </div>
     <nav class="sanshi-nav">
       <a href="../index.html">沙盘</a>
       <a href="八字.html" class="on">八字</a>
-      <a href="紫微.html">紫微</a>
     </nav>
   </header>
   <section class="notice" role="note" aria-label="使用声明">
@@ -30,9 +29,9 @@
     <div class="page-head">
       <div class="page-sigil" aria-hidden="true">八</div>
       <div class="page-head-copy">
-        <span class="tag">排盘1 · 八字排盘</span>
+        <span class="tag">八字排盘</span>
         <h2>四柱结构 · 候选</h2>
-        <p>当前盘由本地历法库计算；所有盘面与断语均为拓展面候选。</p>
+        <p>输入阳历出生时间，本地历法库排四柱、藏干、十神、纳音与大运。</p>
       </div>
     </div>
     <figure class="theme-visual">
@@ -55,17 +54,34 @@
           <text x="434" y="98">丁未</text>
         </g>
         <text x="300" y="150" fill="#c5a45c" font-family="Songti SC, Noto Serif SC, serif" font-size="13" text-anchor="middle">起点 · 环境 · 自我 · 出口</text>
-        <text x="470" y="206" fill="#c5a45c" font-family="Songti SC, Noto Serif SC, serif" font-size="13" text-anchor="middle">排盘1</text>
+        <text x="470" y="206" fill="#c5a45c" font-family="Songti SC, Noto Serif SC, serif" font-size="13" text-anchor="middle">八字</text>
         <text x="130" y="206" fill="#fbf6ec" font-family="Songti SC, Noto Serif SC, serif" font-size="12" text-anchor="middle">候选结构</text>
       </svg>
       <figcaption>八字四柱：年柱是起点，月柱是环境，日柱是自我，时柱是出口。</figcaption>
     </figure>
-    <article class="chart-card">
-      <h3>实时排盘</h3>
-      <div class="live-panel"><pre id="liveOutput" class="live-output">正在连接实时排盘…</pre></div>
-      <div class="readout">
-        <strong>结构读法（候选）</strong>：先看日主与月令，再读十神、藏干、纳音和旬空；大运只看阶段结构，不直接断吉凶。
-      </div>
+    <article class="bazi-tool">
+      <form id="baziForm" class="bazi-form">
+        <label>出生日期
+          <input type="date" id="baziDate" name="date" required>
+        </label>
+        <label>出生时间
+          <input type="time" id="baziTime" name="time" value="12:00" required>
+        </label>
+        <label>性别
+          <select id="baziGender" name="gender">
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </label>
+        <button type="submit">排盘</button>
+      </form>
+      <div id="baziBoard" class="bazi-board"><div class="pillar"><span class="sub">正在排盘…</span></div></div>
+      <div id="baziMeta" class="bazi-meta"></div>
+      <div id="baziDayun" class="bazi-dayun"><h4>大运</h4><div class="dayun-chips"><span>等待排盘</span></div></div>
+      <details class="bazi-raw">
+        <summary>查看原始排盘文本</summary>
+        <pre id="liveOutput" class="live-output">正在连接实时排盘…</pre>
+      </details>
     </article>
     <article class="chart-card mainline">
       <h3>先懂它是什么</h3>
@@ -97,7 +113,79 @@
       <p class="gate-note">未同意前不会展示作品内容</p>
     </div>
   </div>
-  <script src="../sanshi/live.js"></script>
+  <script>
+    (function () {
+      const out = document.getElementById("liveOutput");
+      const board = document.getElementById("baziBoard");
+      const meta = document.getElementById("baziMeta");
+      const dayunEl = document.getElementById("baziDayun");
+      const tag = document.querySelector(".page-head .tag");
+      const form = document.getElementById("baziForm");
+      let custom = false;
+
+      function render(text) {
+        const pillars = [];
+        const pz = text.match(/八字: (\S+) (\S+) (\S+) (\S+)/);
+        const hides = text.match(/藏干: 年\[([^\]]+)\] 月\[([^\]]+)\] 日\[([^\]]+)\] 时\[([^\]]+)\]/);
+        const tens = text.match(/十神: 年\[([^\]]+)\] 月\[([^\]]+)\] 日主\[([^\]]+)\] 时\[([^\]]+)\]/);
+        const nays = text.match(/纳音: 年\[([^\]]+)\] 月\[([^\]]+)\] 日\[([^\]]+)\] 时\[([^\]]+)\]/);
+        const metaLine = text.match(/农历: ([^\n]+)/);
+        const kong = text.match(/日空: ([^\n]+)/);
+        const qiyun = text.match(/起运: ([^\n]+)/);
+        const dayun = text.match(/大运: ([^\n]+)/);
+        if (pz) {
+          ["年柱", "月柱", "日柱", "时柱"].forEach((label, i) => {
+            const gan = pz[i + 1].slice(0, 1);
+            const zhi = pz[i + 1].slice(1);
+            pillars.push(
+              '<div class="pillar"><span class="label">' + label + '</span>' +
+              '<span class="gan">' + gan + '</span><span class="zhi">' + zhi + '</span>' +
+              (hides ? '<span class="sub">藏干 ' + hides[i + 1] + '</span>' : '') +
+              (tens ? '<span class="sub">' + tens[i + 1] + '</span>' : '') +
+              (nays ? '<span class="sub">' + nays[i + 1] + '</span>' : '') +
+              '</div>'
+            );
+          });
+          board.innerHTML = pillars.join("");
+        } else {
+          board.innerHTML = '<div class="pillar"><span class="sub">排盘数据解析失败</span></div>';
+        }
+        const items = [];
+        if (metaLine) items.push('<div class="meta-item"><b>历法</b>' + metaLine[1] + '</div>');
+        if (kong) items.push('<div class="meta-item"><b>日空</b>' + kong[1] + '</div>');
+        if (qiyun) items.push('<div class="meta-item"><b>起运</b>' + qiyun[1] + '</div>');
+        meta.innerHTML = items.join("");
+        if (dayun) {
+          dayunEl.innerHTML = '<h4>大运</h4><div class="dayun-chips">' + dayun[1].trim().split(/\s+/).map(x => '<span>' + x + '</span>').join("") + '</div>';
+        }
+      }
+
+      async function load(dt, gender) {
+        const q = new URLSearchParams();
+        if (dt) q.set("dt", dt);
+        q.set("gender", gender || "男");
+        try {
+          const res = await fetch("http://127.0.0.1:8778/api/bazi?" + q.toString());
+          const text = await res.text();
+          out.textContent = text;
+          render(text);
+          if (tag) tag.textContent = "八字排盘 · 已更新";
+        } catch (e) {
+          out.textContent = "实时服务未连接，当前显示静态快照。";
+          if (tag) tag.textContent = "静态快照 · 实时服务未连接";
+        }
+      }
+
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        custom = true;
+        load(form.date.value + " " + form.time.value, form.gender.value);
+      });
+      form.date.value = new Date().toISOString().slice(0, 10);
+      load("", "男");
+      setInterval(() => { if (!custom) load("", "男"); }, 60000);
+    })();
+  </script>
   <script src="../sanshi/gate.js"></script>
 </body>
 </html>
