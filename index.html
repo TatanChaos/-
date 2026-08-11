@@ -8,7 +8,9 @@
 <style>
   :root {
     --bg: #f4f2ec;
-    --surface: #fffdf8;
+    --paper-soft: var(--paper-soft);
+    --wash: var(--wash);
+    --surface: var(--paper-soft);
     --ink: #24241f;
     --muted: #6f6d63;
     --line: #d8d3c7;
@@ -19,6 +21,8 @@
     --red: #b43a2f;
     --red-soft: #f6e2de;
     --radius: 8px;
+    --radius-card: 2px;
+    --space-section: 26px;
     --shadow: 0 1px 2px rgba(30, 30, 20, .06);
   }
   * { box-sizing: border-box; }
@@ -346,13 +350,13 @@
     font-size: 12px;
     padding: 6px 8px;
     border: 1px solid var(--line);
-    background: #fffdf8;
+    background: var(--paper-soft);
     color: var(--ink);
   }
   .compare-out {
     margin-top: 10px;
     padding: 10px;
-    background: #f4efe3;
+    background: var(--wash);
     border-left: 2px solid var(--gold);
     font-size: 12px;
     line-height: 1.7;
@@ -395,7 +399,7 @@
     font: inherit;
     font-size: 12px;
     line-height: 1.7;
-    background: #fffdf8;
+    background: var(--paper-soft);
     border: 1px solid var(--line);
     color: var(--ink);
     resize: vertical;
@@ -911,7 +915,7 @@
   .entry-article {
     margin-top: 16px;
     padding: 12px 14px;
-    background: #fffdf8;
+    background: var(--paper-soft);
     border: 1px solid var(--line);
   }
   .entry-article summary {
@@ -1053,7 +1057,7 @@
   .situation-box {
     margin-top: 16px;
     padding: 16px;
-    background: #fffdf8;
+    background: var(--paper-soft);
     border: 1px solid var(--line);
     border-left: 3px solid var(--red);
     border-radius: 2px;
@@ -1125,7 +1129,7 @@
     font: inherit;
     cursor: pointer;
     text-align: left;
-    background: #fffdf8;
+    background: var(--paper-soft);
     border: 1px solid var(--line);
     border-left: 3px solid var(--gold);
     border-radius: 2px;

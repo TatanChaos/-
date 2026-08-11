@@ -13,6 +13,10 @@
   --paper: #f7f2e6;
   --ink-deep: #1e2d2a;
   --gold: #b08b4a;
+  --paper-soft: var(--paper-soft);
+  --wash: var(--wash);
+  --radius-card: 2px;
+  --space-section: 26px;
 }
 
 * { box-sizing: border-box; }
@@ -432,7 +436,7 @@ body.theme-bazi {
 
 .chart-item {
   padding: 10px 12px;
-  background: #f4efe3;
+  background: var(--wash);
   border: 1px solid var(--line);
   border-left: 2px solid transparent;
 }
@@ -531,7 +535,7 @@ body.theme-bazi {
 }
 .mainline-grid > div {
   padding: 12px;
-  background: #f4efe3;
+  background: var(--wash);
   border: 1px solid var(--line);
   border-top: 2px solid var(--gold);
 }
@@ -582,7 +586,7 @@ body.theme-bazi {
   font-size: 13px;
   padding: 9px 10px;
   border: 1px solid var(--line);
-  background: #fffdf8;
+  background: var(--paper-soft);
   color: var(--ink);
 }
 .bazi-form button {
@@ -603,7 +607,7 @@ body.theme-bazi {
 .pillar {
   position: relative;
   padding: 14px 10px;
-  background: #fffdf8;
+  background: var(--paper-soft);
   border: 1px solid var(--line);
   border-top: 4px solid var(--gold);
   text-align: center;
@@ -651,7 +655,7 @@ body.theme-bazi {
 .bazi-dayun {
   margin-top: 14px;
   padding: 12px;
-  background: #fffdf8;
+  background: var(--paper-soft);
   border: 1px solid var(--line);
 }
 .bazi-dayun h4 {
@@ -682,7 +686,7 @@ body.theme-bazi {
 .bazi-raw pre {
   margin: 8px 0 0;
   padding: 12px;
-  background: #fffdf8;
+  background: var(--paper-soft);
   border: 1px solid var(--line);
   white-space: pre-wrap;
   font-size: 11px;
