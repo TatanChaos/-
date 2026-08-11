@@ -82,6 +82,36 @@
   }
   .rules { margin-top: 16px; padding: 14px; background: var(--amber-soft); border-left: 4px solid var(--amber); font-size: 13px; line-height: 1.8; }
   .rules strong { color: var(--ink-deep); }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .step {
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+  }
+  .step b {
+    display: block;
+    font-size: 15px;
+    color: var(--ink-deep);
+    margin-bottom: 6px;
+  }
+  .step span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .step a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--red);
+  }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .btn {
     display: inline-block;
@@ -120,6 +150,25 @@
   <main>
     <h2>为什么需要你</h2>
     <p class="intro">盘面可以一直排，但规则能不能站住，只能靠真实发生的事回填。我们不做“算得准”的承诺，只做“记录、对照、验证”的研究。</p>
+
+    <div class="section-title">三步参与</div>
+    <div class="steps">
+      <div class="step">
+        <b>1 · 在沙盘里看到符号</b>
+        <span>选一个场景，不用先懂干支。你只需要说“这件事像什么”。</span>
+        <a href="index.html">进入沙盘</a>
+      </div>
+      <div class="step">
+        <b>2 · 用推演随录记现实</b>
+        <span>记下时间、场景、问题和后续变化。记录只存在你的浏览器，不上传。</span>
+        <a href="index.html?notes=1">打开推演随录</a>
+      </div>
+      <div class="step">
+        <b>3 · 结果出来后交样本</b>
+        <span>事情有结果后，用下面四句话交回。不会排盘也能交，候选由维护者补。</span>
+        <a href="https://github.com/TatanChaos/-/issues/new?template=real_sample.md" target="_blank" rel="noopener">提交四句话样本</a>
+      </div>
+    </div>
 
     <div class="section-title">四句话就能交</div>
     <div class="sample-box">

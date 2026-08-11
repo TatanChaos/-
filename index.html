@@ -1897,6 +1897,17 @@
     showWorkspace();
   });
   document.getElementById("sceneBack").addEventListener("click", showScenes);
+  const urlParams = new URLSearchParams(location.search);
+  function openNotesFromLink() {
+    chooseScene(SCENARIOS[0]);
+    setTimeout(() => {
+      const notes = document.getElementById("notesPanel");
+      if (notes) {
+        notes.open = true;
+        notes.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 350);
+  }
   document.getElementById("noteForm").addEventListener("submit", e => {
     e.preventDefault();
     const input = document.getElementById("noteInput");
@@ -1929,6 +1940,7 @@
   }
   if (gateAccepted()) {
     gate.hidden = true;
+    if (urlParams.get("notes") === "1") openNotesFromLink();
   } else {
     document.body.classList.add("gate-open");
   }
@@ -1942,6 +1954,7 @@
     } catch {}
     gate.hidden = true;
     document.body.classList.remove("gate-open");
+    if (urlParams.get("notes") === "1") openNotesFromLink();
   });
   renderNotes();
 </script>
