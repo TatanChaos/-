@@ -2315,7 +2315,7 @@
       if (s.mode === "gan" || s.mode === "zhi") mode = s.mode;
       if (ZHI.includes(s.selectedZhi)) selectedZhi = s.selectedZhi;
       if (GAN.includes(s.selectedGan)) selectedGan = s.selectedGan;
-      if (["overview", "structure", "system", "relation", "verify", "source", "full", "jiazi", "interact", "corpus"].includes(s.detailTab)) detailTab = s.detailTab;
+      if (["overview", "structure", "system", "relation", "verify", "source", "full", "jiazi", "interact", "combination", "corpus"].includes(s.detailTab)) detailTab = s.detailTab;
       if (s.activeRel) {
         Object.keys(activeRel).forEach(key => {
           if (typeof s.activeRel[key] === "boolean") activeRel[key] = s.activeRel[key];
@@ -2878,13 +2878,7 @@
     el.value = selected;
   }
 
-  function renderJiaziPair() {
-    const aEl = document.getElementById("jiaziPairA");
-    const bEl = document.getElementById("jiaziPairB");
-    const out = document.getElementById("jiaziPairOut");
-    if (!aEl || !bEl || !out || !aEl.value || !bEl.value) return;
-    const j1 = aEl.value;
-    const j2 = bEl.value;
+  function jiaziPairExplanation(j1, j2) {
     const d1 = JIAZI_DEEP[j1] || {};
     const d2 = JIAZI_DEEP[j2] || {};
     const g1 = j1[0], z1 = j1[1], g2 = j2[0], z2 = j2[1];
@@ -2900,7 +2894,15 @@
       : (z1 === z2 ? "同" + z1 + "重复：同一支的环境重复，容易过度自洽。" : (zhiSameWuxing ? "同" + DATA[z1].name.split(" · ")[0] + "不同位：同类环境叠加，不形成冲合，看力量是否重复。" : "暂无传统直接关系，按两柱同盘叠加读。"));
     const ganLabel = ganKey || (g1 === g2 ? "同干" : (ganSameWuxing ? "同气" : "暂无传统关系"));
     const zhiLabel = zhiKey || (z1 === z2 ? "同支" : (zhiSameWuxing ? "同气" : "暂无传统关系"));
-    out.innerHTML = "<strong>" + j1 + " 与 " + j2 + " 的互动</strong><br><b>天干层</b>：" + g1 + " × " + g2 + " → " + ganLabel + "：" + ganText + "<br><b>地支层</b>：" + z1 + " × " + z2 + " → " + zhiLabel + "：" + zhiText + "<br><b>两柱合读</b>：" + (d1.essence || "待补") + "；" + (d2.essence || "待补") + "。" + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+    return "<strong>" + j1 + " 与 " + j2 + " 的互动</strong><br><b>天干层</b>：" + g1 + " × " + g2 + " → " + ganLabel + "：" + ganText + "<br><b>地支层</b>：" + z1 + " × " + z2 + " → " + zhiLabel + "：" + zhiText + "<br><b>两柱合读</b>：" + (d1.essence || "待补") + "；" + (d2.essence || "待补") + "。<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+  }
+
+  function renderJiaziPair() {
+    const aEl = document.getElementById("jiaziPairA");
+    const bEl = document.getElementById("jiaziPairB");
+    const out = document.getElementById("jiaziPairOut");
+    if (!aEl || !bEl || !out || !aEl.value || !bEl.value) return;
+    out.innerHTML = jiaziPairExplanation(aEl.value, bEl.value);
   }
 
   function cleanInteractPart(s) {
@@ -2946,6 +2948,70 @@
       return;
     }
     out.textContent = "没读出来，请写完整，例如：甲子 与 乙丑；甲 与 午。";
+  }
+
+  function parseCombinationTokens(text) {
+    const cleaned = String(text).replace(/[，,、。；;和与及vsVS對对对照]/g, " ");
+    const re = /([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])|([甲乙丙丁戊己庚辛壬癸])|([子丑寅卯辰巳午未申酉戌亥])/g;
+    const out = [];
+    let m;
+    while ((m = re.exec(cleaned)) !== null) {
+      const token = m[1] || m[2] || m[3];
+      if (!out.includes(token)) out.push(token);
+    }
+    return out;
+  }
+
+  function explainPairTokens(a, b) {
+    if (a === b) {
+      const d = isJiaziTerm(a) ? (JIAZI_DEEP[a] || {}) : (DEEP_DATA[a] || {});
+      return "<strong>" + a + " 对自身</strong><br>同结构重复：" + (d.essence || d.benyi || "待补") + "。真实样本回填前不作断言。";
+    }
+    if (isJiaziTerm(a) && isJiaziTerm(b)) return jiaziPairExplanation(a, b);
+    if (!isJiaziTerm(a) && !isJiaziTerm(b)) {
+      const pair = interactionPair(a, b);
+      return "<strong>" + pair.title + "</strong>：" + pair.body + "<br><b>颐真候选解</b>：" + composeDualInterpretation(a, b) + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+    }
+    const j = isJiaziTerm(a) ? a : b;
+    const s = isJiaziTerm(a) ? b : a;
+    const jg = j[0];
+    const jz = j[1];
+    const sd = DEEP_DATA[s] || {};
+    let body = "<strong>" + j + " 与 " + s + " 的跨层对照</strong><br>";
+    if (GAN.includes(s)) {
+      const key = relationKeyForPair(s, jg);
+      const text = key ? (GAN_REL_EXPLAIN[key] || REL_EXPLAIN[key] || "结构关系成立，原文待补。") : (s === jg ? "同" + s + "重复：同一干的力量翻倍。" : "无传统直接关系，按整体承接读。");
+      body += "<b>天干层</b>：" + s + " × " + jg + " → " + (key || "暂无传统关系") + "：" + text + "<br><b>地支层</b>：" + s + " 为天干，与地支 " + jz + " 无传统直接关系，看整体承接。<br>";
+    } else {
+      const key = relationKeyForPair(s, jz);
+      const text = key ? (REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key] || "结构关系成立，原文待补。") : (s === jz ? "同" + s + "重复：同一支的环境重复。" : "无传统直接关系，按整体承接读。");
+      body += "<b>地支层</b>：" + s + " × " + jz + " → " + (key || "暂无传统关系") + "：" + text + "<br><b>天干层</b>：" + s + " 为地支，与天干 " + jg + " 无传统直接关系，看整体承接。<br>";
+    }
+    body += "<b>合读</b>：" + (JIAZI_DEEP[j] ? JIAZI_DEEP[j].essence : "待补") + "；" + (sd.benyi || sd.life || s) + "。<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+    return body;
+  }
+
+  function analyzeCombination() {
+    const input = document.getElementById("combinationInput");
+    const out = document.getElementById("combinationOut");
+    if (!input || !out) return;
+    const tokens = parseCombinationTokens(input.value);
+    if (tokens.length < 2) {
+      out.innerHTML = "<p>请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。</p>";
+      return;
+    }
+    const singleRows = tokens.map(t => {
+      const d = isJiaziTerm(t) ? (JIAZI_DEEP[t] || {}) : (DEEP_DATA[t] || {});
+      return `<div class="row"><div class="label">${t}</div><div class="value">${d.essence || d.benyi || d.life || "待补"}</div></div>`;
+    }).join("");
+    const pairCount = tokens.length * (tokens.length - 1) / 2;
+    let pairRows = "";
+    for (let i = 0; i < tokens.length; i += 1) {
+      for (let j = i + 1; j < tokens.length; j += 1) {
+        pairRows += `<div class="row"><div class="label">${tokens[i]} × ${tokens[j]}</div><div class="value">${explainPairTokens(tokens[i], tokens[j])}</div></div>`;
+      }
+    }
+    out.innerHTML = `<div class="rows"><div class="row"><div class="label">组合清单</div><div class="value">${tokens.join(" · ")}</div></div>${singleRows}</div><h3 class="interact-head">两两关系 · ${pairCount} 对</h3><div class="rows">${pairRows}</div>`;
   }
 
   function renderCompareOptions() {
@@ -3187,6 +3253,7 @@
       ["full", "全盘 · 一项不少"],
       ["jiazi", "六十甲子"],
       ["interact", "任意干支互动"],
+      ["combination", "组合盘"],
       ["corpus", "十天干 · 十二地支"],
       ["overview", "象意 · 它是什么"],
       ["structure", "体用 · 它的作用"],
@@ -3235,6 +3302,13 @@
       </div>
       <div id="jiaziPairOut" class="compare-out">任选两柱六十甲子，看天干层、地支层和两柱合读。</div>
       <span class="compare-caveat">真实样本回填前不作断言。</span>`,
+      combination: `<h3 class="interact-head">输入任意组合</h3>
+        <div class="interact-query">
+          <input id="combinationInput" placeholder="例如：甲子 乙丑 丙寅；或 甲 子 午">
+          <button type="button" id="combinationGo">读组合</button>
+        </div>
+        <div id="combinationOut" class="compare-out">组合数量不靠写死，按规则逐对生成；真实样本回填前全部是候选。</div>
+        <span class="compare-caveat">真实样本回填前不作断言。</span>`,
       corpus: `<div class="rows">${corpusHTML}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
@@ -3248,8 +3322,8 @@
         <div class="title-wrap">
           <span class="seal-note" aria-hidden="true">颐<br>真</span>
           <div>
-            <h2>${detailTab === "jiazi" ? "六十甲子全库" : detailTab === "interact" ? "任意干支互动" : detailTab === "corpus" ? "十天干 · 十二地支全库" : headKey + " · " + d.name}</h2>
-            <div class="tagline">${detailTab === "jiazi" ? "六十甲子逐对可查" : detailTab === "interact" ? "任意干支相配，读成六十甲子" : detailTab === "corpus" ? "22 个符号全盘展开" : d.func}</div>
+            <h2>${detailTab === "jiazi" ? "六十甲子全库" : detailTab === "interact" ? "任意干支互动" : detailTab === "combination" ? "组合盘" : detailTab === "corpus" ? "十天干 · 十二地支全库" : headKey + " · " + d.name}</h2>
+            <div class="tagline">${detailTab === "jiazi" ? "六十甲子逐对可查" : detailTab === "interact" ? "任意干支相配，读成六十甲子" : detailTab === "combination" ? "任意多符号，按规则逐对生成" : detailTab === "corpus" ? "22 个符号全盘展开" : d.func}</div>
           </div>
         </div>
         <span class="chapter-note" aria-hidden="true">象数初笺</span>
@@ -3283,6 +3357,15 @@
       interactQuery.addEventListener("keydown", e => {
         if (e.key === "Enter") parseInteractQuery();
       });
+    }
+    const combinationGo = document.getElementById("combinationGo");
+    const combinationInput = document.getElementById("combinationInput");
+    if (combinationGo && combinationInput) {
+      combinationGo.addEventListener("click", analyzeCombination);
+      combinationInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") analyzeCombination();
+      });
+      analyzeCombination();
     }
     const jiaziPairA = document.getElementById("jiaziPairA");
     const jiaziPairB = document.getElementById("jiaziPairB");
