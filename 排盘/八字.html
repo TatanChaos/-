@@ -30,8 +30,8 @@
       <div class="page-sigil" aria-hidden="true">八</div>
       <div class="page-head-copy">
         <span class="tag">八字排盘</span>
-        <h2>四柱结构 · 候选</h2>
-        <p>输入阳历出生时间，本地历法库排四柱、藏干、十神、纳音与大运。</p>
+        <h2>输入时间，排四柱</h2>
+        <p>这里不是算命：把出生时间排成可检查的四柱结构；真实样本回填前，所有读法都是候选。</p>
       </div>
     </div>
     <figure class="theme-visual">
@@ -59,7 +59,7 @@
         </g>
         <text x="300" y="150" fill="#c5a45c" font-family="Songti SC, Noto Serif SC, serif" font-size="13" text-anchor="middle">起点 · 环境 · 自我 · 出口</text>
         <text x="470" y="206" fill="#c5a45c" font-family="Songti SC, Noto Serif SC, serif" font-size="13" text-anchor="middle">八字</text>
-        <text x="130" y="206" fill="#fbf6ec" font-family="Songti SC, Noto Serif SC, serif" font-size="12" text-anchor="middle">候选结构</text>
+        <text x="130" y="206" fill="#fbf6ec" font-family="Songti SC, Noto Serif SC, serif" font-size="12" text-anchor="middle">四柱排盘</text>
       </svg>
       <figcaption>八字四柱：年柱是起点，月柱是环境，日柱是自我，时柱是出口。</figcaption>
     </figure>
@@ -82,6 +82,7 @@
       <div id="baziBoard" class="bazi-board"><div class="pillar"><span class="sub">正在排盘…</span></div></div>
       <div id="baziMeta" class="bazi-meta"></div>
       <div id="baziDayun" class="bazi-dayun"><h4>大运</h4><div class="dayun-chips"><span>等待排盘</span></div></div>
+      <div id="baziReadout" class="readout"><strong>结构读法（候选）</strong>：正在生成…</div>
       <details class="bazi-raw">
         <summary>查看原始排盘文本</summary>
         <pre id="liveOutput" class="live-output">正在连接实时排盘…</pre>
@@ -123,6 +124,7 @@
       const board = document.getElementById("baziBoard");
       const meta = document.getElementById("baziMeta");
       const dayunEl = document.getElementById("baziDayun");
+      const readout = document.getElementById("baziReadout");
       const tag = document.querySelector(".page-head .tag");
       const form = document.getElementById("baziForm");
       let custom = false;
@@ -161,6 +163,24 @@
         meta.innerHTML = items.join("");
         if (dayun) {
           dayunEl.innerHTML = '<h4>大运</h4><div class="dayun-chips">' + dayun[1].trim().split(/\s+/).map(x => '<span>' + x + '</span>').join("") + '</div>';
+        }
+        if (pz && tens) {
+          const GAN_ELEMENT = {甲:"木",乙:"木",丙:"火",丁:"火",戊:"土",己:"土",庚:"金",辛:"金",壬:"水",癸:"水"};
+          const ZHI_ELEMENT = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
+          const dayGan = pz[3].slice(0, 1);
+          const dayEl = GAN_ELEMENT[dayGan] || "?";
+          const monthZhi = pz[2].slice(1);
+          const monthEl = ZHI_ELEMENT[monthZhi] || "?";
+          const season = dayEl === monthEl ? "得令" : "月令与日主不同，需看整体生克";
+          const shiShen = tens[4] || "";
+          const nayin = nays ? nays[4] : "";
+          const dayunFirst = dayun ? dayun[1].trim().split(/\s+/)[0] : "";
+          readout.innerHTML =
+            "<strong>结构读法（候选）</strong><br>黑话：日主" + dayGan + dayEl + "，生于" + monthZhi + "月（" + monthEl + "），" + season + "；时柱" + shiShen + "，纳音" + nayin + "，日空" + (kong ? kong[1] : "未取") + "。" +
+            (dayunFirst ? " 大运从 " + dayunFirst + " 起，进入阶段候选。" : "") +
+            "<br>人话：这个时间结构里，" + dayGan + "是核心角色；月令是当前环境，日空标记一个缺位，大运给出阶段路径。真实样本回填前，这只是一种读法，不是结论。";
+        } else {
+          readout.innerHTML = "<strong>结构读法（候选）</strong>：排盘数据解析失败。";
         }
       }
 
