@@ -1824,13 +1824,13 @@
         </div>
         <div id="selectedReadout" class="selected-readout" aria-live="polite"></div>
         <details class="compare-panel" id="comparePanel">
-          <summary>双符号对照</summary>
+          <summary>任意干支互动</summary>
           <div class="compare-row">
             <select id="compareA" aria-label="对照符号 A"></select>
             <span>与</span>
             <select id="compareB" aria-label="对照符号 B"></select>
           </div>
-          <div id="compareOut" class="compare-out">选两个符号，看它们之间有没有直接关系。</div>
+          <div id="compareOut" class="compare-out">选任意天干/地支：干支相配看六十甲子，同系统看关系。</div>
           <div class="compare-note">
             <label for="compareNoteInput"><span class="compare-seal" aria-hidden="true">印</span>落款 · 你的解</label>
             <textarea id="compareNoteInput" placeholder="像在画上落款：写你自己读出的这一笔"></textarea>
@@ -2159,6 +2159,7 @@
   ];
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+  const ALL_SYMBOLS = [...GAN, ...ZHI];
   const SIX = [["子", "丑"], ["寅", "亥"], ["卯", "戌"], ["辰", "酉"], ["巳", "申"], ["午", "未"]];
   const THREE = [["申", "子", "辰"], ["亥", "卯", "未"], ["寅", "午", "戌"], ["巳", "酉", "丑"]];
   const CHONG = [["子", "午"], ["丑", "未"], ["寅", "申"], ["卯", "酉"], ["辰", "戌"], ["巳", "亥"]];
@@ -2224,6 +2225,16 @@
   const NOTE_KEY = "symbol-sandbox-notes-v1";
   const COMPARE_NOTE_KEY = "symbol-compare-notes-v1";
 
+  function allSymbolLabel(k) {
+    const d = GAN_DATA[k] || DATA[k];
+    return k + " · " + (d ? d.name : "");
+  }
+
+  function crossPartner(k) {
+    if (GAN.includes(k)) return ZHI[GAN.indexOf(k) % ZHI.length];
+    return GAN[ZHI.indexOf(k) % GAN.length];
+  }
+
   function pos(zhi) {
     const i = ZHI.indexOf(zhi);
     const angle = -90 + i * 30;
@@ -2272,7 +2283,7 @@
       if (s.mode === "gan" || s.mode === "zhi") mode = s.mode;
       if (ZHI.includes(s.selectedZhi)) selectedZhi = s.selectedZhi;
       if (GAN.includes(s.selectedGan)) selectedGan = s.selectedGan;
-      if (["overview", "structure", "system", "relation", "verify", "source"].includes(s.detailTab)) detailTab = s.detailTab;
+      if (["overview", "structure", "system", "relation", "verify", "source", "full", "jiazi", "interact", "corpus"].includes(s.detailTab)) detailTab = s.detailTab;
       if (s.activeRel) {
         Object.keys(activeRel).forEach(key => {
           if (typeof s.activeRel[key] === "boolean") activeRel[key] = s.activeRel[key];
@@ -2745,9 +2756,14 @@
   }
 
   function relationKeyForPair(a, b) {
-    if (mode === "gan") {
+    if (GAN.includes(a) && GAN.includes(b)) {
       const pair = WUHE.find(p => p.includes(a) && p.includes(b));
       return pair ? GAN_DATA[pair[0]].he : "";
+    }
+    if (GAN.includes(a) !== GAN.includes(b)) {
+      const g = GAN.includes(a) ? a : b;
+      const z = GAN.includes(a) ? b : a;
+      return g + z;
     }
     if (a === b) return ["辰", "午", "酉", "亥"].includes(a) ? a + "自刑" : "";
     const groups = [
@@ -2761,11 +2777,55 @@
     return found ? found[0].join("") + found[1] : "";
   }
 
+  function interactionPair(a, b) {
+    const key = relationKeyForPair(a, b);
+    const deep = JIAZI_DEEP[key];
+    const text = REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key];
+    if (deep) {
+      return {
+        title: "六十甲子 · " + key,
+        body: "<b>一针见血</b>：" + deep.essence + "<br><b>怎么用</b>：" + deep.use + "<br><b>过与不及</b>：" + deep.over + "<br><b>怎么验证</b>：" + deep.verify
+      };
+    }
+    if (key && text) {
+      return { title: key, body: text };
+    }
+    if (a === b) {
+      return {
+        title: a + " 对自身",
+        body: "同结构重复，不构成直接关系；需看整体体用。" + (["辰", "午", "酉", "亥"].includes(a) ? " " + a + " 另有自刑口径。" : "")
+      };
+    }
+    return { title: a + " 与 " + b, body: "暂无传统直接关系，仍需看整体盘面。" };
+  }
+
+  function fillSymbolSelect(el, selected) {
+    if (!el) return;
+    el.innerHTML = "";
+    ALL_SYMBOLS.forEach(k => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = allSymbolLabel(k);
+      el.appendChild(opt);
+    });
+    el.value = selected;
+  }
+
+  function renderInteract() {
+    const aEl = document.getElementById("interactA");
+    const bEl = document.getElementById("interactB");
+    const out = document.getElementById("interactOut");
+    if (!aEl || !bEl || !out) return;
+    const pair = interactionPair(aEl.value, bEl.value);
+    const own = composeDualInterpretation(aEl.value, bEl.value);
+    out.innerHTML = "<strong>" + pair.title + "</strong>：" + pair.body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+  }
+
   function renderCompareOptions() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
     if (!aEl || !bEl) return;
-    const list = mode === "zhi" ? ZHI : GAN;
+    const list = ALL_SYMBOLS;
     const prevA = aEl.value;
     const prevB = bEl.value;
     aEl.innerHTML = "";
@@ -2773,14 +2833,14 @@
     list.forEach(k => {
       const aOpt = document.createElement("option");
       aOpt.value = k;
-      aOpt.textContent = k;
+      aOpt.textContent = allSymbolLabel(k);
       const bOpt = document.createElement("option");
       bOpt.value = k;
-      bOpt.textContent = k;
+      bOpt.textContent = allSymbolLabel(k);
       aEl.appendChild(aOpt);
       bEl.appendChild(bOpt);
     });
-    const rec = activeScene && activeScene.compare && mode === "zhi" ? activeScene.compare : null;
+    const rec = activeScene && activeScene.compare ? activeScene.compare : null;
     if (rec && list.includes(rec[0]) && list.includes(rec[1])) {
       aEl.value = rec[0];
       bEl.value = rec[1];
@@ -2806,10 +2866,18 @@
 
   function composeDualInterpretation(a, b) {
     if (a === b) {
-      const d = mode === "gan" ? GAN_DATA[a] : DATA[a];
+      const d = GAN.includes(a) ? GAN_DATA[a] : DATA[a];
       return "同一结构重复：" + d.system + " 过度自洽，候选读法是 " + d.hypothesis + "。";
     }
-    if (mode === "gan") {
+    if (GAN.includes(a) !== GAN.includes(b)) {
+      const g = GAN.includes(a) ? a : b;
+      const z = GAN.includes(a) ? b : a;
+      const dg = GAN_DATA[g];
+      const dz = DATA[z];
+      const deep = JIAZI_DEEP[g + z] || {};
+      return "把" + dg.system + "与" + dz.system + "合进" + g + z + "：" + (deep.use || "先看谁接谁，再看谁启动。") + "；" + dg.hypothesis + "；" + dz.hypothesis + "。";
+    }
+    if (GAN.includes(a)) {
       const d1 = GAN_DATA[a];
       const d2 = GAN_DATA[b];
       if (!d1 || !d2) return "";
@@ -2828,21 +2896,9 @@
     if (!aEl || !bEl || !out || !aEl.value || !bEl.value) return;
     const a = aEl.value;
     const b = bEl.value;
-    const key = relationKeyForPair(a, b);
-    const text = REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key];
-    let title, body;
-    if (key && text) {
-      title = key;
-      body = text;
-    } else if (a === b) {
-      title = a + " 对自身";
-      body = "同结构重复，不构成直接关系；需看整体体用。" + (["辰", "午", "酉", "亥"].includes(a) ? " " + a + " 另有自刑口径。" : "");
-    } else {
-      title = a + " 与 " + b;
-      body = "暂无传统直接关系，仍需看整体盘面。";
-    }
+    const pair = interactionPair(a, b);
     const own = composeDualInterpretation(a, b);
-    out.innerHTML = "<strong>" + title + "</strong>：" + body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+    out.innerHTML = "<strong>" + pair.title + "</strong>：" + pair.body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
     renderCompareNote();
   }
 
@@ -3003,6 +3059,7 @@
     const tabs = [
       ["full", "全盘 · 一项不少"],
       ["jiazi", "六十甲子"],
+      ["interact", "任意干支互动"],
       ["corpus", "十天干 · 十二地支"],
       ["overview", "象意 · 它是什么"],
       ["structure", "体用 · 它的作用"],
@@ -3019,6 +3076,13 @@
     const section = {
       full: `<div class="rows">${fullRows}</div>`,
       jiazi: `<div class="rows">${jiaziHTML}</div>`,
+      interact: `<div class="compare-row">
+        <select id="interactA" aria-label="互动符号 A"></select>
+        <span>与</span>
+        <select id="interactB" aria-label="互动符号 B"></select>
+      </div>
+      <div id="interactOut" class="compare-out">选任意天干或地支，看它合起来是哪一柱六十甲子，并读它的结构。</div>
+      <span class="compare-caveat">真实样本回填前不作断言。</span>`,
       corpus: `<div class="rows">${corpusHTML}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
@@ -3032,8 +3096,8 @@
         <div class="title-wrap">
           <span class="seal-note" aria-hidden="true">颐<br>真</span>
           <div>
-            <h2>${detailTab === "jiazi" ? "六十甲子全库" : detailTab === "corpus" ? "十天干 · 十二地支全库" : headKey + " · " + d.name}</h2>
-            <div class="tagline">${detailTab === "jiazi" ? "六十甲子逐对可查" : detailTab === "corpus" ? "22 个符号全盘展开" : d.func}</div>
+            <h2>${detailTab === "jiazi" ? "六十甲子全库" : detailTab === "interact" ? "任意干支互动" : detailTab === "corpus" ? "十天干 · 十二地支全库" : headKey + " · " + d.name}</h2>
+            <div class="tagline">${detailTab === "jiazi" ? "六十甲子逐对可查" : detailTab === "interact" ? "任意干支相配，读成六十甲子" : detailTab === "corpus" ? "22 个符号全盘展开" : d.func}</div>
           </div>
         </div>
         <span class="chapter-note" aria-hidden="true">象数初笺</span>
@@ -3050,6 +3114,16 @@
     el.querySelectorAll(".subnav-btn").forEach(btn => {
       btn.addEventListener("click", () => switchDetail(btn.getAttribute("data-tab")));
     });
+    const interactA = document.getElementById("interactA");
+    const interactB = document.getElementById("interactB");
+    if (interactA && interactB) {
+      const interactDefaultA = currentSelected();
+      fillSymbolSelect(interactA, interactDefaultA);
+      fillSymbolSelect(interactB, crossPartner(interactDefaultA));
+      interactA.addEventListener("change", renderInteract);
+      interactB.addEventListener("change", renderInteract);
+      renderInteract();
+    }
     renderSelectedReadout();
   }
 
