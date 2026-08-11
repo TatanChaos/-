@@ -1494,14 +1494,14 @@
     "癸": "阴水，雨露泉水：渗透与滋养。"
   };
   const SCENARIOS = [
-    { key: "子", label: "深夜还没睡", desc: "潜藏、输入：事情还没定型，正在往里进。" },
-    { key: "寅", label: "项目刚启动", desc: "生发、启动：新东西刚开始，还没跑通。" },
-    { key: "辰", label: "数据攒了很多", desc: "大库、缓存：东西存得很多，但还没被用起来。" },
-    { key: "午", label: "内容突然爆了", desc: "峰值、显象：热度到了最高点。" },
-    { key: "申", label: "流程卡住、规则不清", desc: "传输、规则：交接不顺，制度没理顺。" },
-    { key: "酉", label: "东西反复打磨", desc: "精密、加工：一直在修细节，怕出错。" },
-    { key: "戌", label: "平台想收口", desc: "收束、闭环：要把散的东西收进一个平台。" },
-    { key: "亥", label: "想不通、还没落地", desc: "源头、混沌：想法很多，但还没有结构。" }
+    { key: "子", label: "深夜还没睡", desc: "潜藏、输入：事情还没定型，正在往里进。", compare: ["子", "丑"] },
+    { key: "寅", label: "项目刚启动", desc: "生发、启动：新东西刚开始，还没跑通。", compare: ["寅", "亥"] },
+    { key: "辰", label: "数据攒了很多", desc: "大库、缓存：东西存得很多，但还没被用起来。", compare: ["辰", "戌"] },
+    { key: "午", label: "内容突然爆了", desc: "峰值、显象：热度到了最高点。", compare: ["午", "未"] },
+    { key: "申", label: "流程卡住、规则不清", desc: "传输、规则：交接不顺，制度没理顺。", compare: ["申", "亥"] },
+    { key: "酉", label: "东西反复打磨", desc: "精密、加工：一直在修细节，怕出错。", compare: ["酉", "卯"] },
+    { key: "戌", label: "平台想收口", desc: "收束、闭环：要把散的东西收进一个平台。", compare: ["戌", "卯"] },
+    { key: "亥", label: "想不通、还没落地", desc: "源头、混沌：想法很多，但还没有结构。", compare: ["亥", "寅"] }
   ];
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -1659,6 +1659,7 @@
     const catalog = document.getElementById("catalogPanel");
     if (catalog) catalog.open = false;
     showWorkspace();
+    if (s.compare) setComparePair(s.compare[0], s.compare[1]);
   }
 
   function showWorkspace() {
@@ -1933,11 +1934,28 @@
       aEl.appendChild(aOpt);
       bEl.appendChild(bOpt);
     });
-    aEl.value = list.includes(prevA) ? prevA : currentSelected();
-    bEl.value = list.includes(prevB) && prevB !== aEl.value ? prevB : list[(list.indexOf(aEl.value) + 1) % list.length];
+    const rec = activeScene && activeScene.compare && mode === "zhi" ? activeScene.compare : null;
+    if (rec && list.includes(rec[0]) && list.includes(rec[1])) {
+      aEl.value = rec[0];
+      bEl.value = rec[1];
+    } else {
+      aEl.value = list.includes(prevA) ? prevA : currentSelected();
+      bEl.value = list.includes(prevB) && prevB !== aEl.value ? prevB : list[(list.indexOf(aEl.value) + 1) % list.length];
+    }
     aEl.addEventListener("change", updateCompare);
     bEl.addEventListener("change", updateCompare);
     updateCompare();
+  }
+
+  function setComparePair(a, b) {
+    const aEl = document.getElementById("compareA");
+    const bEl = document.getElementById("compareB");
+    const panel = document.getElementById("comparePanel");
+    if (!aEl || !bEl) return;
+    if (Array.from(aEl.options).some(o => o.value === a)) aEl.value = a;
+    if (Array.from(bEl.options).some(o => o.value === b)) bEl.value = b;
+    updateCompare();
+    if (panel) panel.open = true;
   }
 
   function updateCompare() {
