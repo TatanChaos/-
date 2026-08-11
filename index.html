@@ -1041,6 +1041,68 @@
     color: var(--muted);
     padding: 7px 10px;
   }
+  .stop-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(30, 45, 42, .72);
+    backdrop-filter: blur(2px);
+  }
+  .stop-modal[hidden] { display: none; }
+  .stop-card {
+    width: min(100%, 520px);
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+    box-shadow: 0 12px 40px rgba(20, 25, 20, .28);
+  }
+  .stop-seal {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    background: var(--red);
+    color: #fff;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 18px;
+  }
+  .stop-card h2 {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 22px;
+    color: var(--ink-deep);
+  }
+  .stop-card p {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .stop-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .stop-actions button {
+    font: inherit;
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+  }
+  .stop-actions .primary {
+    border-color: var(--red);
+    background: var(--red);
+    color: #fff;
+  }
   .scene-random-btn {
     margin: 14px 10px 0 0;
     font: inherit;
@@ -1573,6 +1635,19 @@
     <br>
     补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="docs/viewer.html?file=../LICENSE" target="_blank">LICENSE</a>。意见征集：<a href="feedback.html">点这里</a> · <a href="https://github.com/TatanChaos/-/issues" target="_blank">查看已有意见</a> · <a href="updates.html">更新公告</a> · <a href="samples.html">真实样本征集</a>。
   </footer>
+  <div class="stop-modal" id="stopModal" role="dialog" aria-modal="true" aria-labelledby="stopTitle" hidden>
+    <div class="stop-card">
+      <div class="stop-seal" aria-hidden="true">止</div>
+      <h2 id="stopTitle">驻足 · 象</h2>
+      <p id="stopEssence"></p>
+      <p id="stopEdge"></p>
+      <p id="stopRelation"></p>
+      <div class="stop-actions">
+        <button type="button" id="stopClose">再停一会儿</button>
+        <button type="button" class="primary" id="stopEnter">进入沙盘</button>
+      </div>
+    </div>
+  </div>
   <div class="gate" id="agreementGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-card">
       <div class="gate-seal" aria-hidden="true"><img src="assets/logo.svg" alt=""></div>
@@ -1814,6 +1889,7 @@
   };
   let activeRel = { six: true, three: true, chong: true, hai: true, xing: true };
   let activeScene = null;
+  let pendingScene = null;
   let mode = "zhi";
   let selectedZhi = "戌";
   let selectedGan = "甲";
@@ -1894,7 +1970,7 @@
       b.type = "button";
       b.className = "scene-btn";
       b.innerHTML = "<b>" + s.label + "</b><span>" + s.desc + "</span>";
-      b.addEventListener("click", () => chooseScene(s));
+      b.addEventListener("click", () => stopAtScene(s));
       wrap.appendChild(b);
     });
   }
@@ -1921,12 +1997,12 @@
     if (!btn) return;
     const s = todayScene();
     btn.textContent = "今日一象 · " + s.key + " " + DATA[s.key].name.split(" · ")[0];
-    btn.addEventListener("click", () => chooseScene(s));
+    btn.addEventListener("click", () => stopAtScene(s));
   }
 
   function randomScene() {
     const z = ZHI[Math.floor(Math.random() * ZHI.length)];
-    chooseScene({ key: z, label: DATA[z].name, desc: DATA[z].edge, compare: [z, relatedTo(z)] });
+    stopAtScene({ key: z, label: DATA[z].name, desc: DATA[z].edge, compare: [z, relatedTo(z)] });
   }
 
   function matchSituation(text) {
@@ -1991,6 +2067,25 @@
     btn.textContent = "进入沙盘看对照";
     btn.addEventListener("click", () => chooseScene(scene));
     out.appendChild(btn);
+  }
+
+  function stopAtScene(s) {
+    pendingScene = s;
+    const modal = document.getElementById("stopModal");
+    const title = document.getElementById("stopTitle");
+    const essence = document.getElementById("stopEssence");
+    const edge = document.getElementById("stopEdge");
+    const relation = document.getElementById("stopRelation");
+    if (!modal || !title || !essence || !edge || !relation) return;
+    const d = DATA[s.key];
+    if (!d) return;
+    title.textContent = s.key + " · " + d.name;
+    essence.textContent = "本质：" + (ESSENCE_ZHI[s.key] || "");
+    edge.textContent = "人话：" + d.edge;
+    const other = s.compare ? s.compare[1] : relatedTo(s.key);
+    const key = relationKeyForPair(s.key, other);
+    relation.textContent = key && REL_EXPLAIN[key] ? "关系：" + key + "：" + REL_EXPLAIN[key] : "关系：暂无直接关系，进沙盘可看对照。";
+    modal.hidden = false;
   }
 
   function chooseScene(s) {
@@ -2585,6 +2680,13 @@
   });
   document.getElementById("sceneBack").addEventListener("click", showScenes);
   document.getElementById("sceneRandom").addEventListener("click", randomScene);
+  document.getElementById("stopClose").addEventListener("click", () => {
+    document.getElementById("stopModal").hidden = true;
+  });
+  document.getElementById("stopEnter").addEventListener("click", () => {
+    document.getElementById("stopModal").hidden = true;
+    if (pendingScene) chooseScene(pendingScene);
+  });
   document.getElementById("situationGo").addEventListener("click", explainSituation);
   document.getElementById("situationInput").addEventListener("keydown", e => {
     if (e.key === "Enter") explainSituation();
