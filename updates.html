@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>更新公告 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .back {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247,242,230,.28);
+    padding: 6px 10px;
+  }
+  .back:hover { color: var(--paper); border-color: var(--gold); }
+  main {
+    flex: 1;
+    width: min(100%, 820px);
+    margin: 0 auto;
+    padding: 24px 18px 34px;
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 28px;
+    letter-spacing: .1em;
+  }
+  .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .section-title {
+    margin: 26px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 17px;
+  }
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li {
+    position: relative;
+    padding: 0 0 18px 22px;
+    border-left: 1px solid var(--line);
+  }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: 4px;
+    width: 9px;
+    height: 9px;
+    background: var(--red);
+  }
+  .timeline .date { display: block; font-size: 11px; color: var(--muted); }
+  .timeline .title { display: block; margin: 4px 0; font-size: 15px; font-weight: 700; }
+  .timeline p { margin: 0; font-size: 13px; line-height: 1.75; color: var(--muted); }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .card {
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+    font-size: 12px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 14px; }
+  .card p { margin: 0; line-height: 1.7; color: var(--muted); }
+  footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px dashed var(--line);
+  }
+  footer a { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div>
+        <h1>更新公告</h1>
+        <p>颐真书房 · 体验版</p>
+      </div>
+    </div>
+    <a class="back" href="index.html">返回沙盘</a>
+  </header>
+  <main>
+    <h2>我们做到哪了</h2>
+    <p class="intro">这里是正式公告栏。重要更新会写在这里；意见反馈走 GitHub Issues，自由讨论走 GitHub Discussions。</p>
+
+    <div class="section-title">更新记录</div>
+    <ul class="timeline">
+      <li>
+        <span class="date">2026-08-11</span>
+        <span class="title">体验版 v0.1 上线</span>
+        <p>符号映射沙盘、本地推演随录、意见与讨论、用户协议与许可已开放；文档阅读器接入，不再裸文本打开。</p>
+      </li>
+    </ul>
+
+    <div class="section-title">接下来做什么</div>
+    <div class="cards">
+      <div class="card">
+        <h3>真实样本回填</h3>
+        <p>收集现实观察，用数据验证哪些结构能站住。</p>
+      </div>
+      <div class="card">
+        <h3>三式逐个开放</h3>
+        <p>太乙、奇门、六壬先内部复核，确认后再公开。</p>
+      </div>
+      <div class="card">
+        <h3>暂不做</h3>
+        <p>干支组合、付费算命、账号同步、隐私上传。</p>
+      </div>
+    </div>
+  </main>
+  <footer>
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="feedback.html">意见与讨论</a> · <a href="docs/viewer.html?file=AGREEMENT.md">用户协议</a> · <a href="docs/viewer.html?file=LICENSE">许可说明</a>
+  </footer>
+</body>
+</html>

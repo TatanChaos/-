@@ -930,6 +930,38 @@
   }
   .license-note strong { color: var(--ink-deep); }
   .license-note a { color: var(--red); text-decoration: underline; }
+  .notes-local {
+    margin: 0 0 10px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .roadmap {
+    position: relative;
+    z-index: 1;
+    max-width: 1240px;
+    margin: 14px auto 0;
+    padding: 0 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .roadmap-item {
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+    font-size: 12px;
+  }
+  .roadmap-item h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+  }
+  .roadmap-item p {
+    margin: 0;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   @media (max-width: 860px) {
     .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
   }
@@ -1088,6 +1120,7 @@
         <blockquote class="classic-quote">观象玩辞，观变玩占 <span>《周易·系辞》</span></blockquote>
         <details class="notes" id="notesPanel">
           <summary>推演随录 · <span id="notesSummary">0 条草稿</span></summary>
+          <p class="notes-local">推演随录仅保存在你的浏览器，不上传网络；清缓存或换设备会清空。</p>
           <form class="note-form" id="noteForm">
             <textarea id="noteInput" rows="3" placeholder="记下现实观察：时间、场景、现象、结果"></textarea>
             <div class="note-actions">
@@ -1103,10 +1136,28 @@
       </div>
     </section>
   </main>
+  <section class="roadmap" aria-label="体验版说明与计划">
+    <div class="roadmap-item">
+      <h3>当前体验版</h3>
+      <p>符号映射沙盘 · 本地推演随录 · 意见与讨论 · 用户协议与许可。</p>
+    </div>
+    <div class="roadmap-item">
+      <h3>定位</h3>
+      <p>开源文化研究作品，不是预测产品；不收费、不承诺、不收集隐私。</p>
+    </div>
+    <div class="roadmap-item">
+      <h3>即将上线</h3>
+      <p>真实样本回填 · 三式入口逐个开放 · 干支组合暂不做。</p>
+    </div>
+    <div class="roadmap-item">
+      <h3><a href="updates.html">更新公告</a></h3>
+      <p>体验版 v0.1：沙盘、本地随录、意见反馈已开放。</p>
+    </div>
+  </section>
   <footer class="license-note">
     <strong>使用限制</strong>：本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。所有干支、星图、系统映射均为拓展面候选，不作决策依据。
     <br>
-    补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="docs/viewer.html?file=../LICENSE" target="_blank">LICENSE</a>。意见征集：<a href="feedback.html">点这里</a>。
+    补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="docs/viewer.html?file=../LICENSE" target="_blank">LICENSE</a>。意见征集：<a href="feedback.html">点这里</a> · <a href="https://github.com/TatanChaos/-/issues" target="_blank">查看已有意见</a> · <a href="updates.html">更新公告</a>。
   </footer>
   <div class="gate" id="agreementGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-card">
