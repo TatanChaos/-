@@ -2828,6 +2828,17 @@
     out.innerHTML = "<strong>" + pair.title + "</strong>：" + pair.body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
   }
 
+  function renderFullInteract() {
+    const wrap = document.querySelector(".full-interact");
+    const bEl = document.getElementById("fullInteractB");
+    const out = document.getElementById("fullInteractOut");
+    if (!wrap || !bEl || !out) return;
+    const a = wrap.getAttribute("data-a");
+    const pair = interactionPair(a, bEl.value);
+    const own = composeDualInterpretation(a, bEl.value);
+    out.innerHTML = "<strong>" + pair.title + "</strong>：" + pair.body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+  }
+
   function fillJiaziSelect(el, selected) {
     if (!el) return;
     el.innerHTML = "";
@@ -3119,7 +3130,18 @@
       ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/地支关系稽古工作台_2026-08-11.md")}" target="_blank">稽古工作台</a>`
       : `<a href="docs/viewer.html?file=${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/viewer.html?file=符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/viewer.html?file=地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
     const section = {
-      full: `<div class="rows">${fullRows}</div>`,
+      full: `<div class="rows">${fullRows}</div>
+        <div class="full-interact" data-a="${headKey}">
+          <h3 class="interact-head">${headKey} · 与任意干支互动</h3>
+          <div class="compare-row">
+            <strong>${headKey}</strong>
+            <span>与</span>
+            <select id="fullInteractB" aria-label="任意干支"></select>
+          </div>
+          <div id="fullInteractOut" class="compare-out">选任意天干或地支，看它与 ${headKey} 的互动。</div>
+          <button type="button" class="subnav-btn" id="toJiaziPair">六十甲子两柱对照</button>
+          <span class="compare-caveat">真实样本回填前不作断言。</span>
+        </div>`,
       jiazi: `<div class="rows">${jiaziHTML}</div>`,
       interact: `<div class="compare-row">
         <select id="interactA" aria-label="互动符号 A"></select>
@@ -3187,6 +3209,14 @@
       jiaziPairB.addEventListener("change", renderJiaziPair);
       renderJiaziPair();
     }
+    const fullInteractB = document.getElementById("fullInteractB");
+    if (fullInteractB) {
+      fillSymbolSelect(fullInteractB, crossPartner(headKey));
+      fullInteractB.addEventListener("change", renderFullInteract);
+      renderFullInteract();
+    }
+    const toJiaziPair = document.getElementById("toJiaziPair");
+    if (toJiaziPair) toJiaziPair.addEventListener("click", () => switchDetail("interact"));
     renderSelectedReadout();
   }
 
