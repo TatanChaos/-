@@ -142,6 +142,7 @@
     <br>
     <a href="learn.html">自己解开自己</a> · <a href="life.html">生活衔接卡</a> · <a href="samples.html">真实样本</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
   </footer>
+  <script src="assets/jiazi-deep.js"></script>
   <script src="assets/nayin-deep.js"></script>
   <script>
     const DATA = [
@@ -340,7 +341,8 @@
       const q = search.value.trim();
       const list = DATA.filter(d => {
         const deep = NAYIN_DEEP[d.term] || {};
-        const searchable = d.term + d.plain + d.modern + d.scene + d.source + deep.sharp + deep.limit + deep.verify;
+        const deepJ = JIAZI_DEEP[d.term] || {};
+        const searchable = d.term + d.plain + d.modern + d.scene + d.source + deep.sharp + deep.limit + deep.verify + deepJ.essence + deepJ.use + deepJ.over + deepJ.verify + deepJ.luokuan;
         return (activeGroup === "全部" || d.group === activeGroup) && (!q || searchable.includes(q));
       });
       grid.innerHTML = list.map(d => `
@@ -348,6 +350,7 @@
           <h3>${d.term}</h3>
           <p class="src">${d.src}</p>
           <div class="row"><b>人话</b>${d.plain}</div>
+          ${JIAZI_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>落款</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
           ${NAYIN_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
           <div class="row"><b>现代结构</b>${d.modern}</div>
           <div class="row"><b>生活场景</b>${d.scene}</div>

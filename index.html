@@ -1945,6 +1945,7 @@
     </div>
   </div>
 <script src="assets/deep-data.js"></script>
+<script src="assets/jiazi-deep.js"></script>
 <script>
   const DATA = {
     "子": { zhi: "子", name: "水 · 种子 · 子时", cang: "癸", dir: "正北", hour: "23:00-01:00", animal: "鼠", month: "大雪-小寒", rel: "六合丑 / 六冲午 / 三合申子辰 / 六害未 / 三刑子卯", func: "流动、潜藏、初始", system: "数据流、增量输入、基因信息", hypothesis: "输入端越活跃，系统后续越多样", edge: "流动不是消失，是还没定形。" },
@@ -2975,7 +2976,17 @@
       ${deepRows}${jiaziRows}${relationFullRows}`;
     const jiaziHTML = JIAZI_60.map(line => {
       const [pair, text] = line.split("：");
-      return `<div class="row"><div class="label">${pair}</div><div class="value">${text}</div></div>`;
+      const deep = JIAZI_DEEP[pair] || {};
+      return `<details class="corpus-symbol" open>
+        <summary>${pair} · ${text}</summary>
+        <div class="rows">
+          <div class="row"><div class="label">一针见血</div><div class="value">${deep.essence || text}</div></div>
+          <div class="row"><div class="label">怎么用</div><div class="value">${deep.use || "待补"}</div></div>
+          <div class="row"><div class="label">过与不及</div><div class="value">${deep.over || "待补"}</div></div>
+          <div class="row"><div class="label">怎么验证</div><div class="value">${deep.verify || "待真实样本"}</div></div>
+          <div class="row"><div class="label">落款</div><div class="value">${deep.luokuan || "留白给你"}</div></div>
+        </div>
+      </details>`;
     }).join("");
     const allSymbolKeys = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
     const corpusHTML = allSymbolKeys.map(key => {
