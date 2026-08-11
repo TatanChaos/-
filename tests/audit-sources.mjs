@@ -49,23 +49,30 @@ const groups = {
   翻译: terms.filter(t => !["六十甲子", "纳音"].includes(t.group)).map(t => t.src)
 };
 
-function pending(src) {
-  return /待复核|待补|待确认|待收录|待锚定|流派差异/.test(src) || !verifiedSource(src);
+function sourceStatus(src) {
+  if (/待复核|待补|待确认|待收录|待锚定|流派差异/.test(src)) return "pending";
+  if (/颐真初笺|初笺|通行/.test(src)) return "synthetic";
+  if (src.includes("已对校")) return verifiedSource(src) ? "verified" : "pending";
+  return "verified";
 }
 
 let total = 0;
 let anchored = 0;
+let synthetic = 0;
 let pendingCount = 0;
 const pendingSamples = [];
 
 for (const [group, sources] of Object.entries(groups)) {
   for (const src of sources) {
     total += 1;
-    if (pending(src)) {
+    const status = sourceStatus(src);
+    if (status === "verified") {
+      anchored += 1;
+    } else if (status === "synthetic") {
+      synthetic += 1;
+    } else {
       pendingCount += 1;
       if (pendingSamples.length < 24) pendingSamples.push(`${group} · ${src}`);
-    } else {
-      anchored += 1;
     }
   }
 }
@@ -81,6 +88,7 @@ for (const file of docs) {
 console.log(`稽古状态`);
 console.log(`原文/出处条目：${total}`);
 console.log(`已锚定：${anchored}`);
+console.log(`颐真初笺/通行：${synthetic}`);
 console.log(`待复核/待补：${pendingCount}`);
 console.log(`文档待补标记：${docs.length} 篇中 ${docPending.length} 篇仍有待补`);
 if (pendingSamples.length) {
