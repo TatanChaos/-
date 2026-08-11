@@ -1981,6 +1981,7 @@
   </div>
 <script src="assets/deep-data.js"></script>
 <script src="assets/jiazi-deep.js"></script>
+<script src="assets/combination-engine.js"></script>
 <script>
   const DATA = {
     "子": { zhi: "子", name: "水 · 种子 · 子时", cang: "癸", dir: "正北", hour: "23:00-01:00", animal: "鼠", month: "大雪-小寒", rel: "六合丑 / 六冲午 / 三合申子辰 / 六害未 / 三刑子卯", func: "流动、潜藏、初始", system: "数据流、增量输入、基因信息", hypothesis: "输入端越活跃，系统后续越多样", edge: "流动不是消失，是还没定形。" },
@@ -2959,15 +2960,7 @@
   }
 
   function parseCombinationTokens(text) {
-    const cleaned = String(text).replace(/[，,、。；;和与及vsVS對对对照]/g, " ");
-    const re = /([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])|([甲乙丙丁戊己庚辛壬癸])|([子丑寅卯辰巳午未申酉戌亥])/g;
-    const out = [];
-    let m;
-    while ((m = re.exec(cleaned)) !== null) {
-      const token = m[1] || m[2] || m[3];
-      out.push(token);
-    }
-    return out;
+    return CombinationEngine.parseTokens(text);
   }
 
   function explainPairTokens(a, b) {
@@ -3000,13 +2993,7 @@
   }
 
   function pairByIndex(n, idx) {
-    let i = 0;
-    let remaining = idx;
-    while (remaining >= n - 1 - i) {
-      remaining -= n - 1 - i;
-      i += 1;
-    }
-    return [i, i + 1 + remaining];
+    return CombinationEngine.pairByIndex(n, idx);
   }
 
   function renderCombinationPage() {

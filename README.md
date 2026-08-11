@@ -21,7 +21,17 @@
 
 ## 运行
 
-本目录是纯静态网页，直接打开 `index.html`，或在目录内启动本地服务：
+本目录可以直接打开 `index.html`，但文档阅读器在 `file://` 下会回退到 Markdown 原文。完整服务端体验推荐使用：
+
+```bash
+node server.js
+```
+
+然后访问 `http://127.0.0.1:8780/`。
+
+组合盘在服务端模式下按页计算，不把全部组合一次性塞给浏览器；`file://` 下自动回退到前端分页。
+
+也可以使用原来的纯静态服务：
 
 ```bash
 python3 -m http.server 8766
@@ -29,20 +39,31 @@ python3 -m http.server 8766
 
 然后访问 `http://127.0.0.1:8766/`。
 
+## 校验
+
+```bash
+node tests/verify.mjs
+```
+
+校验 22 个天干地支字段、60 组甲子、30 组纳音、组合引擎与隐私边界。
+
 ## 目录
 
 ```text
-index.html          符号映射沙盘
-life.html           生活衔接卡
-learn.html          自己解开自己
-samples.html        真实样本征集
-排盘/八字.html      八字排盘
-assets/             logo、纸纹、云纹、星宫图背景
-docs/               十天干、十二地支、关系稽古、表达原则、进门文章
-sanshi/             太乙、奇门、六壬三式内测入口
-门户/               颐真书房门户：沙盘优先 + 八字排盘入口
-feedback.html       意见征集：GitHub Issue + 本地复制模板
-VERSION.md          体验版 / 正式版 v1 范围说明
+index.html               符号映射沙盘
+translator.html          术语翻译工作台
+life.html                生活衔接卡
+learn.html               自己解开自己
+samples.html             真实样本征集
+排盘/八字.html           八字排盘
+assets/                  logo、纸纹、云纹、星宫图背景、深解数据、组合引擎
+docs/                    十天干、十二地支、关系稽古、表达原则、进门文章
+sanshi/                  太乙、奇门、六壬三式内测入口
+门户/                    颐真书房门户：沙盘优先 + 八字排盘入口
+feedback.html            意见征集：GitHub Issue + 本地复制模板
+server.js                本地静态服务与组合 API
+tests/verify.mjs         内容与引擎校验
+VERSION.md               体验版 / 正式版 v1 范围说明
 ```
 
 ## 边界

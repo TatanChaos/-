@@ -1,11 +1,10 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const Engine = require("./assets/combination-engine.js");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
-const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -18,49 +17,21 @@ const MIME = {
   ".md": "text/markdown; charset=utf-8"
 };
 
-function parseTokens(text) {
-  const cleaned = String(text).replace(/[，,、。；;和与及vsVS對对对照]/g, " ");
-  const re = /([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])|([甲乙丙丁戊己庚辛壬癸])|([子丑寅卯辰巳午未申酉戌亥])/g;
-  const out = [];
-  let m;
-  while ((m = re.exec(cleaned)) !== null) out.push(m[1] || m[2] || m[3]);
-  return out;
-}
-
-function pairByIndex(n, idx) {
-  let i = 0;
-  let remaining = idx;
-  while (remaining >= n - 1 - i) {
-    remaining -= n - 1 - i;
-    i += 1;
-  }
-  return [i, i + 1 + remaining];
-}
-
 function handleCombine(text, page, size, res) {
-  const tokens = parseTokens(text);
+  const tokens = Engine.parseTokens(text);
   if (tokens.length < 2) {
     sendJson(res, 400, { error: "请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。" });
     return;
   }
-  const pairCount = tokens.length * (tokens.length - 1) / 2;
-  const pageCount = Math.max(1, Math.ceil(pairCount / size));
-  const currentPage = Math.min(page, pageCount - 1);
-  const start = currentPage * size;
-  const end = Math.min(start + size, pairCount);
-  const pairs = [];
-  for (let idx = start; idx < end; idx += 1) {
-    const [i, j] = pairByIndex(tokens.length, idx);
-    pairs.push([tokens[i], tokens[j]]);
-  }
+  const result = Engine.pagePairs(tokens, page, size);
   sendJson(res, 200, {
     tokens: tokens.slice(0, 100),
     tokenCount: tokens.length,
-    pairCount,
-    page: currentPage,
-    pageCount,
-    size,
-    pairs
+    pairCount: result.pairCount,
+    page: result.page,
+    pageCount: result.pageCount,
+    size: result.size,
+    pairs: result.pairs
   });
 }
 
