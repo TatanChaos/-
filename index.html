@@ -1011,6 +1011,32 @@
     letter-spacing: .08em;
   }
   .scene-extra { margin-top: 12px; }
+  .values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .value-card {
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+    border-radius: var(--radius-card);
+  }
+  .value-card b {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: var(--ink-deep);
+    margin-bottom: 5px;
+  }
+  .value-card span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   .scene-quick-links {
     display: flex;
     flex-wrap: wrap;
@@ -1743,6 +1769,12 @@
       <div class="scene-skip-row">
         <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
       </div>
+    </div>
+    <div class="values">
+      <div class="value-card"><b>不装大师</b><span>解是陪你拆，不是替你判。</span></div>
+      <div class="value-card"><b>不做许愿池</b><span>结果由现实给，不由我们承诺。</span></div>
+      <div class="value-card"><b>黑话保留，人话紧跟</b><span>给够，也给得懂。</span></div>
+      <div class="value-card"><b>真实样本才算数</b><span>候选不是结论，验证才是。</span></div>
     </div>
   </section>
   <main class="layout" hidden>
