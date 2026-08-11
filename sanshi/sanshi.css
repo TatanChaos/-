@@ -466,6 +466,40 @@ body.theme-liuren {
 
 .readout strong { color: var(--ink-deep); }
 
+.mainline { margin-top: 14px; }
+.mainline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.mainline-grid > div {
+  padding: 12px;
+  background: #f4efe3;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--gold);
+}
+.mainline-grid strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--red);
+  letter-spacing: .08em;
+}
+.mainline-grid p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.mainline-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.mainline-note a { color: var(--red); }
+
 .sanshi-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
