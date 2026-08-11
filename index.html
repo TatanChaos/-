@@ -204,6 +204,7 @@
   .edge.chong.active, .edge.hai.active, .edge.xing.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
   .edge.five { stroke: var(--teal); stroke-opacity: .55; }
   .edge.five.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
+  #wheel .edge { cursor: pointer; }
   .relation-controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .rel-btn {
     font: inherit;
@@ -1265,7 +1266,7 @@
           <button type="button" class="term-btn" data-term="chujian">象数初笺</button>
           <button type="button" class="term-btn" data-term="candidate">拓展面候选</button>
         </div>
-        <div id="termReadout" class="term-readout" aria-live="polite">点一个词，看它的结构解释。</div>
+        <div id="termReadout" class="term-readout" aria-live="polite">点一个词或盘上的关系线，看它的结构解释。</div>
         <blockquote class="classic-quote">观象玩辞，观变玩占 <span>《周易·系辞》</span></blockquote>
         <details class="notes" id="notesPanel">
           <summary>推演随录 · <span id="notesSummary">0 条草稿</span></summary>
@@ -1751,7 +1752,11 @@
         line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
         line.setAttribute("class", "edge " + cls);
         line.setAttribute("data-rel", cls);
-        line.setAttribute("data-pair", [z, group[(i + 1) % group.length]].join(""));
+        const pair = [z, group[(i + 1) % group.length]];
+        line.setAttribute("data-pair", pair.join(""));
+        line.setAttribute("data-relkey", group.length === 2
+          ? group.join("") + (cls === "xing" ? "三刑" : REL_LABELS[cls])
+          : group.join("") + (cls === "three" ? "三合" : "三刑"));
         svg.appendChild(line);
       });
     });
@@ -1771,6 +1776,7 @@
         line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
         line.setAttribute("class", "edge five");
         line.setAttribute("data-pair", pair.join(""));
+        line.setAttribute("data-relkey", GAN_DATA[pair[0]].he);
         svg.appendChild(line);
       });
       GAN.forEach(g => {
@@ -1788,6 +1794,7 @@
         node.addEventListener("click", () => select(g));
         svg.appendChild(node);
       });
+      bindEdgeExplanations();
       highlightWheel();
       return;
     }
@@ -1806,6 +1813,7 @@
         ring.setAttribute("r", 36);
         ring.setAttribute("data-rel", "xing");
         ring.setAttribute("data-pair", z + z);
+        ring.setAttribute("data-relkey", z + "自刑");
         svg.appendChild(ring);
       });
     }
@@ -1824,7 +1832,22 @@
       g.addEventListener("click", () => select(z));
       svg.appendChild(g);
     });
+    bindEdgeExplanations();
     highlightWheel();
+  }
+
+  function bindEdgeExplanations() {
+    document.querySelectorAll("#wheel .edge").forEach(edge => {
+      const key = edge.getAttribute("data-relkey");
+      const show = () => {
+        const out = document.getElementById("termReadout");
+        if (!out || !key) return;
+        const text = REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key];
+        if (text) out.innerHTML = "<strong>" + key + "</strong>：" + text;
+      };
+      edge.addEventListener("mouseenter", show);
+      edge.addEventListener("click", show);
+    });
   }
 
   function highlightWheel() {
