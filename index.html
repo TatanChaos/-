@@ -200,6 +200,7 @@
   .edge.chong { stroke: #4f6b8a; stroke-opacity: .45; }
   .edge.hai { stroke: #b0563f; stroke-opacity: .45; }
   .edge.xing { stroke: #5b7f4f; stroke-opacity: .45; }
+  .edge.self { fill: none; stroke-dasharray: 5 5; }
   .edge.chong.active, .edge.hai.active, .edge.xing.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
   .edge.five { stroke: var(--teal); stroke-opacity: .55; }
   .edge.five.active { stroke: var(--red); stroke-opacity: 1; stroke-width: 2.5; }
@@ -660,6 +661,7 @@
   .edge.chong { stroke: #4f6b8a; stroke-opacity: .55; }
   .edge.hai { stroke: #a04f3d; stroke-opacity: .5; }
   .edge.xing { stroke: #5b7f4f; stroke-opacity: .55; }
+  .edge.self { fill: none; stroke-dasharray: 5 5; }
   .edge.five { stroke: #2d6a62; stroke-opacity: .6; }
   .node circle {
     fill: #fdfaf2;
@@ -1205,7 +1207,7 @@
     "未": { zhi: "未", name: "土 · 木库 · 未时", cang: "己丁乙", dir: "西南", hour: "13:00-15:00", animal: "羊", month: "小暑-立秋", rel: "六合午 / 六冲丑 / 三合亥卯未 / 六害子 / 三刑丑戌未", func: "成果沉淀", system: "作品库、知识库、归档", hypothesis: "沉淀越多，越容易形成长期资产", edge: "未完成不是结果，未归档才是。" },
     "申": { zhi: "申", name: "金 · 传送 · 申时", cang: "庚壬戊", dir: "西南", hour: "15:00-17:00", animal: "猴", month: "立秋-白露", rel: "六合巳 / 六冲寅 / 三合申子辰 / 六害亥 / 三刑寅巳申", func: "规则、传输", system: "协议、流程、制度", hypothesis: "规则越清晰，系统越可复制", edge: "规则是传送，也是过滤。" },
     "酉": { zhi: "酉", name: "金 · 精密 · 酉时", cang: "辛", dir: "正西", hour: "17:00-19:00", animal: "鸡", month: "白露-寒露", rel: "六合辰 / 六冲卯 / 三合巳酉丑 / 六害戌 / 自刑", func: "加工、精炼", system: "编译器、芯片、精加工", hypothesis: "精密层出错成本最高", edge: "越精密，越怕一个极小的偏差。" },
-    "戌": { zhi: "戌", name: "火库 · 戌时", cang: "戊辛丁", dir: "西北", hour: "19:00-21:00", animal: "狗", month: "寒露-立冬", rel: "六合卯 / 六冲辰 / 三合寅午戌 / 六害酉 / 三刑丑戌未", func: "平台、收束", system: "平台池、用户池、闭环", hypothesis: "池子越大，封闭越强，开库冲击越大", edge: "平台是库，也是锁。" },
+    "戌": { zhi: "戌", name: "土 · 火库 · 戌时", cang: "戊辛丁", dir: "西北", hour: "19:00-21:00", animal: "狗", month: "寒露-立冬", rel: "六合卯 / 六冲辰 / 三合寅午戌 / 六害酉 / 三刑丑戌未", func: "平台、收束", system: "平台池、用户池、闭环", hypothesis: "池子越大，封闭越强，开库冲击越大", edge: "平台是库，也是锁。" },
     "亥": { zhi: "亥", name: "水 · 源头 · 亥时", cang: "壬甲", dir: "西北", hour: "21:00-23:00", animal: "猪", month: "立冬-大雪", rel: "六合寅 / 六冲巳 / 三合亥卯未 / 六害申 / 自刑", func: "混沌、潜在", system: "原始数据、未分化需求", hypothesis: "混沌层越深，越难直接量化", edge: "源头不清晰，下游却全部受它影响。" }
   };
   const GAN_DATA = {
@@ -1272,6 +1274,32 @@
     "壬": "流量分发、数据管道",
     "癸": "渗透测试、埋点"
   };
+  const ESSENCE_ZHI = {
+    "子": "水之初生：种子、子夜、极寒中藏一阳，未成形但已有方向。",
+    "丑": "土之藏纳：冬末湿土，金之库，收纳待用。",
+    "寅": "木之生发：春之始，万物启动。",
+    "卯": "木之繁茂：仲春门象，生长与扩散。",
+    "辰": "土之水库：季春归藏又待生，缓冲与蓄积。",
+    "巳": "火之信息：孟夏蛇象、驿马，连接与发热。",
+    "午": "火之极盛：仲夏日当午，显象与峰值。",
+    "未": "土之木库：季夏成果将熟未熟，沉淀待转化。",
+    "申": "金之传送：孟秋驿马与道路，交接与传输。",
+    "酉": "金之精纯：仲秋兑象、缺象，加工与精炼。",
+    "戌": "土之火库：季秋收束，平台与闭环。",
+    "亥": "水之源头：孟冬混沌与潜在，未分化。"
+  };
+  const ESSENCE_GAN = {
+    "甲": "阳木，参天大树：主干与开始。",
+    "乙": "阴木，花草藤蔓：柔软而能攀附连接。",
+    "丙": "阳火，太阳之火：光与热度，显象传播。",
+    "丁": "阴火，灯烛之火：小而持久，点亮局部。",
+    "戊": "阳土，高山厚土：稳定承载。",
+    "己": "阴土，田园湿土：滋养与收纳。",
+    "庚": "阳金，刀剑金属：变革与切割。",
+    "辛": "阴金，珠玉之金：精炼与修饰。",
+    "壬": "阳水，江河大海：流动与扩张。",
+    "癸": "阴水，雨露泉水：渗透与滋养。"
+  };
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const SIX = [["子", "丑"], ["寅", "亥"], ["卯", "戌"], ["辰", "酉"], ["巳", "申"], ["午", "未"]];
@@ -1307,14 +1335,24 @@
     "寅巳申三刑": "启动、连接、规则三者互相卡：创新、热连接、制度互相拉扯。",
     "丑戌未三刑": "冷库、平台、成果库三者互相压：存储、封闭、归档互相挤压。",
     "子卯三刑": "输入与并发互相伤：入口太快会打乱并行任务。",
-    "自刑": "同一结构过度内耗：自己积累的规则反过来卡住自己。"
+    "辰自刑": "缓存过度自洽：缓存池只按自己的节奏运行，就会拒绝外部变化，变成自我加固。",
+    "午自刑": "峰值过度自转：热度顶点自我消耗，峰值越满越容易瞬间回落。",
+    "酉自刑": "精密过度内卷：标准越细越难容忍偏差，也越难对外协作。",
+    "亥自刑": "源头过度沉浸：混沌需求一直不结构化，就无法进入下游系统。"
+  };
+  const GAN_REL_EXPLAIN = {
+    "甲己合土": "主干与田园合为承载层：顶层框架和底层维护协同，现代对应平台底座。",
+    "乙庚合金": "藤蔓与刀剑合为规则层：柔性适配和刚性切割协同，现代对应可执行制度或工具。",
+    "丙辛合水": "太阳与珠玉合为流动层：显象和精炼协同，现代对应可传播也可沉淀的数据流。",
+    "丁壬合木": "灯烛与江河合为生长层：持续供给和全域流动协同，现代对应可扩展的分发生态。",
+    "戊癸合火": "高山与雨露合为显象层：承载底座和细粒度渗透协同，现代对应被看见的能量。"
   };
   const TERM_EXPLAIN = {
     six: "六合 = 协作对接：像两个模块顺利接上。",
     three: "三合 = 同盟组合：像三人小组形成稳定结构。",
     chong: "六冲 = 直接对立：像两个模块抢同一份资源。",
     hai: "六害 = 暗中消耗：像看不见的隐性摩擦。",
-    xing: "三刑 = 结构性摩擦：像制度本身造成的卡点。",
+    xing: "三刑 = 结构性摩擦：寅巳申、丑戌未、子卯成刑；辰午酉亥为自刑。",
     chujian: "象数初笺 = 第一轮批注稿，不是定稿。",
     candidate: "拓展面候选 = 未定论假设，真实样本回填前不视为已验证。"
   };
@@ -1360,6 +1398,7 @@
     el.innerHTML =
       '<div class="sr-head"><strong>' + key + '</strong><span>' + d.name + '</span></div>' +
       '<div class="sr-row"><span>人话</span><b>' + d.edge + '</b></div>' +
+      '<div class="sr-row"><span>本质</span><b>' + (mode === "zhi" ? ESSENCE_ZHI[key] : ESSENCE_GAN[key]) + '</b></div>' +
       '<div class="sr-row"><span>现代对应</span><b>' + d.system + '</b></div>' +
       '<div class="sr-row"><span>现实例子</span><b>' + example + '</b></div>' +
       '<div class="sr-row"><span>' + (mode === "zhi" ? "关系" : "五合") + '</span><b>' + relation + '</b></div>';
@@ -1551,7 +1590,20 @@
     if (activeRel.three) drawEdges(THREE, "three");
     if (activeRel.chong) drawEdges(CHONG, "chong");
     if (activeRel.hai) drawEdges(HAI, "hai");
-    if (activeRel.xing) drawEdges(XING, "xing");
+    if (activeRel.xing) {
+      drawEdges(XING, "xing");
+      ["辰", "午", "酉", "亥"].forEach(z => {
+        const p = pos(z);
+        const ring = document.createElementNS(ns, "circle");
+        ring.setAttribute("class", "edge xing self");
+        ring.setAttribute("cx", p.x);
+        ring.setAttribute("cy", p.y);
+        ring.setAttribute("r", 36);
+        ring.setAttribute("data-rel", "xing");
+        ring.setAttribute("data-pair", z + z);
+        svg.appendChild(ring);
+      });
+    }
     ZHI.forEach(z => {
       const p = pos(z);
       const g = document.createElementNS(ns, "g");
@@ -1586,12 +1638,16 @@
     const headKey = mode === "zhi" ? d.zhi : d.gan;
     const verify = mode === "zhi" ? VERIFY_ZHI[selectedZhi] : VERIFY_GAN[selectedGan];
     const example = mode === "zhi" ? EXAMPLE_ZHI[selectedZhi] : EXAMPLE_GAN[selectedGan];
+    const essence = mode === "zhi" ? ESSENCE_ZHI[selectedZhi] : ESSENCE_GAN[selectedGan];
     const relRows = mode === "zhi"
       ? Object.keys(REL_EXPLAIN)
           .filter(k => k.includes(selectedZhi))
           .map(k => `<div class="row"><div class="label">${k}</div><div class="value">${REL_EXPLAIN[k]}</div></div>`)
           .join("")
-      : "";
+      : Object.keys(GAN_REL_EXPLAIN)
+          .filter(k => k.includes(selectedGan))
+          .map(k => `<div class="row"><div class="label">${k}</div><div class="value">${GAN_REL_EXPLAIN[k]}</div></div>`)
+          .join("");
     const metaHTML = mode === "zhi"
       ? `<div class="row"><div class="label">藏干</div><div class="value">${d.cang}</div></div>
          <div class="row"><div class="label">方位</div><div class="value">${d.dir}</div></div>
@@ -1619,12 +1675,12 @@
       ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/地支关系稽古工作台_2026-08-11.md")}" target="_blank">稽古工作台</a>`
       : `<a href="docs/viewer.html?file=${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/viewer.html?file=符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/viewer.html?file=地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
     const section = {
-      overview: `<div class="rows">${metaHTML}<div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
+      overview: `<div class="rows">${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
-      relation: `<div class="rows">${relationHTML}<div class="row"><div class="label">含义</div><div class="value">${mode === "zhi" ? "六合=协作；三合=同盟；六冲=对立；六害=暗中消耗；三刑=结构性摩擦" : "五合=协作/化气，需看全局是否成化"}</div></div>${relRows}</div>`,
+      relation: `<div class="rows">${relationHTML}<div class="row"><div class="label">含义</div><div class="value">${mode === "zhi" ? "六合=协作；三合=同盟；六冲=对立；六害=暗中消耗；三刑=结构性摩擦" : "五合=协作/化气，需看全局是否成化"}</div></div>${relRows}<div class="row"><div class="label">判读边界</div><div class="value">合冲害刑是结构关系，不是直接吉凶结论；是否成化、午未合土/日月等流派差异、力量强弱、全局组合都会改变作用，单独一条关系不用于断事。</div></div></div>`,
       verify: `<div class="rows"><div class="row"><div class="label">验证方法</div><div class="value">${verify}</div></div><div class="row"><div class="label">状态</div><div class="value">待真实样本回填，未回填前不视为已验</div></div></div>`,
-      source: `<div class="rows"><div class="row"><div class="label">本地底稿</div><div class="value">${sourceLinks}</div></div><div class="row"><div class="label">原文状态</div><div class="value">六合、三合、六冲、六害、三刑已锚定《三命通会》初笺，待交叉复核</div></div><div class="row"><div class="label">建议</div><div class="value">继续查《协纪辨方书》《御定星历考原》；《渊海子平》《滴天髓》待收录后再补</div></div></div>`
+      source: `<div class="rows"><div class="row"><div class="label">本地底稿</div><div class="value">${sourceLinks}</div></div><div class="row"><div class="label">原文状态</div><div class="value">六合、三合、六冲、六害、三刑已锚定《三命通会》初笺；天干五合待补原文，未补前按候选处理</div></div><div class="row"><div class="label">建议</div><div class="value">继续查《协纪辨方书》《御定星历考原》；《渊海子平》《滴天髓》待收录后再补</div></div></div>`
     }[detailTab];
     el.innerHTML = `
       <div class="detail-head">
