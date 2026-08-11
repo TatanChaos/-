@@ -41,8 +41,27 @@ function sendJson(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
+function countKeys(rel) {
+  const text = fs.readFileSync(path.join(ROOT, rel), "utf8");
+  const matches = text.match(/^  "[^"]+": \{/gm);
+  return matches ? matches.length : 0;
+}
+
 const server = http.createServer((req, res) => {
   const parsed = new URL(req.url, "http://127.0.0.1:" + PORT);
+
+  if (parsed.pathname === "/api/status") {
+    sendJson(res, 200, {
+      ok: true,
+      service: "yizhen-shufang",
+      symbols: countKeys("assets/deep-data.js"),
+      jiazi: countKeys("assets/jiazi-deep.js"),
+      nayin: countKeys("assets/nayin-deep.js"),
+      engine: true,
+      serverTime: new Date().toISOString()
+    });
+    return;
+  }
 
   if (parsed.pathname === "/api/combine") {
     if (req.method === "POST") {

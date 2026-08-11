@@ -51,6 +51,7 @@ try {
     "/assets/jiazi-deep.js",
     "/assets/nayin-deep.js",
     "/assets/combination-engine.js",
+    "/api/status",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];
   for (const page of pages) {

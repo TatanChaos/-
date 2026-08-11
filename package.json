@@ -8,6 +8,7 @@
     "check": "node tests/verify.mjs",
     "audit": "node tests/audit-sources.mjs",
     "test": "node tests/verify.mjs",
-    "smoke": "node tests/smoke.mjs"
+    "smoke": "node tests/smoke.mjs",
+    "all": "npm run check && npm run smoke && npm run audit"
   }
 }
