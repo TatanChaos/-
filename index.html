@@ -1928,6 +1928,7 @@
       <p class="gate-note">未同意前不会展示作品内容</p>
     </div>
   </div>
+<script src="assets/deep-data.js"></script>
 <script>
   const DATA = {
     "子": { zhi: "子", name: "水 · 种子 · 子时", cang: "癸", dir: "正北", hour: "23:00-01:00", animal: "鼠", month: "大雪-小寒", rel: "六合丑 / 六冲午 / 三合申子辰 / 六害未 / 三刑子卯", func: "流动、潜藏、初始", system: "数据流、增量输入、基因信息", hypothesis: "输入端越活跃，系统后续越多样", edge: "流动不是消失，是还没定形。" },
@@ -2918,7 +2919,39 @@
     const relationHTML = mode === "zhi"
       ? `<div class="row"><div class="label">关系</div><div class="value">${d.rel}</div></div>`
       : `<div class="row"><div class="label">五合</div><div class="value">${d.he}</div></div>`;
+    const deep = DEEP_DATA[headKey] || {};
+    const deepFieldLabels = [
+      ["source", "出处"],
+      ["benyi", "本义"],
+      ["tian", "天象"],
+      ["di", "地象"],
+      ["ren", "人象"],
+      ["ti", "体"],
+      ["yong", "用"],
+      ["guo", "过"],
+      ["modern", "现代"],
+      ["life", "生活"],
+      ["verify", "验证"],
+      ["luokuan", "落款"]
+    ];
+    const deepRows = deepFieldLabels
+      .filter(([key]) => deep[key])
+      .map(([key, label]) => `<div class="row"><div class="label">${label}</div><div class="value">${deep[key]}</div></div>`)
+      .join("");
+    const jiaziRows = JIAZI_60
+      .filter(line => line.includes(headKey))
+      .map(line => `<div class="row"><div class="label">甲子组合</div><div class="value">${line}</div></div>`)
+      .join("");
+    const relationFullRows = relRows || "";
+    const fullRows = `${sceneRow}${metaHTML}${relationHTML}
+      <div class="row"><div class="label">本质</div><div class="value">${essence}</div></div>
+      <div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div>
+      <div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div>
+      <div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div>
+      <div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div>
+      ${deepRows}${jiaziRows}${relationFullRows}`;
     const tabs = [
+      ["full", "全盘 · 一项不少"],
       ["overview", "象意 · 它是什么"],
       ["structure", "体用 · 它的作用"],
       ["system", "映射 · 现代对应"],
@@ -2932,6 +2965,7 @@
       ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/地支关系稽古工作台_2026-08-11.md")}" target="_blank">稽古工作台</a>`
       : `<a href="docs/viewer.html?file=${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/viewer.html?file=符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/viewer.html?file=地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
     const section = {
+      full: `<div class="rows">${fullRows}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
