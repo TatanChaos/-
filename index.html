@@ -1467,7 +1467,9 @@
             <div class="note-actions">
               <button type="submit" class="note-btn primary">记录当前符号</button>
               <button type="button" class="note-btn" id="noteExport">导出本地记录</button>
+              <button type="button" class="note-btn" id="noteImport">导入本地记录</button>
               <button type="button" class="note-btn" id="noteClear">清空</button>
+              <input type="file" id="noteImportInput" accept="application/json" hidden>
             </div>
           </form>
           <ul class="note-list" id="noteList"></ul>
@@ -1966,6 +1968,26 @@
     URL.revokeObjectURL(url);
   }
 
+  function importLocalData(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (Array.isArray(data.notes)) saveNotes(data.notes);
+        if (data.compareNotes && typeof data.compareNotes === "object") saveCompareNotes(data.compareNotes);
+        if (Array.isArray(data.unmatchedSituations)) {
+          try {
+            localStorage.setItem("symbol-situation-unmatched-v1", JSON.stringify(data.unmatchedSituations.slice(0, 20)));
+          } catch {}
+        }
+        alert("导入完成");
+      } catch {
+        alert("文件格式不对，请选择导出的 JSON 文件。");
+      }
+    };
+    reader.readAsText(file);
+  }
+
   function renderNotes() {
     const notes = loadNotes();
     const list = document.getElementById("noteList");
@@ -2446,6 +2468,12 @@
     if (confirm("清空本地样本记录？")) saveNotes([]);
   });
   document.getElementById("noteExport").addEventListener("click", exportLocalData);
+  document.getElementById("noteImport").addEventListener("click", () => document.getElementById("noteImportInput").click());
+  document.getElementById("noteImportInput").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (file) importLocalData(file);
+    e.target.value = "";
+  });
   document.getElementById("compareNoteSave").addEventListener("click", saveCompareNote);
   document.getElementById("compareNoteClear").addEventListener("click", clearCompareNote);
   document.querySelectorAll(".term-btn").forEach(btn => {
