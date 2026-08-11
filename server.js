@@ -5,6 +5,7 @@ const Engine = require("./assets/combination-engine.js");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
+const HOST = process.env.HOST || "127.0.0.1";
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -88,6 +89,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, "127.0.0.1", () => {
-  console.log("颐真书房 local server: http://127.0.0.1:" + PORT);
+server.listen(PORT, HOST, () => {
+  const actualPort = server.address().port;
+  console.log("颐真书房 local server: http://" + HOST + ":" + actualPort);
 });
