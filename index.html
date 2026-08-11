@@ -1249,6 +1249,23 @@
     color: var(--amber);
     font-weight: 700;
   }
+  .situation-self {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .situation-self b {
+    display: block;
+    color: var(--teal);
+    font-size: 12px;
+  }
+  .situation-self span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   .situation-out > p {
     margin: 10px 0 0;
     font-size: 11px;
@@ -2527,7 +2544,8 @@
     ];
     if (generic) rows.splice(1, 0, ["甲子", jiazi]);
     if (compound) rows.push(["复合", compound + "：多个维度同时在场，不能只看单象。"]);
-    out.innerHTML = "<strong><span class=\"situation-seal\">解</span>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div><p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
+    const selfSteps = "<div class=\"situation-self\"><b>自己解开自己</b><span>1. 对照：你描述的情况里，最像 " + first + " 或 " + second + " 的部分是哪一块？像在哪里？</span><span>2. 落款：用你自己的话写一句：我现在真正在做什么。</span><span>3. 验证：接下来 3 天记录一个可观察的变化，回填样本时才算数。</span></div>";
+    out.innerHTML = "<strong><span class=\"situation-seal\">解</span>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div>" + selfSteps + "<p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "situation-enter";
