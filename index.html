@@ -784,6 +784,18 @@
   }
   .entry-article-body p { margin: 0 0 8px; }
   .entry-article-body a { color: var(--red); }
+  .scene-samples-link {
+    display: inline-block;
+    margin: 14px 10px 0 0;
+    padding: 10px 16px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .scene-samples-link:hover { opacity: .9; }
   .scene-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -1210,6 +1222,7 @@
           <a href="docs/viewer.html?file=进门.md" target="_blank">读完整进门文章</a>
         </div>
       </details>
+      <a class="scene-samples-link" href="samples.html">交一份真实样本</a>
       <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
     </div>
   </section>
