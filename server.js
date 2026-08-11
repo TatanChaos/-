@@ -5,7 +5,7 @@ const Engine = require("./assets/combination-engine.js");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
-const HOST = process.env.HOST || "127.0.0.1";
+const HOST = process.env.HOST || "0.0.0.0";
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
