@@ -3134,6 +3134,20 @@
     renderCombinationPage();
   }
 
+  async function run10kDemo() {
+    const input = document.getElementById("combinationInput");
+    const out = document.getElementById("combinationOut");
+    if (!input || !out) return;
+    const text = Array.from({ length: 10000 }, (_, i) => JIAZI_60[i % JIAZI_60.length].split("：")[0]).join(" ");
+    input.value = text;
+    if (location.protocol === "file:") {
+      out.innerHTML = "<p>请在服务端模式打开 http://127.0.0.1:8780/index.html 后使用这个演示。</p>";
+      return;
+    }
+    combinationText = text;
+    await loadCombinationApiPage(0);
+  }
+
   function renderCompareOptions() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
@@ -3412,6 +3426,7 @@
         <div class="interact-query">
           <input id="combinationInput" placeholder="例如：甲子 乙丑 丙寅；或 甲 子 午">
           <button type="button" id="combinationGo">读组合</button>
+          <button type="button" id="combinationDemo10k" class="subnav-btn">1万对象演示</button>
         </div>
         <div id="combinationOut" class="compare-out">组合数量不靠写死，按规则逐对生成；真实样本回填前全部是候选。</div>
         <span class="compare-caveat">真实样本回填前不作断言。</span>`,
@@ -3444,7 +3459,8 @@
         <span class="badge red">不作计算依据</span>
       </div>`;
     el.querySelectorAll(".subnav-btn").forEach(btn => {
-      btn.addEventListener("click", () => switchDetail(btn.getAttribute("data-tab")));
+      const tab = btn.getAttribute("data-tab");
+      if (tab) btn.addEventListener("click", () => switchDetail(tab));
     });
     const interactA = document.getElementById("interactA");
     const interactB = document.getElementById("interactB");
@@ -3473,6 +3489,8 @@
       });
       analyzeCombination();
     }
+    const combinationDemo10k = document.getElementById("combinationDemo10k");
+    if (combinationDemo10k) combinationDemo10k.addEventListener("click", run10kDemo);
     const jiaziPairA = document.getElementById("jiaziPairA");
     const jiaziPairB = document.getElementById("jiaziPairB");
     if (jiaziPairA && jiaziPairB) {
