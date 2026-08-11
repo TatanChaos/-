@@ -305,6 +305,7 @@
       const b = document.createElement("button");
       b.type = "button";
       b.className = "category-btn";
+      b.setAttribute("data-category", item[0]);
       b.textContent = item[0] + " · " + item[1];
       b.addEventListener("click", () => {
         activeCategory = item[0];
@@ -333,6 +334,16 @@
       const title = "样本：" + activeCategory + (time ? " · " + time : "");
       window.open("https://github.com/TatanChaos/-/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body), "_blank");
     });
+    const params = new URLSearchParams(location.search);
+    const cat = params.get("category");
+    if (cat) {
+      const target = wrap.querySelector('.category-btn[data-category="' + cat + '"]');
+      if (target) target.click();
+    }
+    if (params.get("time")) document.getElementById("sampleTime").value = params.get("time");
+    if (params.get("question")) document.getElementById("sampleQuestion").value = params.get("question");
+    if (params.get("result")) document.getElementById("sampleResult").value = params.get("result");
+    if (params.get("source")) document.getElementById("sampleSource").value = params.get("source");
   </script>
 </body>
 </html>

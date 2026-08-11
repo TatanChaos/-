@@ -527,6 +527,17 @@
     cursor: pointer;
   }
   .note-del:hover { color: var(--red); background: var(--red-soft); }
+  .note-submit {
+    margin-top: 8px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--teal);
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .note-submit:hover { border-color: var(--teal); background: var(--teal-soft); }
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; }
     .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
@@ -790,6 +801,7 @@
   }
   .note-item { background: #fffdf6; }
   .note-del:hover { color: var(--red); background: var(--red-soft); }
+  .note-submit:hover { border-color: var(--teal); background: var(--teal-soft); }
   .topbar { padding: 15px 18px 12px; flex-wrap: wrap; }
   .status { white-space: normal; }
   .notice {
@@ -2019,6 +2031,7 @@
       <li class="note-item">
         <div class="note-meta">${esc(n.mode === "gan" ? "天干" : "地支")} ${esc(n.symbol)} · ${esc(formatTime(n.at))}</div>
         <div>${esc(n.text)}</div>
+        <button type="button" class="note-submit" data-note-id="${n.id}">交样本</button>
         <button type="button" class="note-del" data-id="${n.id}" aria-label="删除这条记录">×</button>
       </li>
     `).join("") || '<li class="note-item empty">还没有记录</li>';
@@ -2026,6 +2039,21 @@
       btn.addEventListener("click", () => {
         const id = Number(btn.getAttribute("data-id"));
         saveNotes(loadNotes().filter(n => n.id !== id));
+      });
+    });
+    list.querySelectorAll(".note-submit").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.getAttribute("data-note-id"));
+        const note = loadNotes().find(n => n.id === id);
+        if (!note) return;
+        const time = new Date(note.at).toLocaleString("zh-CN", { hour12: false });
+        const q = new URLSearchParams({
+          category: "选择",
+          time,
+          question: note.text,
+          source: "自己"
+        });
+        location.href = "samples.html?" + q.toString();
       });
     });
   }
