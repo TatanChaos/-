@@ -199,6 +199,22 @@
     padding-top: 2px;
   }
   .row .value { font-size: 14px; line-height: 1.55; word-break: break-word; }
+  .corpus-symbol {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: var(--radius-card);
+  }
+  .corpus-symbol summary {
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .corpus-symbol .rows {
+    padding: 0 12px 12px;
+    border-top: 1px solid var(--line);
+  }
   .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .badge {
     font-size: 11px;
@@ -2934,10 +2950,17 @@
       ["verify", "验证"],
       ["luokuan", "落款"]
     ];
-    const deepRows = deepFieldLabels
-      .filter(([key]) => deep[key])
-      .map(([key, label]) => `<div class="row"><div class="label">${label}</div><div class="value">${deep[key]}</div></div>`)
+    const deepRowsFor = key => deepFieldLabels
+      .filter(([field]) => DEEP_DATA[key] && DEEP_DATA[key][field])
+      .map(([field, label]) => `<div class="row"><div class="label">${label}</div><div class="value">${DEEP_DATA[key][field]}</div></div>`)
       .join("");
+    const deepRows = deepRowsFor(headKey);
+    const relationRowsFor = key => {
+      const rows = [];
+      Object.keys(REL_EXPLAIN).filter(k => k.includes(key)).forEach(k => rows.push(`<div class="row"><div class="label">${k}</div><div class="value">${REL_EXPLAIN[k]}</div></div>`));
+      Object.keys(GAN_REL_EXPLAIN).filter(k => k.includes(key)).forEach(k => rows.push(`<div class="row"><div class="label">${k}</div><div class="value">${GAN_REL_EXPLAIN[k]}</div></div>`));
+      return rows.join("");
+    };
     const jiaziRows = JIAZI_60
       .filter(line => line.includes(headKey))
       .map(line => `<div class="row"><div class="label">甲子组合</div><div class="value">${line}</div></div>`)
@@ -2950,8 +2973,26 @@
       <div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div>
       <div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div>
       ${deepRows}${jiaziRows}${relationFullRows}`;
+    const jiaziHTML = JIAZI_60.map(line => {
+      const [pair, text] = line.split("：");
+      return `<div class="row"><div class="label">${pair}</div><div class="value">${text}</div></div>`;
+    }).join("");
+    const allSymbolKeys = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+    const corpusHTML = allSymbolKeys.map(key => {
+      const meta = DATA[key] || GAN_DATA[key] || {};
+      const comboRows = JIAZI_60.filter(line => line.includes(key)).map(line => {
+        const [pair, text] = line.split("：");
+        return `<div class="row"><div class="label">${pair}</div><div class="value">${text}</div></div>`;
+      }).join("");
+      return `<details class="corpus-symbol" open>
+        <summary>${key} · ${meta.name || ""}（${meta.func || ""}）</summary>
+        <div class="rows">${deepRowsFor(key)}${comboRows}${relationRowsFor(key)}</div>
+      </details>`;
+    }).join("");
     const tabs = [
       ["full", "全盘 · 一项不少"],
+      ["jiazi", "六十甲子"],
+      ["corpus", "十天干 · 十二地支"],
       ["overview", "象意 · 它是什么"],
       ["structure", "体用 · 它的作用"],
       ["system", "映射 · 现代对应"],
@@ -2966,6 +3007,8 @@
       : `<a href="docs/viewer.html?file=${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/viewer.html?file=符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/viewer.html?file=地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
     const section = {
       full: `<div class="rows">${fullRows}</div>`,
+      jiazi: `<div class="rows">${jiaziHTML}</div>`,
+      corpus: `<div class="rows">${corpusHTML}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
@@ -2978,8 +3021,8 @@
         <div class="title-wrap">
           <span class="seal-note" aria-hidden="true">颐<br>真</span>
           <div>
-            <h2>${headKey} · ${d.name}</h2>
-            <div class="tagline">${d.func}</div>
+            <h2>${detailTab === "jiazi" ? "六十甲子全库" : detailTab === "corpus" ? "十天干 · 十二地支全库" : headKey + " · " + d.name}</h2>
+            <div class="tagline">${detailTab === "jiazi" ? "六十甲子逐对可查" : detailTab === "corpus" ? "22 个符号全盘展开" : d.func}</div>
           </div>
         </div>
         <span class="chapter-note" aria-hidden="true">象数初笺</span>
