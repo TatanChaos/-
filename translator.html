@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>术语翻译工作台 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --teal: #1f4a44;
+    --teal-soft: #dce9e2;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+    --radius-card: 2px;
+    --space-section: 26px;
+    --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+    --header-muted: #c7d3cd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: var(--header-muted); }
+  .back {
+    color: var(--header-muted);
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247,242,230,.28);
+    padding: 6px 10px;
+  }
+  main {
+    flex: 1;
+    width: min(100%, 980px);
+    margin: 0 auto;
+    padding: 28px 18px 44px;
+  }
+  h2 { margin: 0 0 8px; font-family: var(--font-serif); font-size: 28px; letter-spacing: .1em; }
+  .intro { margin: 0 0 18px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .search-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .search-row input {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--ink);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .chip {
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 10px;
+    cursor: pointer;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .term {
+    position: relative;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius-card);
+  }
+  .term h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink-deep); font-family: var(--font-serif); }
+  .term .src { margin: 0 0 8px; font-size: 11px; color: var(--amber); line-height: 1.6; }
+  .term .row { margin: 7px 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+  .term .row b { display: block; color: var(--red); font-size: 11px; letter-spacing: .08em; }
+  footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px dashed var(--line);
+  }
+  footer a { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div>
+        <h1>术语翻译工作台</h1>
+        <p>黑话 → 原文 → 人话 → 现代结构 → 生活场景 → 出处 → 边界</p>
+      </div>
+    </div>
+    <a class="back" href="index.html">返回沙盘</a>
+  </header>
+  <main>
+    <h2>一一对应</h2>
+    <p class="intro">每个词都按同一套结构翻译：先保留黑话，再给原文锚点，再讲人话，再给现代结构，再接生活场景，最后标出处和边界。</p>
+    <div class="search-row">
+      <input id="search" type="search" placeholder="搜索：子、寅、六合、日主、空亡…">
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+  </main>
+  <footer>
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="learn.html">自己解开自己</a> · <a href="life.html">生活衔接卡</a> · <a href="samples.html">真实样本</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
+  </footer>
+  <script>
+    const DATA = [
+      { term: "甲", group: "天干", src: "《五行大义》：甲者押也，万物抽甲而出（初笺待复核）", plain: "最早立起来的那根主干。", modern: "主线程、框架、根目录、负责人。", scene: "项目启动、领导、定方向。", note: "甲不是最高，是最先立。", source: "五行大义" },
+      { term: "乙", group: "天干", src: "《五行大义》：乙者轧也，自抽轧而出（初笺待复核）", plain: "能绕过去的藤蔓。", modern: "插件、适配层、边缘接口、协调。", scene: "关系协调、柔性适配、绕开障碍。", note: "不硬碰，却能到。", source: "五行大义" },
+      { term: "丙", group: "天干", src: "《五行大义》：丙者炳也，物生炳然（初笺待复核）", plain: "太阳之火，让人看见。", modern: "曝光、广播、热榜、宣发。", scene: "作品被看见、流量爆发。", note: "被看见不是被记住。", source: "五行大义" },
+      { term: "丁", group: "天干", src: "《五行大义》：丁者强也，物丁壮也（初笺待复核）", plain: "灯烛之火，小而持久。", modern: "后台服务、常驻进程、值班。", scene: "坚持、守夜、长期输出。", note: "持续比爆发耐消耗。", source: "五行大义" },
+      { term: "戊", group: "天干", src: "《五行大义》：戊者茂也，物皆茂盛（初笺待复核）", plain: "高山厚土，不动而载。", modern: "数据库、底座、基础设施。", scene: "稳定后台、承载平台。", note: "不动是它最大的动作。", source: "五行大义" },
+      { term: "己", group: "天干", src: "《五行大义》：己者纪也，物皆有纪可识（初笺待复核）", plain: "田园土，养与收。", modern: "运营、维护、内容沉淀。", scene: "整理、复盘、日常运营。", note: "不显眼，但生长靠它。", source: "五行大义" },
+      { term: "庚", group: "天干", src: "《五行大义》：庚者更也，物更代也（初笺待复核）", plain: "刀，切割与重构。", modern: "重构、迁移、规则执行。", scene: "裁员、改革、换系统。", note: "切对变轻，切错伤己。", source: "五行大义" },
+      { term: "辛", group: "天干", src: "《五行大义》：辛者新也，物初新也（初笺待复核）", plain: "珠玉，精雕细刻。", modern: "芯片、界面打磨、精密工艺。", scene: "精修、审美、打磨细节。", note: "刻出来的，不是砍出来的。", source: "五行大义" },
+      { term: "壬", group: "天干", src: "《五行大义》：壬者任也，阳气任养万物于下（初笺待复核）", plain: "江河，流动与分发。", modern: "流量、数据管道、网络。", scene: "机会流动、扩张、分发。", note: "水流向哪，要自己开渠。", source: "五行大义" },
+      { term: "癸", group: "天干", src: "《五行大义》：癸者揆也，物揆度可度也（初笺待复核）", plain: "雨露，渗透与滋养。", modern: "埋点、渗透、润化层。", scene: "潜移默化、细水长流。", note: "看不见，但已经进入内部。", source: "五行大义" },
+      { term: "子", group: "地支", src: "《五行大义》：子者孳也，阳气始萌，孳生于下也（初笺待复核）", plain: "还没发芽的种子。", modern: "输入、起点、潜藏层。", scene: "深夜灵感、新念头刚起。", note: "看起来空，其实是最早的有。", source: "五行大义" },
+      { term: "丑", group: "地支", src: "《五行大义》：丑者纽也，寒气自屈纽也（初笺待复核）", plain: "冬天的仓库，冻住但没死。", modern: "冷存储、档案、旧账。", scene: "压着没做、暂存待用。", note: "不是没有，是暂存在暗处。", source: "五行大义" },
+      { term: "寅", group: "地支", src: "《五行大义》：寅者移也，物芽稍吐，引而申之，移出于地也（初笺待复核）", plain: "刚钻出土的芽。", modern: "启动器、新协议、冷启动。", scene: "新项目、新工作、迈出第一步。", note: "最弱，但方向已定。", source: "五行大义" },
+      { term: "卯", group: "地支", src: "《五行大义》：卯者冒也，万物生长覆冒于地也（初笺待复核）", plain: "一夜间铺开的绿。", modern: "并发、批量生产、扩散。", scene: "赶进度、发布、扩量。", note: "多，但不一定深。", source: "五行大义" },
+      { term: "辰", group: "地支", src: "《五行大义》：辰者震也，万物尽震动而长也（初笺待复核）", plain: "平地上藏着大水库。", modern: "缓存、云存储、蓄水池。", scene: "数据积压、库存、容量。", note: "平时看不见，关键时刻靠它。", source: "五行大义" },
+      { term: "巳", group: "地支", src: "《五行大义》：巳者起也，万物至此时皆已起也（初笺待复核）", plain: "热度开始被看见。", modern: "连接、流量、即时通讯。", scene: "消息、合作、热度起来。", note: "开始被看见，不等于成了。", source: "五行大义" },
+      { term: "午", group: "地支", src: "《五行大义》：午者仵也，阴阳交，万物盛大（初笺待复核）", plain: "最高点，也最容易回落。", modern: "峰值、曝光、热榜。", scene: "直播、热搜、巅峰状态。", note: "最亮不是最稳。", source: "五行大义" },
+      { term: "未", group: "地支", src: "《五行大义》：未者味也，万物皆成，有滋味也（初笺待复核）", plain: "成果快熟，还没上桌。", modern: "作品库、知识库、归档。", scene: "总结、复盘、收尾。", note: "快成了，不是已经成了。", source: "五行大义" },
+      { term: "申", group: "地支", src: "《五行大义》：申者身也，物皆身体成就也（初笺待复核）", plain: "成形后被规则整理。", modern: "流程、协议、制度。", scene: "审批、交接、标准化。", note: "定得太早，会卡住生长。", source: "五行大义" },
+      { term: "酉", group: "地支", src: "《五行大义》：酉者就也，万物成熟缮就也（初笺待复核）", plain: "精工，不是快手。", modern: "芯片、编译器、精加工。", scene: "打磨、工艺、质量。", note: "最怕一点点偏差。", source: "五行大义" },
+      { term: "戌", group: "地支", src: "《五行大义》：戌者灭也，万物灭尽也（初笺待复核）", plain: "火库收口，闭环或锁死。", modern: "平台、闭环、用户池。", scene: "整合、合并、收尾。", note: "收得好是闭环，收不好是封闭。", source: "五行大义" },
+      { term: "亥", group: "地支", src: "《五行大义》：亥者核也，万物收藏，皆坚核也（初笺待复核）", plain: "收进核里的整个春天。", modern: "需求池、未分化层、混沌。", scene: "迷茫、灵感未落地。", note: "外面没动静，里面包着来年。", source: "五行大义" },
+      { term: "六合", group: "关系", src: "《三命通会》论支元六合（初笺待复核）", plain: "两个模块顺利接上。", modern: "协作对接、接口配合。", scene: "合作、关系、流程对接。", note: "协作不等于化气。", source: "三命通会" },
+      { term: "三合", group: "关系", src: "《三命通会》论支元三合（初笺待复核）", plain: "三人小组形成闭环。", modern: "流程同盟、完整链路。", scene: "项目团队、生产闭环。", note: "力量完整，依赖顺序。", source: "三命通会" },
+      { term: "六冲", group: "关系", src: "《三命通会》论冲击（初笺待复核）", plain: "两个模块直接抢资源。", modern: "对立、竞争、冲突。", scene: "抢时间、抢人、抢位置。", note: "冲突本身是结构。", source: "三命通会" },
+      { term: "六害", group: "关系", src: "《三命通会》论六害（初笺待复核）", plain: "表面没事，暗中消耗。", modern: "隐性摩擦、资源内耗。", scene: "关系里的暗耗、流程里的隐性成本。", note: "看不见，但一直在漏。", source: "三命通会" },
+      { term: "三刑", group: "关系", src: "《三命通会》论三刑（初笺待复核）", plain: "制度本身造成的卡点。", modern: "结构摩擦、流程互卡。", scene: "规则太多、互相打架。", note: "不是人坏，是结构卡。", source: "三命通会" },
+      { term: "自刑", group: "关系", src: "《三命通会》三刑体系（初笺待复核）", plain: "自己把自己锁死。", modern: "过度自洽、自我内耗。", scene: "越熟练越拒绝变化。", note: "一个居所过度自转。", source: "三命通会" },
+      { term: "五合", group: "关系", src: "《三命通会》十干合（待补原文）", plain: "两种轨迹合成新运行方式。", modern: "协作化气、角色重组。", scene: "合作后形成新的功能。", note: "是否成化要看全局。", source: "三命通会" },
+      { term: "日主", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "这个结构里的核心角色。", modern: "当前主体、主角色。", scene: "你自己在盘里的位置。", note: "不是唯一，但最贴身。", source: "八字" },
+      { term: "月令", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "当前环境给的势。", modern: "主导季节、主导气候。", scene: "你处在什么阶段。", note: "环境决定力量来源。", source: "八字" },
+      { term: "藏干", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "居所里藏着的余气和种子。", modern: "结构内部的潜力。", scene: "表面下的真实内容。", note: "一个支里不止一个气。", source: "八字" },
+      { term: "十神", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "角色之间的关系标签。", modern: "关系类型、力量生克。", scene: "谁生你、谁克你、谁和你同类。", note: "标签不是结论。", source: "八字" },
+      { term: "纳音", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "这件事的质感。", modern: "风格、气质、数据手感。", scene: "做事的方式和味道。", note: "不能当断语。", source: "八字" },
+      { term: "旬空", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "盲区或条件缺失。", modern: "空档、缺口、未覆盖。", scene: "有想法但缺资源。", note: "缺位本身是信息。", source: "八字" },
+      { term: "大运", group: "八字", src: "通行八字术语（流派差异待复核）", plain: "十年一换的阶段节奏。", modern: "周期、阶段、窗口期。", scene: "人生阶段的变化。", note: "阶段结构，不是命运判决。", source: "八字" },
+      { term: "太乙", group: "三式", src: "《太乙金镜式经》体系（初笺待复核）", plain: "古人版统一坐标系。", modern: "北天极原点、统一基准。", scene: "找方向之前先定原点。", note: "坐标不是答案。", source: "三式" },
+      { term: "奇门", group: "三式", src: "《奇门遁甲》体系（流派差异待复核）", plain: "时空决策沙盘。", modern: "九宫格推演、角色网格。", scene: "把时间、方位、角色放进盘里。", note: "推演不是宣判。", source: "三式" },
+      { term: "六壬", group: "三式", src: "《六壬大全》体系（流派差异待复核）", plain: "从起点到结果的事态路径。", modern: "四课三传、流程链。", scene: "一件事怎么走。", note: "路径是候选，不是注定。", source: "三式" },
+      { term: "月将", group: "三式", src: "三式通行术语（流派差异待复核）", plain: "当月的节律基准。", modern: "时节坐标、基准点。", scene: "当前时间的锚。", note: "口径要显式标。", source: "三式" },
+      { term: "四课", group: "三式", src: "《六壬大全》体系（初笺待复核）", plain: "事态环境的信息输入。", modern: "输入条件、环境上下文。", scene: "事情发生前的背景。", note: "输入不等于结果。", source: "三式" },
+      { term: "三传", group: "三式", src: "《六壬大全》体系（初笺待复核）", plain: "路径链：起点、中转、落点。", modern: "流程链、路径推演。", scene: "事情从哪起、怎么走、落哪。", note: "路径可复现才可信。", source: "三式" },
+      { term: "值符值使", group: "三式", src: "奇门通行术语（流派差异待复核）", plain: "当前局面的负责人和关键通道。", modern: "主控角色、关键入口。", scene: "谁在主导、哪里能走。", note: "看结构，不看吉凶。", source: "三式" },
+      { term: "空亡", group: "三式", src: "三式通行术语（流派差异待复核）", plain: "结构缺位或盲区。", modern: "缺失条件、未覆盖区。", scene: "有局但某个条件不在。", note: "缺位不是没有作用。", source: "三式" },
+      { term: "驿马", group: "三式", src: "三式通行术语（流派差异待复核）", plain: "变动和触发的信号。", modern: "迁移、变化、动态点。", scene: "出行、调动、突发变化。", note: "信号要等样本验证。", source: "三式" },
+      { term: "河图洛书", group: "三式", src: "易学通行体系（待复核）", plain: "古人的矩阵和拓扑。", modern: "数字结构、空间模型。", scene: "把复杂关系放进格子。", note: "模型不是咒语。", source: "易学" },
+      { term: "象", group: "原理", src: "《周易·系辞》：圣人立象以尽意", plain: "语言说不清时，用符号搭桥。", modern: "结构模型、系统映射。", scene: "把现实翻译成可检查的结构。", note: "象是桥，不是终点。", source: "周易" },
+      { term: "留白", group: "原理", src: "《老子》：有之以为利，无之以为用；《文心雕龙》：隐也者，文外之重旨者也", plain: "空处才是用。", modern: "界面留白、系统留接口、判断留余地。", scene: "系统讲完，留给你落款。", note: "墨给够，但不能铺满。", source: "老子/文心雕龙" },
+      { term: "谋事在人成事在天", group: "原理", src: "俗语，作品定位语", plain: "人负责如实做事，结果由现实给。", modern: "过程可控，结果待验证。", scene: "做样本、做记录、不承诺结果。", note: "这是边界，不是口号。", source: "俗语" }
+    ];
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const chipsWrap = document.getElementById("chips");
+    const groups = ["全部", "天干", "地支", "关系", "八字", "三式", "原理"];
+    let activeGroup = "全部";
+    groups.forEach(g => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (g === activeGroup ? " active" : "");
+      b.textContent = g;
+      b.addEventListener("click", () => {
+        activeGroup = g;
+        chipsWrap.querySelectorAll(".chip").forEach(x => x.classList.toggle("active", x.textContent === g));
+        render();
+      });
+      chipsWrap.appendChild(b);
+    });
+    function render() {
+      const q = search.value.trim();
+      const list = DATA.filter(d => (activeGroup === "全部" || d.group === activeGroup) && (!q || (d.term + d.plain + d.modern + d.scene + d.source).includes(q)));
+      grid.innerHTML = list.map(d => `
+        <article class="term">
+          <h3>${d.term}</h3>
+          <p class="src">${d.src}</p>
+          <div class="row"><b>人话</b>${d.plain}</div>
+          <div class="row"><b>现代结构</b>${d.modern}</div>
+          <div class="row"><b>生活场景</b>${d.scene}</div>
+          <div class="row"><b>边界</b>${d.note}</div>
+          <div class="row"><b>出处</b>${d.source}</div>
+        </article>
+      `).join("");
+    }
+    search.addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
