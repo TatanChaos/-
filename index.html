@@ -2257,6 +2257,7 @@
   let selectedGan = "甲";
   let detailTab = "full";
   let combinationTokens = [];
+  let combinationText = "";
   let combinationPage = 0;
   const COMBINATION_PAGE_SIZE = 100;
   const MAX_COMBINATION_TOKENS = 500;
@@ -3057,11 +3058,82 @@
     });
   }
 
-  function analyzeCombination() {
+  async function loadCombinationApiPage(page) {
+    const out = document.getElementById("combinationOut");
+    if (!out || !combinationText) return;
+    try {
+      const res = await fetch("/api/combine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: combinationText, page, size: COMBINATION_PAGE_SIZE })
+      });
+      if (!res.ok) throw new Error("api error");
+      const data = await res.json();
+      renderCombinationApiPage(data);
+    } catch {
+      combinationPage = page;
+      renderCombinationPage();
+    }
+  }
+
+  function renderCombinationApiPage(data) {
+    const out = document.getElementById("combinationOut");
+    if (!out) return;
+    combinationPage = data.page;
+    const singleRows = (data.tokens || []).map(t => {
+      const d = isJiaziTerm(t) ? (JIAZI_DEEP[t] || {}) : (DEEP_DATA[t] || {});
+      return `<div class="row"><div class="label">${t}</div><div class="value">${d.essence || d.benyi || d.life || "待补"}</div></div>`;
+    }).join("");
+    const moreSingle = data.tokenCount > (data.tokens || []).length
+      ? `<div class="row"><div class="label">更多单象</div><div class="value">共 ${data.tokenCount} 个，当前只展示前 ${(data.tokens || []).length} 个。</div></div>`
+      : "";
+    const pairRows = (data.pairs || []).map(([a, b]) => `<div class="row"><div class="label">${a} × ${b}</div><div class="value">${explainPairTokens(a, b)}</div></div>`).join("");
+    const pageInfo = `第 ${data.page + 1} / ${data.pageCount} 页 · 每页 ${data.size} 对`;
+    const prevDisabled = data.page === 0 ? " disabled" : "";
+    const nextDisabled = data.page >= data.pageCount - 1 ? " disabled" : "";
+    out.innerHTML = `
+      <div class="rows">
+        <div class="row"><div class="label">服务端组合</div><div class="value">共 ${data.tokenCount} 个对象 · ${data.pairCount} 对关系</div></div>
+        ${singleRows}${moreSingle}
+      </div>
+      <h3 class="interact-head">两两关系 · ${data.pairCount} 对</h3>
+      <div class="rows">${pairRows}</div>
+      <div class="compare-row">
+        <button type="button" class="subnav-btn" id="combinationPrev"${prevDisabled}>上一页</button>
+        <span>${pageInfo}</span>
+        <button type="button" class="subnav-btn" id="combinationNext"${nextDisabled}>下一页</button>
+      </div>`;
+    const prev = document.getElementById("combinationPrev");
+    const next = document.getElementById("combinationNext");
+    if (prev) prev.addEventListener("click", () => {
+      if (data.page > 0) loadCombinationApiPage(data.page - 1);
+    });
+    if (next) next.addEventListener("click", () => {
+      if (data.page < data.pageCount - 1) loadCombinationApiPage(data.page + 1);
+    });
+  }
+
+  async function analyzeCombination() {
     const input = document.getElementById("combinationInput");
     const out = document.getElementById("combinationOut");
     if (!input || !out) return;
-    const tokens = parseCombinationTokens(input.value);
+    const text = input.value.trim();
+    if (/^https?:$/.test(location.protocol) && text) {
+      combinationText = text;
+      try {
+        const res = await fetch("/api/combine", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, page: 0, size: COMBINATION_PAGE_SIZE })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          renderCombinationApiPage(data);
+          return;
+        }
+      } catch {}
+    }
+    const tokens = parseCombinationTokens(text);
     if (tokens.length < 2) {
       out.innerHTML = "<p>请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。</p>";
       return;
