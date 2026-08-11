@@ -261,6 +261,10 @@
         content.innerHTML = '<div class="error">缺少文档参数。</div>';
         return;
       }
+      if (location.protocol === "file:") {
+        location.replace(file);
+        return;
+      }
       try {
         const res = await fetch(file);
         if (!res.ok) throw new Error(res.status);
