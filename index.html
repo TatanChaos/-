@@ -358,6 +358,54 @@
     line-height: 1.7;
     color: var(--muted);
   }
+  .compare-note {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .compare-note label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-deep);
+  }
+  .compare-note textarea {
+    width: 100%;
+    min-height: 64px;
+    padding: 9px 11px;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.7;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .compare-note-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .compare-note-btn {
+    font: inherit;
+    font-size: 11px;
+    padding: 6px 10px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .compare-note-btn.primary {
+    border-color: var(--red);
+    background: var(--red);
+    color: #fff;
+  }
+  .compare-note-hint {
+    margin: 8px 0 0;
+    font-size: 11px;
+    color: var(--muted);
+  }
   .footnote {
     grid-column: 1 / -1;
     font-size: 11px;
@@ -1301,6 +1349,15 @@
             <select id="compareB" aria-label="对照符号 B"></select>
           </div>
           <div id="compareOut" class="compare-out">选两个符号，看它们之间有没有直接关系。</div>
+          <div class="compare-note">
+            <label for="compareNoteInput">我的解（可选）</label>
+            <textarea id="compareNoteInput" placeholder="写下你自己的想法，或这个组合在现实里对应什么"></textarea>
+            <div class="compare-note-actions">
+              <button type="button" class="compare-note-btn primary" id="compareNoteSave">保存我的解</button>
+              <button type="button" class="compare-note-btn" id="compareNoteClear">清空</button>
+            </div>
+            <p class="compare-note-hint">只存在当前浏览器，不上传；换设备或清缓存会清空。</p>
+          </div>
         </details>
         <div class="term-strip" aria-label="术语解释">
           <button type="button" class="term-btn" data-term="six">六合</button>
@@ -1567,6 +1624,7 @@
   let detailTab = "overview";
   const STATE_KEY = "symbol-sandbox-state-v1";
   const NOTE_KEY = "symbol-sandbox-notes-v1";
+  const COMPARE_NOTE_KEY = "symbol-compare-notes-v1";
 
   function pos(zhi) {
     const i = ZHI.indexOf(zhi);
@@ -1974,6 +2032,57 @@
     } else {
       out.textContent = a + " 与 " + b + " 暂无直接关系：需结合整体盘面，不单独断吉凶。";
     }
+    renderCompareNote();
+  }
+
+  function compareNoteKey() {
+    const a = document.getElementById("compareA").value;
+    const b = document.getElementById("compareB").value;
+    return [a, b].sort().join("");
+  }
+
+  function loadCompareNotes() {
+    try {
+      return JSON.parse(localStorage.getItem(COMPARE_NOTE_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  function saveCompareNotes(notes) {
+    try {
+      localStorage.setItem(COMPARE_NOTE_KEY, JSON.stringify(notes));
+    } catch {}
+  }
+
+  function renderCompareNote() {
+    const input = document.getElementById("compareNoteInput");
+    if (!input) return;
+    input.value = loadCompareNotes()[compareNoteKey()] || "";
+  }
+
+  function saveCompareNote() {
+    const input = document.getElementById("compareNoteInput");
+    if (!input) return;
+    const notes = loadCompareNotes();
+    const key = compareNoteKey();
+    const text = input.value.trim();
+    if (text) notes[key] = text; else delete notes[key];
+    saveCompareNotes(notes);
+    const btn = document.getElementById("compareNoteSave");
+    if (btn) {
+      btn.textContent = "已保存";
+      setTimeout(() => { btn.textContent = "保存我的解"; }, 1200);
+    }
+  }
+
+  function clearCompareNote() {
+    const input = document.getElementById("compareNoteInput");
+    if (!input) return;
+    const notes = loadCompareNotes();
+    delete notes[compareNoteKey()];
+    saveCompareNotes(notes);
+    input.value = "";
   }
 
   function highlightWheel() {
@@ -2127,6 +2236,8 @@
   document.getElementById("noteClear").addEventListener("click", () => {
     if (confirm("清空本地样本记录？")) saveNotes([]);
   });
+  document.getElementById("compareNoteSave").addEventListener("click", saveCompareNote);
+  document.getElementById("compareNoteClear").addEventListener("click", clearCompareNote);
   document.querySelectorAll(".term-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const out = document.getElementById("termReadout");
