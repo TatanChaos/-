@@ -941,6 +941,39 @@
     text-decoration: none;
   }
   .scene-life-link:hover { border-color: var(--red); color: var(--red); }
+  .scene-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .scene-today-btn,
+  .scene-random-btn { margin: 0; }
+  .scene-extra { margin-top: 12px; }
+  .scene-quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .scene-quick-links a {
+    color: var(--red);
+    text-decoration: none;
+  }
+  .scene-quick-links a:hover { text-decoration: underline; }
+  .scene-quick-links .scene-skip {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--red);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .scene-quick-links .scene-skip:hover { text-decoration: underline; }
   .situation-box {
     margin-top: 16px;
     padding: 12px 14px;
@@ -1515,8 +1548,12 @@
         <div id="situationOut" class="situation-out"></div>
       </div>
       <div class="scene-grid" id="sceneGrid"></div>
-      <button type="button" class="scene-today-btn" id="sceneToday">今日一象</button>
-      <button type="button" class="scene-random-btn" id="sceneRandom">随机一象</button>
+      <div class="scene-tools">
+        <button type="button" class="scene-today-btn" id="sceneToday">今日一象</button>
+        <button type="button" class="scene-random-btn" id="sceneRandom">随机一象</button>
+      </div>
+    </div>
+    <div class="scene-extra">
       <details class="entry-article">
         <summary>先读：两分钟看懂这是什么</summary>
         <div class="entry-article-body">
@@ -1525,11 +1562,13 @@
           <a href="docs/viewer.html?file=进门.md" target="_blank">读完整进门文章</a>
         </div>
       </details>
-      <a class="scene-samples-link" href="samples.html">交一份真实样本</a>
-      <a class="scene-paipan-link" href="排盘/八字.html">八字排盘</a>
-      <a class="scene-life-link" href="life.html">生活衔接卡</a>
-      <a class="scene-life-link" href="learn.html">自己解开自己</a>
-      <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
+      <div class="scene-quick-links">
+        <a href="samples.html">交真实样本</a>
+        <a href="排盘/八字.html">八字排盘</a>
+        <a href="life.html">生活衔接卡</a>
+        <a href="learn.html">自己解开自己</a>
+        <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
+      </div>
     </div>
   </section>
   <main class="layout" hidden>
