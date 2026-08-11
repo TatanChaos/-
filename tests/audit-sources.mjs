@@ -28,10 +28,15 @@ function normalize(s) {
 }
 const references = {
   五行大义: normalize(fs.readFileSync(path.join(root, "tests/fixtures/五行大义-干支名义.txt"), "utf8")),
-  史记: normalize(fs.readFileSync(path.join(root, "tests/fixtures/史记-律书-干支名义.txt"), "utf8"))
+  史记: normalize(fs.readFileSync(path.join(root, "tests/fixtures/史记-律书-干支名义.txt"), "utf8")),
+  三命通会: normalize(fs.readFileSync(path.join(root, "tests/fixtures/三命通会-章节.txt"), "utf8"))
 };
 function verifiedSource(src) {
   if (!src.includes("已对校")) return false;
+  if (src.includes("章节已对校")) {
+    const chapter = src.match(/《三命通会·([^》]+)》/);
+    return !!chapter && references.三命通会.includes(normalize(chapter[1]));
+  }
   const body = src.replace(/[（(]已对校[）)]/g, "").replace(/^《五行大义》/, "");
   const segments = body.split(/[；;，,]/).map(s => s.replace(/^[^：]{0,12}：/, "")).filter(Boolean);
   return segments.every(seg => references.五行大义.includes(normalize(seg)) || references.史记.includes(normalize(seg)));
@@ -50,8 +55,9 @@ const groups = {
 };
 
 function sourceStatus(src) {
-  if (/待复核|待补|待确认|待收录|待锚定|流派差异/.test(src)) return "pending";
-  if (/颐真初笺|初笺|通行/.test(src)) return "synthetic";
+  if (/待补原文|待确认|待收录|待锚定|初笺待复核/.test(src)) return "pending";
+  if (/待复核/.test(src) && !/通行|流派差异/.test(src)) return "pending";
+  if (/颐真初笺|初笺|通行|流派差异/.test(src)) return "synthetic";
   if (src.includes("已对校")) return verifiedSource(src) ? "verified" : "pending";
   return "verified";
 }
@@ -61,6 +67,7 @@ let anchored = 0;
 let synthetic = 0;
 let pendingCount = 0;
 const pendingSamples = [];
+const pendingByGroup = {};
 
 for (const [group, sources] of Object.entries(groups)) {
   for (const src of sources) {
@@ -72,6 +79,7 @@ for (const [group, sources] of Object.entries(groups)) {
       synthetic += 1;
     } else {
       pendingCount += 1;
+      pendingByGroup[group] = (pendingByGroup[group] || 0) + 1;
       if (pendingSamples.length < 24) pendingSamples.push(`${group} · ${src}`);
     }
   }
@@ -90,6 +98,7 @@ console.log(`原文/出处条目：${total}`);
 console.log(`已锚定：${anchored}`);
 console.log(`颐真初笺/通行：${synthetic}`);
 console.log(`待复核/待补：${pendingCount}`);
+console.log(`待补分布：${JSON.stringify(pendingByGroup)}`);
 console.log(`文档待补标记：${docs.length} 篇中 ${docPending.length} 篇仍有待补`);
 if (pendingSamples.length) {
   console.log("\n待复核样例：");
