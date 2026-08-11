@@ -2261,7 +2261,7 @@
   let combinationText = "";
   let combinationPage = 0;
   const COMBINATION_PAGE_SIZE = 100;
-  const MAX_COMBINATION_TOKENS = 500;
+  const MAX_COMBINATION_TOKENS = 10000;
   const STATE_KEY = "symbol-sandbox-state-v1";
   const NOTE_KEY = "symbol-sandbox-notes-v1";
   const COMPARE_NOTE_KEY = "symbol-compare-notes-v1";
@@ -3000,10 +3000,14 @@
     const out = document.getElementById("combinationOut");
     if (!out || combinationTokens.length < 2) return;
     const tokens = combinationTokens;
-    const singleRows = tokens.map(t => {
+    const singleLimit = 100;
+    const singleRows = tokens.slice(0, singleLimit).map(t => {
       const d = isJiaziTerm(t) ? (JIAZI_DEEP[t] || {}) : (DEEP_DATA[t] || {});
       return `<div class="row"><div class="label">${t}</div><div class="value">${d.essence || d.benyi || d.life || "待补"}</div></div>`;
     }).join("");
+    const moreSingle = tokens.length > singleLimit
+      ? `<div class="row"><div class="label">更多单象</div><div class="value">共 ${tokens.length} 个，当前只展示前 ${singleLimit} 个。</div></div>`
+      : "";
     const pairCount = tokens.length * (tokens.length - 1) / 2;
     const pageCount = Math.max(1, Math.ceil(pairCount / COMBINATION_PAGE_SIZE));
     if (combinationPage >= pageCount) combinationPage = pageCount - 1;
@@ -3019,8 +3023,8 @@
     const nextDisabled = combinationPage >= pageCount - 1 ? " disabled" : "";
     out.innerHTML = `
       <div class="rows">
-        <div class="row"><div class="label">组合清单</div><div class="value">${tokens.join(" · ")}</div></div>
-        ${singleRows}
+        <div class="row"><div class="label">组合清单</div><div class="value">共 ${tokens.length} 个对象</div></div>
+        ${singleRows}${moreSingle}
       </div>
       <h3 class="interact-head">两两关系 · ${pairCount} 对</h3>
       <div class="rows">${pairRows}</div>
@@ -3141,7 +3145,7 @@
     const text = Array.from({ length: 10000 }, (_, i) => JIAZI_60[i % JIAZI_60.length].split("：")[0]).join(" ");
     input.value = text;
     if (location.protocol === "file:") {
-      out.innerHTML = "<p>请在服务端模式打开 http://127.0.0.1:8780/index.html 后使用这个演示。</p>";
+      await analyzeCombination();
       return;
     }
     combinationText = text;
