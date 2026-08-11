@@ -1003,6 +1003,53 @@
     cursor: pointer;
   }
   .scene-quick-links .scene-skip:hover { text-decoration: underline; }
+  .scene-portals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .portal-card {
+    display: block;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--gold);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .portal-card b {
+    display: block;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 14px;
+    color: var(--ink-deep);
+  }
+  .portal-card span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .portal-card:hover {
+    border-color: var(--red);
+    background: var(--amber-soft);
+  }
+  .scene-skip-row {
+    margin-top: 10px;
+  }
+  .scene-skip-row .scene-skip {
+    border: 1px solid var(--line);
+    background: transparent;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .scene-skip-row .scene-skip:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
   .situation-box {
     margin-top: 16px;
     padding: 16px;
@@ -1607,11 +1654,13 @@
           <a href="docs/viewer.html?file=进门.md" target="_blank">读完整进门文章</a>
         </div>
       </details>
-      <div class="scene-quick-links">
-        <a href="samples.html">交真实样本</a>
-        <a href="排盘/八字.html">八字排盘</a>
-        <a href="life.html">生活衔接卡</a>
-        <a href="learn.html">自己解开自己</a>
+      <div class="scene-portals">
+        <a class="portal-card" href="samples.html"><b>真实样本</b><span>四句话，把现实交回验证</span></a>
+        <a class="portal-card" href="排盘/八字.html"><b>八字排盘</b><span>输入出生时间，排四柱结构</span></a>
+        <a class="portal-card" href="life.html"><b>生活衔接卡</b><span>12 类现实事件，从生活进入</span></a>
+        <a class="portal-card" href="learn.html"><b>自己解开自己</b><span>五步自读，知识公开可查</span></a>
+      </div>
+      <div class="scene-skip-row">
         <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
       </div>
     </div>
