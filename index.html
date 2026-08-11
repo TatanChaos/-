@@ -2252,7 +2252,7 @@
   let mode = "zhi";
   let selectedZhi = "戌";
   let selectedGan = "甲";
-  let detailTab = "overview";
+  let detailTab = "full";
   const STATE_KEY = "symbol-sandbox-state-v1";
   const NOTE_KEY = "symbol-sandbox-notes-v1";
   const COMPARE_NOTE_KEY = "symbol-compare-notes-v1";
@@ -2622,7 +2622,7 @@
       btn.setAttribute("aria-pressed", String(btn.getAttribute("data-mode") === mode));
       btn.onclick = () => {
         mode = btn.getAttribute("data-mode");
-        detailTab = "overview";
+        detailTab = "full";
         activeScene = null;
         renderModeButtons();
         renderButtons();
@@ -3397,7 +3397,7 @@
   function select(z, keepScene) {
     if (!keepScene) activeScene = null;
     if (mode === "zhi") selectedZhi = z; else selectedGan = z;
-    detailTab = "overview";
+    detailTab = "full";
     document.querySelectorAll(".symbol-btn").forEach(b => {
       const pressed = b.querySelector(".zhi").textContent === z;
       b.setAttribute("aria-pressed", String(pressed));
