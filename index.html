@@ -23,6 +23,20 @@
     --radius: 8px;
     --radius-card: 2px;
     --space-section: 26px;
+    --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 13px;
+    --text-lg: 15px;
+    --text-xl: 17px;
+    --text-hero: 28px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 28px;
     --shadow: 0 1px 2px rgba(30, 30, 20, .06);
   }
   * { box-sizing: border-box; }
@@ -30,7 +44,7 @@
     margin: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
     letter-spacing: 0;
   }
   .topbar {
@@ -589,7 +603,7 @@
     --gold: #b08b4a;
   }
   body {
-    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    font-family: var(--font-body);
     background-color: #e9ece4;
     background-image: url("assets/paper.svg");
     background-size: 900px 900px;
@@ -620,7 +634,7 @@
   }
   .brand h1 {
     color: var(--paper);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     letter-spacing: .08em;
   }
   .brand p { color: #c7d3cd; }
@@ -705,7 +719,7 @@
   }
   .detail-head h2 {
     color: var(--ink-deep);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     letter-spacing: .05em;
   }
   .detail-head .tagline { color: var(--amber); }
@@ -745,7 +759,7 @@
   }
   .map-panel h3 {
     color: var(--ink-deep);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     border-bottom: 1px solid var(--line);
     padding-bottom: 8px;
   }
@@ -837,7 +851,7 @@
     margin: 0 0 6px;
     font-size: 13px;
     color: var(--red);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     letter-spacing: .1em;
   }
   .notice p {
@@ -876,7 +890,7 @@
     align-items: center;
     gap: 10px;
     margin: 0 0 8px;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 24px;
     letter-spacing: .08em;
     color: var(--ink-deep);
@@ -895,7 +909,7 @@
   }
   .scene-slogan {
     margin: 0 0 8px;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 13px;
     color: var(--red);
     letter-spacing: .12em;
@@ -1024,7 +1038,7 @@
   }
   .portal-card b {
     display: block;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 14px;
     color: var(--ink-deep);
   }
@@ -1138,7 +1152,7 @@
   .scene-btn:hover { border-left-color: var(--red); background: var(--amber-soft); }
   .scene-btn b {
     display: block;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 16px;
     color: var(--ink-deep);
   }
@@ -1186,12 +1200,12 @@
     margin-bottom: 12px;
     background: var(--red);
     color: #fff;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 18px;
   }
   .stop-card h2 {
     margin: 0 0 8px;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 22px;
     color: var(--ink-deep);
   }
@@ -1311,7 +1325,7 @@
   }
   .gate-card h2 {
     margin: 0 0 8px;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 20px;
     color: var(--ink-deep);
   }
@@ -1419,7 +1433,7 @@
     border-radius: 4px;
     background: var(--red-soft);
     color: var(--red);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 10px;
     line-height: 1.15;
     letter-spacing: .08em;
@@ -1429,7 +1443,7 @@
     flex: 0 0 auto;
     height: 66px;
     writing-mode: vertical-rl;
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 11px;
     letter-spacing: .24em;
     color: var(--amber);
@@ -1453,7 +1467,7 @@
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
     color: var(--muted);
-    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 12px;
     letter-spacing: .12em;
     text-align: center;
@@ -1541,7 +1555,7 @@
     border-bottom: 1px solid var(--line);
   }
   .detail-head h2 {
-    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 26px;
     letter-spacing: .06em;
   }
@@ -1586,7 +1600,7 @@
     letter-spacing: .08em;
   }
   .row .value {
-    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 15px;
     line-height: 1.9;
     color: #2a2d26;
