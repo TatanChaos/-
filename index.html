@@ -1118,28 +1118,58 @@
   }
   .situation-out {
     margin-top: 10px;
-    padding: 10px;
-    background: var(--amber-soft);
-    border-left: 3px solid var(--amber);
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    border-radius: 2px;
     font-size: 12px;
     line-height: 1.8;
     color: var(--muted);
+  }
+  .situation-out > strong {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-deep);
+    font-size: 14px;
+  }
+  .situation-seal {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    background: var(--red);
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0;
   }
   .situation-rows {
     display: grid;
     gap: 8px;
     margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
   }
   .situation-row-item {
     display: flex;
     gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(183, 171, 146, .35);
     font-size: 12px;
     line-height: 1.7;
   }
+  .situation-row-item:last-child { border-bottom: 0; }
   .situation-row-item b {
     flex: 0 0 34px;
     color: var(--amber);
     font-weight: 700;
+  }
+  .situation-out > p {
+    margin: 10px 0 0;
+    font-size: 11px;
+    color: var(--muted);
   }
   .situation-coverage {
     margin: 8px 0 0;
@@ -2252,7 +2282,7 @@
       ["验证", "真实样本回填前不作断言"]
     ];
     if (compound) rows.push(["复合", compound + "：多个维度同时在场，不能只看单象。"]);
-    out.innerHTML = "<strong>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div><p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
+    out.innerHTML = "<strong><span class=\"situation-seal\">解</span>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div><p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "situation-enter";
