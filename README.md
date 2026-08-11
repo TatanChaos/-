@@ -47,6 +47,13 @@ node tests/verify.mjs
 
 校验 22 个天干地支字段、60 组甲子、30 组纳音、组合引擎与隐私边界。
 
+```bash
+npm run smoke
+npm run audit
+```
+
+冒烟测试会启动随机端口服务，检查关键页面、数据文件和组合 API；稽古审计会扫描仍待复核的出处。
+
 ## 目录
 
 ```text
