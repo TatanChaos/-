@@ -358,6 +358,12 @@
     line-height: 1.7;
     color: var(--muted);
   }
+  .compare-caveat {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
   .compare-note {
     margin-top: 12px;
     padding-top: 10px;
@@ -2241,6 +2247,23 @@
     if (panel) panel.open = true;
   }
 
+  function composeDualInterpretation(a, b) {
+    if (a === b) {
+      const d = mode === "gan" ? GAN_DATA[a] : DATA[a];
+      return "同一结构重复：" + d.system + " 过度自洽，候选读法是 " + d.hypothesis + "。";
+    }
+    if (mode === "gan") {
+      const d1 = GAN_DATA[a];
+      const d2 = GAN_DATA[b];
+      if (!d1 || !d2) return "";
+      return "把" + d1.system + "与" + d2.system + "放在同一结构里：" + d1.hypothesis + "；" + d2.hypothesis + "。";
+    }
+    const d1 = DATA[a];
+    const d2 = DATA[b];
+    if (!d1 || !d2) return "";
+    return "把" + d1.system + "与" + d2.system + "放在同一盘里：" + d1.hypothesis + "；" + d2.hypothesis + "。谁先启动、谁在承接，需要真实样本回填后才能判断。";
+  }
+
   function updateCompare() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
@@ -2250,13 +2273,19 @@
     const b = bEl.value;
     const key = relationKeyForPair(a, b);
     const text = REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key];
+    let title, body;
     if (key && text) {
-      out.textContent = key + "：" + text;
+      title = key;
+      body = text;
     } else if (a === b) {
-      out.textContent = a + " 对自身：同结构重复，不构成直接关系；需看整体体用。" + (["辰", "午", "酉", "亥"].includes(a) ? " " + a + " 另有自刑口径。" : "");
+      title = a + " 对自身";
+      body = "同结构重复，不构成直接关系；需看整体体用。" + (["辰", "午", "酉", "亥"].includes(a) ? " " + a + " 另有自刑口径。" : "");
     } else {
-      out.textContent = a + " 与 " + b + " 暂无直接关系：需结合整体盘面，不单独断吉凶。";
+      title = a + " 与 " + b;
+      body = "暂无传统直接关系，仍需看整体盘面。";
     }
+    const own = composeDualInterpretation(a, b);
+    out.innerHTML = "<strong>" + title + "</strong>：" + body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
     renderCompareNote();
   }
 
