@@ -376,6 +376,18 @@
     font-weight: 700;
     color: var(--ink-deep);
   }
+  .compare-seal {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+  }
   .compare-note textarea {
     width: 100%;
     min-height: 64px;
@@ -1491,10 +1503,10 @@
           </div>
           <div id="compareOut" class="compare-out">选两个符号，看它们之间有没有直接关系。</div>
           <div class="compare-note">
-            <label for="compareNoteInput">我的解（可选）</label>
-            <textarea id="compareNoteInput" placeholder="写下你自己的想法，或这个组合在现实里对应什么"></textarea>
+            <label for="compareNoteInput"><span class="compare-seal" aria-hidden="true">印</span>落款 · 你的解</label>
+            <textarea id="compareNoteInput" placeholder="像在画上落款：写你自己读出的这一笔"></textarea>
             <div class="compare-note-actions">
-              <button type="button" class="compare-note-btn primary" id="compareNoteSave">保存我的解</button>
+              <button type="button" class="compare-note-btn primary" id="compareNoteSave">盖印保存</button>
               <button type="button" class="compare-note-btn" id="compareNoteClear">清空</button>
             </div>
             <p class="compare-note-hint">只存在当前浏览器，不上传；换设备或清缓存会清空。</p>
@@ -2388,7 +2400,7 @@
     const btn = document.getElementById("compareNoteSave");
     if (btn) {
       btn.textContent = "已保存";
-      setTimeout(() => { btn.textContent = "保存我的解"; }, 1200);
+      setTimeout(() => { btn.textContent = "盖印保存"; }, 1200);
     }
   }
 
