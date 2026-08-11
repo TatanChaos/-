@@ -63,7 +63,27 @@
     margin: 0 auto;
     padding: 28px 18px 44px;
   }
-  h2 { margin: 0 0 8px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; font-size: 28px; letter-spacing: .1em; }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 28px;
+    letter-spacing: .1em;
+  }
+  h2::before {
+    content: "颐";
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    background: var(--red);
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
   .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
   .balance {
     margin-bottom: 20px;
@@ -77,7 +97,9 @@
   .section-title {
     margin: 26px 0 12px;
     padding-bottom: 8px;
+    padding-left: 12px;
     border-bottom: 1px dashed var(--line);
+    border-left: 4px solid var(--gold);
     font-size: 17px;
   }
   .cards {
@@ -89,7 +111,8 @@
     padding: 14px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-top: 4px solid var(--red);
+    border-left: 4px solid var(--red);
+    border-radius: 2px;
   }
   .card h3 { margin: 0 0 8px; font-size: 16px; color: var(--ink-deep); }
   .card .row { margin: 8px 0; font-size: 12px; line-height: 1.75; color: var(--muted); }
@@ -100,7 +123,8 @@
     padding: 16px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-top: 4px solid var(--gold);
+    border-left: 4px solid var(--gold);
+    border-radius: 2px;
     font-size: 13px;
     line-height: 1.9;
     color: var(--muted);
