@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生活衔接卡 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --teal: #1f4a44;
+    --teal-soft: #dce9e2;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .back {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247,242,230,.28);
+    padding: 6px 10px;
+  }
+  .back:hover { color: var(--paper); border-color: var(--gold); }
+  main {
+    flex: 1;
+    width: min(100%, 960px);
+    margin: 0 auto;
+    padding: 24px 18px 34px;
+  }
+  h2 { margin: 0 0 8px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; font-size: 28px; letter-spacing: .1em; }
+  .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .balance {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: var(--teal-soft);
+    border-left: 4px solid var(--teal);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  .section-title {
+    margin: 26px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 17px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+  }
+  .card h3 { margin: 0 0 8px; font-size: 16px; color: var(--ink-deep); }
+  .card .row { margin: 8px 0; font-size: 12px; line-height: 1.75; color: var(--muted); }
+  .card .row b { display: block; margin-bottom: 3px; color: var(--amber); font-size: 11px; letter-spacing: .08em; }
+  .card a { font-size: 12px; }
+  .week {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--gold);
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .week ol { margin: 8px 0 0; padding-left: 22px; }
+  footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px dashed var(--line);
+  }
+  footer a { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div>
+        <h1>生活衔接卡</h1>
+        <p>把象数接回真实生活 · 不落地就是天书</p>
+      </div>
+    </div>
+    <a class="back" href="index.html">返回沙盘</a>
+  </header>
+  <main>
+    <h2>虚实怎么平衡</h2>
+    <p class="intro">虚的是符号、黑话、候选解释；实的是时间、事件、结果。一条内容要能落地，就必须两头都有：先给一句人话，再给一个能做的动作，最后把结果交回样本。</p>
+    <div class="balance"><strong>落地原则</strong>：符号只负责提供结构，不负责替你决定。现实里发生了什么、什么时候发生、后来怎样，才是真正的地基。</div>
+
+    <div class="section-title">十二类生活事件</div>
+    <div class="cards">
+      <div class="card">
+        <h3>财</h3>
+        <div class="row"><b>人话</b>收入、生意、投资、欠款，钱的事。</div>
+        <div class="row"><b>落地动作</b>记下钱相关事件的时间、金额、结果。</div>
+        <div class="row"><b>符号候选</b>辰=库存/数据，午=流量峰值，未=成果沉淀。</div>
+        <div class="row"><a href="samples.html?category=财">交财类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>感情</h3>
+        <div class="row"><b>人话</b>单身、恋爱、复合、婚姻，关系的事。</div>
+        <div class="row"><b>落地动作</b>记第一次联系、冲突、和好的时间与结果。</div>
+        <div class="row"><b>符号候选</b>六合=协作，六冲=对立，六害=暗中消耗。</div>
+        <div class="row"><a href="samples.html?category=感情">交感情类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>事业</h3>
+        <div class="row"><b>人话</b>工作、跳槽、升迁、创业，位置的事。</div>
+        <div class="row"><b>落地动作</b>记面试、入职、通知、变动的时间与结果。</div>
+        <div class="row"><b>符号候选</b>寅=启动，申=规则/交接，午=曝光。</div>
+        <div class="row"><a href="samples.html?category=事业">交事业类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>学业</h3>
+        <div class="row"><b>人话</b>考试、升学、专业选择，学习的事。</div>
+        <div class="row"><b>落地动作</b>记报名、考试、出分、选择的时间与结果。</div>
+        <div class="row"><b>符号候选</b>卯=并行/产出，申=规则，酉=精加工。</div>
+        <div class="row"><a href="samples.html?category=学业">交学业类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>健康</h3>
+        <div class="row"><b>人话</b>自己、家人、就医、恢复，身体的事。</div>
+        <div class="row"><b>落地动作</b>记症状出现、就医、结果；只记录，不作医疗建议。</div>
+        <div class="row"><b>符号候选</b>候选用途，不作健康结论。</div>
+        <div class="row"><a href="samples.html?category=健康">交健康类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>家庭</h3>
+        <div class="row"><b>人话</b>父母、子女、生育、房产，家的事。</div>
+        <div class="row"><b>落地动作</b>记关键事件时间、结果、谁参与了。</div>
+        <div class="row"><b>符号候选</b>六亲关系，具体待样本回填。</div>
+        <div class="row"><a href="samples.html?category=家庭">交家庭类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>官非</h3>
+        <div class="row"><b>人话</b>纠纷、官司、劳动仲裁，规则的事。</div>
+        <div class="row"><b>落地动作</b>记立案、调解、判决的时间与结果。</div>
+        <div class="row"><b>符号候选</b>申=规则/制度，丑=档案，白虎=压力。</div>
+        <div class="row"><a href="samples.html?category=官非">交官非类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>出行</h3>
+        <div class="row"><b>人话</b>远行、搬家、交通，移动的事。</div>
+        <div class="row"><b>落地动作</b>记出发、到达、是否顺利。</div>
+        <div class="row"><b>符号候选</b>驿马、申亥结构，待样本验证。</div>
+        <div class="row"><a href="samples.html?category=出行">交出行类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>失物</h3>
+        <div class="row"><b>人话</b>东西丢了、宠物丢了，找不找得回。</div>
+        <div class="row"><b>落地动作</b>记丢失时间、寻找过程、结果。</div>
+        <div class="row"><b>符号候选</b>六爻候选，待样本回填。</div>
+        <div class="row"><a href="samples.html?category=失物">交失物类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>应期</h3>
+        <div class="row"><b>人话</b>什么时候有结果，还要等多久。</div>
+        <div class="row"><b>落地动作</b>记预期时间点、实际时间点、差多少。</div>
+        <div class="row"><b>符号候选</b>应期本身就是样本。</div>
+        <div class="row"><a href="samples.html?category=应期">交应期类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>选择</h3>
+        <div class="row"><b>人话</b>做不做、选 A 还是 B。</div>
+        <div class="row"><b>落地动作</b>记选择时间、选项、结果。</div>
+        <div class="row"><b>符号候选</b>双符号对照，看结构不替代决定。</div>
+        <div class="row"><a href="samples.html?category=选择">交选择类样本</a></div>
+      </div>
+      <div class="card">
+        <h3>心定</h3>
+        <div class="row"><b>人话</b>迷茫、焦虑、状态不好。</div>
+        <div class="row"><b>落地动作</b>记迷茫出现的场景、之后做了什么、有没有变化。</div>
+        <div class="row"><b>符号候选</b>亥=源头混沌，丁=持续点亮。</div>
+        <div class="row"><a href="samples.html?category=心定">交心定类样本</a></div>
+      </div>
+    </div>
+
+    <div class="section-title">7 天生活观察模板</div>
+    <div class="week">
+      <strong>每天只做一件事</strong>：把今天最像“一个情况”的真实事件记下来。
+      <ol>
+        <li>今天发生了一件什么事？</li>
+        <li>大概什么时间？</li>
+        <li>我当时最关心什么？</li>
+        <li>后来怎么样了？</li>
+      </ol>
+      <p>7 天后，把 7 条记录整理成样本交回；不会排盘也没关系，候选由维护者补。</p>
+    </div>
+  </main>
+  <footer>
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="samples.html">真实样本征集</a> · <a href="updates.html">更新公告</a> · <a href="feedback.html">意见与讨论</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
+  </footer>
+</body>
+</html>
