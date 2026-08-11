@@ -29,13 +29,24 @@ function normalize(s) {
 const references = {
   五行大义: normalize(fs.readFileSync(path.join(root, "tests/fixtures/五行大义-干支名义.txt"), "utf8")),
   史记: normalize(fs.readFileSync(path.join(root, "tests/fixtures/史记-律书-干支名义.txt"), "utf8")),
-  三命通会: normalize(fs.readFileSync(path.join(root, "tests/fixtures/三命通会-章节.txt"), "utf8"))
+  三命通会: normalize(fs.readFileSync(path.join(root, "tests/fixtures/三命通会-章节.txt"), "utf8")),
+  六壬大全: normalize(fs.readFileSync(path.join(root, "tests/fixtures/六壬大全-入手法.txt"), "utf8")),
+  太乙金镜式经: normalize(fs.readFileSync(path.join(root, "tests/fixtures/太乙金镜式经-序.txt"), "utf8"))
 };
 function verifiedSource(src) {
   if (!src.includes("已对校")) return false;
   if (src.includes("章节已对校")) {
-    const chapter = src.match(/《三命通会·([^》]+)》/);
-    return !!chapter && references.三命通会.includes(normalize(chapter[1]));
+    const quote = src.match(/[：:]([^（]+)/);
+    if (quote) {
+      const book = src.includes("六壬大全") ? "六壬大全" : src.includes("太乙金镜式经") ? "太乙金镜式经" : "三命通会";
+      return !!references[book] && references[book].includes(normalize(quote[1].trim()));
+    }
+    const chapter = src.match(/《([^》]+)·([^》]+)》/);
+    if (chapter) {
+      const book = chapter[1] === "六壬大全" ? "六壬大全" : chapter[1] === "太乙金镜式经" ? "太乙金镜式经" : "三命通会";
+      return !!references[book] && references[book].includes(normalize(chapter[2]));
+    }
+    return false;
   }
   const body = src.replace(/[（(]已对校[）)]/g, "").replace(/^《五行大义》/, "");
   const segments = body.split(/[；;，,]/).map(s => s.replace(/^[^：]{0,12}：/, "")).filter(Boolean);
