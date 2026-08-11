@@ -322,6 +322,42 @@
     line-height: 1.7;
     color: var(--ink);
   }
+  .compare-panel {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .compare-panel summary {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--red);
+  }
+  .compare-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .compare-row select {
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    background: #fffdf8;
+    color: var(--ink);
+  }
+  .compare-out {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f4efe3;
+    border-left: 2px solid var(--gold);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   .footnote {
     grid-column: 1 / -1;
     font-size: 11px;
@@ -1257,6 +1293,15 @@
           <span><i style="background:#b43a2f"></i>当前符号</span>
         </div>
         <div id="selectedReadout" class="selected-readout" aria-live="polite"></div>
+        <details class="compare-panel" id="comparePanel">
+          <summary>双符号对照</summary>
+          <div class="compare-row">
+            <select id="compareA" aria-label="对照符号 A"></select>
+            <span>与</span>
+            <select id="compareB" aria-label="对照符号 B"></select>
+          </div>
+          <div id="compareOut" class="compare-out">选两个符号，看它们之间有没有直接关系。</div>
+        </details>
         <div class="term-strip" aria-label="术语解释">
           <button type="button" class="term-btn" data-term="six">六合</button>
           <button type="button" class="term-btn" data-term="three">三合</button>
@@ -1609,6 +1654,7 @@
     renderButtons();
     renderRelControls();
     renderWheel();
+    renderCompareOptions();
     select(s.key, true);
     const catalog = document.getElementById("catalogPanel");
     if (catalog) catalog.open = false;
@@ -1693,6 +1739,7 @@
         renderRelControls();
         renderWheel();
         renderDetail();
+        renderCompareOptions();
         persistState();
       };
     });
@@ -1850,6 +1897,67 @@
     });
   }
 
+  function relationKeyForPair(a, b) {
+    if (mode === "gan") {
+      const pair = WUHE.find(p => p.includes(a) && p.includes(b));
+      return pair ? GAN_DATA[pair[0]].he : "";
+    }
+    if (a === b) return ["辰", "午", "酉", "亥"].includes(a) ? a + "自刑" : "";
+    const groups = [
+      ...SIX.map(g => [g, "六合"]),
+      ...THREE.map(g => [g, "三合"]),
+      ...CHONG.map(g => [g, "六冲"]),
+      ...HAI.map(g => [g, "六害"]),
+      ...XING.map(g => [g, "三刑"])
+    ];
+    const found = groups.find(([g]) => g.includes(a) && g.includes(b));
+    return found ? found[0].join("") + found[1] : "";
+  }
+
+  function renderCompareOptions() {
+    const aEl = document.getElementById("compareA");
+    const bEl = document.getElementById("compareB");
+    if (!aEl || !bEl) return;
+    const list = mode === "zhi" ? ZHI : GAN;
+    const prevA = aEl.value;
+    const prevB = bEl.value;
+    aEl.innerHTML = "";
+    bEl.innerHTML = "";
+    list.forEach(k => {
+      const aOpt = document.createElement("option");
+      aOpt.value = k;
+      aOpt.textContent = k;
+      const bOpt = document.createElement("option");
+      bOpt.value = k;
+      bOpt.textContent = k;
+      aEl.appendChild(aOpt);
+      bEl.appendChild(bOpt);
+    });
+    aEl.value = list.includes(prevA) ? prevA : currentSelected();
+    bEl.value = list.includes(prevB) && prevB !== aEl.value ? prevB : list[(list.indexOf(aEl.value) + 1) % list.length];
+    aEl.addEventListener("change", updateCompare);
+    bEl.addEventListener("change", updateCompare);
+    updateCompare();
+  }
+
+  function updateCompare() {
+    const aEl = document.getElementById("compareA");
+    const bEl = document.getElementById("compareB");
+    const out = document.getElementById("compareOut");
+    if (!aEl || !bEl || !out || !aEl.value || !bEl.value) return;
+    const a = aEl.value;
+    const b = bEl.value;
+    const key = relationKeyForPair(a, b);
+    const text = REL_EXPLAIN[key] || GAN_REL_EXPLAIN[key];
+    if (key && text) {
+      out.textContent = key + "：" + text;
+    } else if (a === b) {
+      out.textContent = a + " 对自身：同结构重复，不构成直接关系；需看整体体用。" + (["辰", "午", "酉", "亥"].includes(a) ? " " + a + " 另有自刑口径。" : "");
+    } else {
+      out.textContent = a + " 与 " + b + " 暂无直接关系：需结合整体盘面，不单独断吉凶。";
+    }
+  }
+
   function highlightWheel() {
     const svg = document.getElementById("wheel");
     const selected = currentSelected();
@@ -1953,6 +2061,11 @@
     });
     renderDetail();
     highlightWheel();
+    const compareA = document.getElementById("compareA");
+    if (compareA) {
+      compareA.value = currentSelected();
+      updateCompare();
+    }
     persistState();
   }
 
@@ -1963,6 +2076,7 @@
   renderRelControls();
   renderWheel();
   renderDetail();
+  renderCompareOptions();
   document.getElementById("sceneSkip").addEventListener("click", () => {
     activeScene = null;
     renderDetail();
