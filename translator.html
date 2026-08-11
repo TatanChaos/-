@@ -130,7 +130,7 @@
   </header>
   <main>
     <h2>一一对应</h2>
-    <p class="intro">每个词都按同一套结构翻译：先保留黑话，再给原文锚点，再讲人话，再给现代结构，再接生活场景，最后标出处和边界。六十甲子与三十组纳音已逐对补齐，纳音不只给名字，也给质地、过与不及、验证观察。</p>
+    <p class="intro">每个词都按同一套结构翻译：先保留黑话，再给原文锚点，再讲人话，再给现代结构，再接生活场景，最后标出处和边界。十天干、十二地支全项展开，六十甲子与三十组纳音逐对补齐，纳音不只给名字，也给质地、过与不及、验证观察。</p>
     <div class="search-row">
       <input id="search" type="search" placeholder="搜索：子、寅、六合、日主、空亡…">
     </div>
@@ -142,6 +142,7 @@
     <br>
     <a href="learn.html">自己解开自己</a> · <a href="life.html">生活衔接卡</a> · <a href="samples.html">真实样本</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
   </footer>
+  <script src="assets/deep-data.js"></script>
   <script src="assets/jiazi-deep.js"></script>
   <script src="assets/nayin-deep.js"></script>
   <script>
@@ -342,22 +343,43 @@
       const list = DATA.filter(d => {
         const deep = NAYIN_DEEP[d.term] || {};
         const deepJ = JIAZI_DEEP[d.term] || {};
-        const searchable = d.term + d.plain + d.modern + d.scene + d.source + deep.sharp + deep.limit + deep.verify + deepJ.essence + deepJ.use + deepJ.over + deepJ.verify + deepJ.luokuan;
+        const deepS = DEEP_DATA[d.term] || {};
+        const searchable = d.term + d.plain + d.modern + d.scene + d.source + deep.sharp + deep.limit + deep.verify + deepJ.essence + deepJ.use + deepJ.over + deepJ.verify + deepJ.luokuan + deepS.source + deepS.benyi + deepS.tian + deepS.di + deepS.ren + deepS.ti + deepS.yong + deepS.guo + deepS.modern + deepS.life + deepS.verify + deepS.luokuan;
         return (activeGroup === "全部" || d.group === activeGroup) && (!q || searchable.includes(q));
       });
-      grid.innerHTML = list.map(d => `
+      grid.innerHTML = list.map(d => {
+        const deepSym = DEEP_DATA[d.term] || {};
+        const deepRows = [
+          ["source", "出处"],
+          ["benyi", "本义"],
+          ["tian", "天象"],
+          ["di", "地象"],
+          ["ren", "人象"],
+          ["ti", "体"],
+          ["yong", "用"],
+          ["guo", "过"],
+          ["modern", "现代"],
+          ["life", "生活"],
+          ["verify", "验证"],
+          ["luokuan", "落款"]
+        ]
+          .filter(([field]) => deepSym[field])
+          .map(([field, label]) => `<div class="row"><b>${label}</b>${deepSym[field]}</div>`)
+          .join("");
+        return `
         <article class="term">
           <h3>${d.term}</h3>
           <p class="src">${d.src}</p>
           <div class="row"><b>人话</b>${d.plain}</div>
+          ${deepRows}
           ${JIAZI_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>落款</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
           ${NAYIN_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
           <div class="row"><b>现代结构</b>${d.modern}</div>
           <div class="row"><b>生活场景</b>${d.scene}</div>
           <div class="row"><b>边界</b>${d.note}</div>
           <div class="row"><b>出处</b>${d.source}</div>
-        </article>
-      `).join("");
+        </article>`;
+      }).join("");
     }
     search.addEventListener("input", render);
     render();
