@@ -1106,7 +1106,7 @@
   <footer class="license-note">
     <strong>使用限制</strong>：本页内容按 CC BY-NC-SA 4.0 提供；可学习、可分享、可标注后非商业引用，未经书面许可不得直接商用。所有干支、星图、系统映射均为拓展面候选，不作决策依据。
     <br>
-    补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="LICENSE" target="_blank">LICENSE</a>。意见征集：<a href="feedback.html">点这里</a>。
+    补充：原创代码与素材可学习、可非商业转载；星宫图为用户提供素材，来源待确认；完整条款见 <a href="docs/viewer.html?file=../LICENSE" target="_blank">LICENSE</a>。意见征集：<a href="feedback.html">点这里</a>。
   </footer>
   <div class="gate" id="agreementGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-card">
@@ -1566,7 +1566,7 @@
     const isLocal = (location.hostname === "127.0.0.1" || location.hostname === "localhost" || location.hostname === "0.0.0.0") && location.port === "8766";
     const sourceLinks = isLocal
       ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/地支关系稽古工作台_2026-08-11.md")}" target="_blank">稽古工作台</a>`
-      : `<a href="docs/${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
+      : `<a href="docs/viewer.html?file=${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="docs/viewer.html?file=符号跨域映射工作台.md" target="_blank">符号跨域工作台</a> · <a href="docs/viewer.html?file=地支关系稽古工作台.md" target="_blank">稽古工作台</a>`;
     const section = {
       overview: `<div class="rows">${metaHTML}<div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
