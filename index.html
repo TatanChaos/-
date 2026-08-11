@@ -2256,6 +2256,10 @@
   let selectedZhi = "戌";
   let selectedGan = "甲";
   let detailTab = "full";
+  let combinationTokens = [];
+  let combinationPage = 0;
+  const COMBINATION_PAGE_SIZE = 100;
+  const MAX_COMBINATION_TOKENS = 500;
   const STATE_KEY = "symbol-sandbox-state-v1";
   const NOTE_KEY = "symbol-sandbox-notes-v1";
   const COMPARE_NOTE_KEY = "symbol-compare-notes-v1";
@@ -2994,6 +2998,65 @@
     return body;
   }
 
+  function pairByIndex(n, idx) {
+    let i = 0;
+    let remaining = idx;
+    while (remaining >= n - 1 - i) {
+      remaining -= n - 1 - i;
+      i += 1;
+    }
+    return [i, i + 1 + remaining];
+  }
+
+  function renderCombinationPage() {
+    const out = document.getElementById("combinationOut");
+    if (!out || combinationTokens.length < 2) return;
+    const tokens = combinationTokens;
+    const singleRows = tokens.map(t => {
+      const d = isJiaziTerm(t) ? (JIAZI_DEEP[t] || {}) : (DEEP_DATA[t] || {});
+      return `<div class="row"><div class="label">${t}</div><div class="value">${d.essence || d.benyi || d.life || "待补"}</div></div>`;
+    }).join("");
+    const pairCount = tokens.length * (tokens.length - 1) / 2;
+    const pageCount = Math.max(1, Math.ceil(pairCount / COMBINATION_PAGE_SIZE));
+    if (combinationPage >= pageCount) combinationPage = pageCount - 1;
+    const start = combinationPage * COMBINATION_PAGE_SIZE;
+    const end = Math.min(start + COMBINATION_PAGE_SIZE, pairCount);
+    let pairRows = "";
+    for (let idx = start; idx < end; idx += 1) {
+      const [i, j] = pairByIndex(tokens.length, idx);
+      pairRows += `<div class="row"><div class="label">${tokens[i]} × ${tokens[j]}</div><div class="value">${explainPairTokens(tokens[i], tokens[j])}</div></div>`;
+    }
+    const pageInfo = `第 ${combinationPage + 1} / ${pageCount} 页 · 每页 ${COMBINATION_PAGE_SIZE} 对`;
+    const prevDisabled = combinationPage === 0 ? " disabled" : "";
+    const nextDisabled = combinationPage >= pageCount - 1 ? " disabled" : "";
+    out.innerHTML = `
+      <div class="rows">
+        <div class="row"><div class="label">组合清单</div><div class="value">${tokens.join(" · ")}</div></div>
+        ${singleRows}
+      </div>
+      <h3 class="interact-head">两两关系 · ${pairCount} 对</h3>
+      <div class="rows">${pairRows}</div>
+      <div class="compare-row">
+        <button type="button" class="subnav-btn" id="combinationPrev"${prevDisabled}>上一页</button>
+        <span>${pageInfo}</span>
+        <button type="button" class="subnav-btn" id="combinationNext"${nextDisabled}>下一页</button>
+      </div>`;
+    const prev = document.getElementById("combinationPrev");
+    const next = document.getElementById("combinationNext");
+    if (prev) prev.addEventListener("click", () => {
+      if (combinationPage > 0) {
+        combinationPage -= 1;
+        renderCombinationPage();
+      }
+    });
+    if (next) next.addEventListener("click", () => {
+      if (combinationPage < pageCount - 1) {
+        combinationPage += 1;
+        renderCombinationPage();
+      }
+    });
+  }
+
   function analyzeCombination() {
     const input = document.getElementById("combinationInput");
     const out = document.getElementById("combinationOut");
@@ -3003,23 +3066,13 @@
       out.innerHTML = "<p>请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。</p>";
       return;
     }
-    const MAX_COMBINATION_TOKENS = 50;
     if (tokens.length > MAX_COMBINATION_TOKENS) {
-      out.innerHTML = `<p>一次最多读 ${MAX_COMBINATION_TOKENS} 个对象，避免页面卡死；你可以分批发。</p>`;
+      out.innerHTML = `<p>单次前端最多读 ${MAX_COMBINATION_TOKENS} 个对象；超过这个量级建议分批发，或把计算接到后端。</p>`;
       return;
     }
-    const singleRows = tokens.map(t => {
-      const d = isJiaziTerm(t) ? (JIAZI_DEEP[t] || {}) : (DEEP_DATA[t] || {});
-      return `<div class="row"><div class="label">${t}</div><div class="value">${d.essence || d.benyi || d.life || "待补"}</div></div>`;
-    }).join("");
-    const pairCount = tokens.length * (tokens.length - 1) / 2;
-    let pairRows = "";
-    for (let i = 0; i < tokens.length; i += 1) {
-      for (let j = i + 1; j < tokens.length; j += 1) {
-        pairRows += `<div class="row"><div class="label">${tokens[i]} × ${tokens[j]}</div><div class="value">${explainPairTokens(tokens[i], tokens[j])}</div></div>`;
-      }
-    }
-    out.innerHTML = `<div class="rows"><div class="row"><div class="label">组合清单</div><div class="value">${tokens.join(" · ")}</div></div>${singleRows}</div><h3 class="interact-head">两两关系 · ${pairCount} 对</h3><div class="rows">${pairRows}</div>`;
+    combinationTokens = tokens;
+    combinationPage = 0;
+    renderCombinationPage();
   }
 
   function renderCompareOptions() {
