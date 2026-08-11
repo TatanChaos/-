@@ -400,6 +400,12 @@
     line-height: 1.7;
     color: var(--muted);
   }
+  .interact-head {
+    margin: 16px 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--red);
+  }
   .compare-caveat {
     display: block;
     margin-top: 6px;
@@ -2757,6 +2763,7 @@
 
   function relationKeyForPair(a, b) {
     if (GAN.includes(a) && GAN.includes(b)) {
+      if (a === b) return "";
       const pair = WUHE.find(p => p.includes(a) && p.includes(b));
       return pair ? GAN_DATA[pair[0]].he : "";
     }
@@ -2819,6 +2826,44 @@
     const pair = interactionPair(aEl.value, bEl.value);
     const own = composeDualInterpretation(aEl.value, bEl.value);
     out.innerHTML = "<strong>" + pair.title + "</strong>：" + pair.body + "<br><strong>颐真候选解</strong>：" + own + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
+  }
+
+  function fillJiaziSelect(el, selected) {
+    if (!el) return;
+    el.innerHTML = "";
+    JIAZI_60.forEach(line => {
+      const pair = line.split("：")[0];
+      const opt = document.createElement("option");
+      opt.value = pair;
+      opt.textContent = pair;
+      el.appendChild(opt);
+    });
+    el.value = selected;
+  }
+
+  function renderJiaziPair() {
+    const aEl = document.getElementById("jiaziPairA");
+    const bEl = document.getElementById("jiaziPairB");
+    const out = document.getElementById("jiaziPairOut");
+    if (!aEl || !bEl || !out || !aEl.value || !bEl.value) return;
+    const j1 = aEl.value;
+    const j2 = bEl.value;
+    const d1 = JIAZI_DEEP[j1] || {};
+    const d2 = JIAZI_DEEP[j2] || {};
+    const g1 = j1[0], z1 = j1[1], g2 = j2[0], z2 = j2[1];
+    const ganKey = relationKeyForPair(g1, g2);
+    const zhiKey = relationKeyForPair(z1, z2);
+    const ganSameWuxing = GAN_DATA[g1] && GAN_DATA[g2] && GAN_DATA[g1].wuxing === GAN_DATA[g2].wuxing && g1 !== g2;
+    const zhiSameWuxing = DATA[z1] && DATA[z2] && DATA[z1].name.split(" · ")[0] === DATA[z2].name.split(" · ")[0] && z1 !== z2;
+    const ganText = ganKey
+      ? (GAN_REL_EXPLAIN[ganKey] || REL_EXPLAIN[ganKey] || "结构关系成立，原文待补。")
+      : (g1 === g2 ? "同" + g1 + "重复：同一干的力量翻倍，容易自我强化。" : (ganSameWuxing ? "同" + GAN_DATA[g1].wuxing + "不同位：同类结构叠加，不形成合冲，看谁先谁后。" : "暂无传统直接关系，按两柱同盘叠加读。"));
+    const zhiText = zhiKey
+      ? (REL_EXPLAIN[zhiKey] || GAN_REL_EXPLAIN[zhiKey] || "结构关系成立，原文待补。")
+      : (z1 === z2 ? "同" + z1 + "重复：同一支的环境重复，容易过度自洽。" : (zhiSameWuxing ? "同" + DATA[z1].name.split(" · ")[0] + "不同位：同类环境叠加，不形成冲合，看力量是否重复。" : "暂无传统直接关系，按两柱同盘叠加读。"));
+    const ganLabel = ganKey || (g1 === g2 ? "同干" : (ganSameWuxing ? "同气" : "暂无传统关系"));
+    const zhiLabel = zhiKey || (z1 === z2 ? "同支" : (zhiSameWuxing ? "同气" : "暂无传统关系"));
+    out.innerHTML = "<strong>" + j1 + " 与 " + j2 + " 的互动</strong><br><b>天干层</b>：" + g1 + " × " + g2 + " → " + ganLabel + "：" + ganText + "<br><b>地支层</b>：" + z1 + " × " + z2 + " → " + zhiLabel + "：" + zhiText + "<br><b>两柱合读</b>：" + (d1.essence || "待补") + "；" + (d2.essence || "待补") + "。" + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
   }
 
   function renderCompareOptions() {
@@ -3082,6 +3127,14 @@
         <select id="interactB" aria-label="互动符号 B"></select>
       </div>
       <div id="interactOut" class="compare-out">选任意天干或地支，看它合起来是哪一柱六十甲子，并读它的结构。</div>
+      <span class="compare-caveat">真实样本回填前不作断言。</span>
+      <h3 class="interact-head">六十甲子 × 六十甲子</h3>
+      <div class="compare-row">
+        <select id="jiaziPairA" aria-label="六十甲子 A"></select>
+        <span>与</span>
+        <select id="jiaziPairB" aria-label="六十甲子 B"></select>
+      </div>
+      <div id="jiaziPairOut" class="compare-out">任选两柱六十甲子，看天干层、地支层和两柱合读。</div>
       <span class="compare-caveat">真实样本回填前不作断言。</span>`,
       corpus: `<div class="rows">${corpusHTML}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
@@ -3123,6 +3176,16 @@
       interactA.addEventListener("change", renderInteract);
       interactB.addEventListener("change", renderInteract);
       renderInteract();
+    }
+    const jiaziPairA = document.getElementById("jiaziPairA");
+    const jiaziPairB = document.getElementById("jiaziPairB");
+    if (jiaziPairA && jiaziPairB) {
+      const jiaziKeys = JIAZI_60.map(line => line.split("：")[0]);
+      fillJiaziSelect(jiaziPairA, jiaziKeys[0]);
+      fillJiaziSelect(jiaziPairB, jiaziKeys[1]);
+      jiaziPairA.addEventListener("change", renderJiaziPair);
+      jiaziPairB.addEventListener("change", renderJiaziPair);
+      renderJiaziPair();
     }
     renderSelectedReadout();
   }
