@@ -881,6 +881,63 @@
     text-decoration: none;
   }
   .scene-samples-link:hover { opacity: .9; }
+  .situation-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+  }
+  .situation-box label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-deep);
+  }
+  .situation-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .situation-row input {
+    flex: 1;
+    min-width: 200px;
+    padding: 9px 11px;
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .situation-row button {
+    font: inherit;
+    font-size: 12px;
+    padding: 9px 12px;
+    cursor: pointer;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+  }
+  .situation-out {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .situation-enter {
+    margin-top: 8px;
+    display: block;
+    font: inherit;
+    font-size: 12px;
+    padding: 7px 10px;
+    cursor: pointer;
+    border: 1px solid var(--red);
+    background: transparent;
+    color: var(--red);
+  }
   .scene-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -1309,6 +1366,14 @@
       <h2>从你的场景开始</h2>
       <p class="scene-slogan">谋事在人，成事在天</p>
       <p>不用先记干支。选一个你现在熟悉的情况，先看它像什么，再认识它叫什么。</p>
+      <div class="situation-box">
+        <label for="situationInput">说一个你遇到的情况</label>
+        <div class="situation-row">
+          <input id="situationInput" placeholder="例如：公司想裁员、追一个人、数据堆着没用">
+          <button type="button" id="situationGo">用干支解释</button>
+        </div>
+        <div id="situationOut" class="situation-out"></div>
+      </div>
       <div class="scene-grid" id="sceneGrid"></div>
       <button type="button" class="scene-random-btn" id="sceneRandom">随机一象</button>
       <details class="entry-article">
@@ -1572,6 +1637,20 @@
     { key: "戌", label: "平台想收口", desc: "收束、闭环：要把散的东西收进一个平台。", compare: ["戌", "卯"] },
     { key: "亥", label: "想不通、还没落地", desc: "源头、混沌：想法很多，但还没有结构。", compare: ["亥", "寅"] }
   ];
+  const SITUATION_KEYWORDS = {
+    "子": ["深夜", "没睡", "输入", "种子", "开始", "新数据", "刚起步", "夜里", "入局", "还没定"],
+    "丑": ["冷", "存储", "档案", "库存", "压着", "没动", "备份", "冻结", "沉淀"],
+    "寅": ["启动", "新项目", "创业", "开张", "开始做", "冷启动", "立项", "开工"],
+    "卯": ["并发", "批量", "内容", "多线程", "生产", "发布", "大量", "扩散", "赶进度"],
+    "辰": ["缓存", "云", "堆", "库存", "数据多", "存储池", "积压", "囤"],
+    "巳": ["连接", "流量", "沟通", "消息", "在线", "网络", "热", "链接", "联系"],
+    "午": ["爆", "火", "高峰", "热搜", "直播", "峰值", "出名", "冲高", "突然火了", "爆了", "突然爆了", "爆火", "冲上热搜", "流量爆发"],
+    "未": ["沉淀", "成果", "归档", "作品", "总结", "收尾", "复盘", "转化", "整理"],
+    "申": ["流程", "规则", "制度", "交接", "审批", "卡住", "标准", "协议", "卡壳"],
+    "酉": ["打磨", "细节", "加工", "精修", "工艺", "质量", "反复", "优化", "挑剔"],
+    "戌": ["平台", "收口", "闭环", "用户池", "封闭", "整合", "汇总", "圈层", "合并"],
+    "亥": ["想法", "混沌", "迷茫", "没落地", "潜在", "源头", "灵感", "模糊", "没方向"]
+  };
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const SIX = [["子", "丑"], ["寅", "亥"], ["卯", "戌"], ["辰", "酉"], ["巳", "申"], ["午", "未"]];
@@ -1728,6 +1807,53 @@
   function randomScene() {
     const z = ZHI[Math.floor(Math.random() * ZHI.length)];
     chooseScene({ key: z, label: DATA[z].name, desc: DATA[z].edge, compare: [z, relatedTo(z)] });
+  }
+
+  function matchSituation(text) {
+    const scores = {};
+    Object.keys(SITUATION_KEYWORDS).forEach(z => {
+      SITUATION_KEYWORDS[z].forEach(kw => {
+        if (text.includes(kw)) scores[z] = (scores[z] || 0) + kw.length;
+      });
+    });
+    return Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  }
+
+  function saveUnmatchedSituation(text) {
+    try {
+      const key = "symbol-situation-unmatched-v1";
+      const arr = JSON.parse(localStorage.getItem(key) || "[]");
+      if (!arr.includes(text)) {
+        arr.unshift(text);
+        localStorage.setItem(key, JSON.stringify(arr.slice(0, 20)));
+      }
+    } catch {}
+  }
+
+  function explainSituation() {
+    const input = document.getElementById("situationInput");
+    const out = document.getElementById("situationOut");
+    if (!input || !out) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const matches = matchSituation(text);
+    if (!matches.length) {
+      saveUnmatchedSituation(text);
+      out.innerHTML = "<strong>没有匹配到稳定符号</strong>：这条已记入本地待扩展清单，可先按场景或随机进入。";
+      return;
+    }
+    const first = matches[0][0];
+    const second = matches[1] ? matches[1][0] : relatedTo(first);
+    const scene = { key: first, label: DATA[first].name, desc: "你描述的情况最接近 " + first + "：" + DATA[first].edge, compare: [first, second] };
+    const key = relationKeyForPair(first, second);
+    const relText = REL_EXPLAIN[key];
+    out.innerHTML = "<strong>候选解释</strong>：你描述的情况更像 " + first + "（" + DATA[first].func + "），其次是 " + second + "（" + DATA[second].func + "）。" + (key && relText ? " 对照关系：" + key + "：" + relText : "") + "<br>这不是定论，是候选结构；真实样本回填前不作断言。";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "situation-enter";
+    btn.textContent = "进入沙盘看对照";
+    btn.addEventListener("click", () => chooseScene(scene));
+    out.appendChild(btn);
   }
 
   function chooseScene(s) {
@@ -2240,6 +2366,10 @@
   });
   document.getElementById("sceneBack").addEventListener("click", showScenes);
   document.getElementById("sceneRandom").addEventListener("click", randomScene);
+  document.getElementById("situationGo").addEventListener("click", explainSituation);
+  document.getElementById("situationInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") explainSituation();
+  });
   const urlParams = new URLSearchParams(location.search);
   function openNotesFromLink() {
     chooseScene(SCENARIOS[0]);
