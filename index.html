@@ -406,6 +406,32 @@
     font-weight: 700;
     color: var(--red);
   }
+  .interact-query {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .interact-query input {
+    flex: 1;
+    min-width: 220px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--ink);
+  }
+  .interact-query button {
+    font: inherit;
+    font-size: 12px;
+    padding: 8px 12px;
+    border: 1px solid var(--teal);
+    background: var(--teal-soft);
+    color: #0b4f4a;
+    cursor: pointer;
+  }
   .compare-caveat {
     display: block;
     margin-top: 6px;
@@ -2877,6 +2903,51 @@
     out.innerHTML = "<strong>" + j1 + " 与 " + j2 + " 的互动</strong><br><b>天干层</b>：" + g1 + " × " + g2 + " → " + ganLabel + "：" + ganText + "<br><b>地支层</b>：" + z1 + " × " + z2 + " → " + zhiLabel + "：" + zhiText + "<br><b>两柱合读</b>：" + (d1.essence || "待补") + "；" + (d2.essence || "待补") + "。" + "<span class='compare-caveat'>真实样本回填前不作断言。</span>";
   }
 
+  function cleanInteractPart(s) {
+    return String(s).replace(/[。，,、\s]/g, "");
+  }
+
+  function isJiaziTerm(s) {
+    return s.length === 2 && GAN.includes(s[0]) && ZHI.includes(s[1]);
+  }
+
+  function parseInteractQuery() {
+    const input = document.getElementById("interactQuery");
+    const out = document.getElementById("interactQueryOut");
+    if (!input || !out) return;
+    const text = input.value.trim();
+    if (!text) {
+      out.textContent = "请写两个对象，例如：甲子 与 乙丑，或 甲 与 午。";
+      return;
+    }
+    const parts = text.replace(/[×xX*]/g, " 与 ").split(/与|和|vs|VS|對|对|对照|：|:/).map(cleanInteractPart).filter(Boolean);
+    if (parts.length !== 2) {
+      out.textContent = "请写两个对象，例如：甲子 与 乙丑，或 甲 与 午。";
+      return;
+    }
+    const a = parts[0];
+    const b = parts[1];
+    const jiaziA = document.getElementById("jiaziPairA");
+    const jiaziB = document.getElementById("jiaziPairB");
+    const symbolA = document.getElementById("interactA");
+    const symbolB = document.getElementById("interactB");
+    if (isJiaziTerm(a) && isJiaziTerm(b) && jiaziA && jiaziB) {
+      fillJiaziSelect(jiaziA, a);
+      fillJiaziSelect(jiaziB, b);
+      renderJiaziPair();
+      out.textContent = "已读：" + a + " × " + b + "，结果见下方“六十甲子 × 六十甲子”。";
+      return;
+    }
+    if ((GAN.includes(a) || ZHI.includes(a)) && (GAN.includes(b) || ZHI.includes(b)) && symbolA && symbolB) {
+      fillSymbolSelect(symbolA, a);
+      fillSymbolSelect(symbolB, b);
+      renderInteract();
+      out.textContent = "已读：" + a + " × " + b + "，结果见上方。";
+      return;
+    }
+    out.textContent = "没读出来，请写完整，例如：甲子 与 乙丑；甲 与 午。";
+  }
+
   function renderCompareOptions() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
@@ -3149,6 +3220,12 @@
         <select id="interactB" aria-label="互动符号 B"></select>
       </div>
       <div id="interactOut" class="compare-out">选任意天干或地支，看它合起来是哪一柱六十甲子，并读它的结构。</div>
+      <h3 class="interact-head">直接输入</h3>
+      <div class="interact-query">
+        <input id="interactQuery" placeholder="例如：甲子 与 乙丑；甲 与 午">
+        <button type="button" id="interactQueryGo">读互动</button>
+      </div>
+      <div id="interactQueryOut" class="compare-out">可以直接写两个对象，页面会读成互动。</div>
       <span class="compare-caveat">真实样本回填前不作断言。</span>
       <h3 class="interact-head">六十甲子 × 六十甲子</h3>
       <div class="compare-row">
@@ -3198,6 +3275,14 @@
       interactA.addEventListener("change", renderInteract);
       interactB.addEventListener("change", renderInteract);
       renderInteract();
+    }
+    const interactQueryGo = document.getElementById("interactQueryGo");
+    const interactQuery = document.getElementById("interactQuery");
+    if (interactQueryGo && interactQuery) {
+      interactQueryGo.addEventListener("click", parseInteractQuery);
+      interactQuery.addEventListener("keydown", e => {
+        if (e.key === "Enter") parseInteractQuery();
+      });
     }
     const jiaziPairA = document.getElementById("jiaziPairA");
     const jiaziPairB = document.getElementById("jiaziPairB");
