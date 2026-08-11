@@ -1300,6 +1300,55 @@
     line-height: 1.6;
     color: var(--muted);
   }
+  .scene-btn .why {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--amber);
+  }
+  .scene-why {
+    margin: 18px 0;
+    padding: 14px;
+    background: var(--wash);
+    border-left: 3px solid var(--teal);
+  }
+  .scene-why h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    color: var(--ink-deep);
+  }
+  .scene-why p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .why-item {
+    padding: 10px;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+  }
+  .why-item b {
+    display: block;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .why-item span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
   .scene-skip {
     margin-top: 14px;
     font: inherit;
@@ -1786,6 +1835,16 @@
       <p>不用先记干支。选一个你现在熟悉的情况，先看它像什么，再认识它叫什么。</p>
       <p class="scene-teach">我们不替你解命盘，我们教你自己把自己解开。</p>
       <p class="scene-integrity">我们不求快、不求多，只求每一句都站得住；滥竽充数不是我们要做的事。</p>
+      <div class="scene-why">
+        <h3>为什么现实情况能对应干支？</h3>
+        <p>不是拿干支去算你，而是先看这件事的运行结构，再找结构相近的象。干支是镜子，不是判决。</p>
+        <div class="why-grid">
+          <div class="why-item"><b>项目刚启动</b><span>像寅：芽破土，方向有了，力量还弱。</span></div>
+          <div class="why-item"><b>数据攒了很多</b><span>像辰：平地上藏着水库，容量大，但还没流动。</span></div>
+          <div class="why-item"><b>内容突然爆了</b><span>像午：正午最亮，也最怕开始回落。</span></div>
+          <div class="why-item"><b>流程卡住</b><span>像申：道路和制度没理顺，交接就卡壳。</span></div>
+        </div>
+      </div>
       <div class="situation-box">
         <label for="situationInput">说一个你遇到的情况</label>
         <div class="situation-row">
@@ -2088,14 +2147,14 @@
     "癸": "阴水，雨露泉水：渗透与滋养。"
   };
   const SCENARIOS = [
-    { key: "子", label: "深夜还没睡", desc: "潜藏、输入：事情还没定型，正在往里进。", compare: ["子", "丑"] },
-    { key: "寅", label: "项目刚启动", desc: "生发、启动：新东西刚开始，还没跑通。", compare: ["寅", "亥"] },
-    { key: "辰", label: "数据攒了很多", desc: "大库、缓存：东西存得很多，但还没被用起来。", compare: ["辰", "戌"] },
-    { key: "午", label: "内容突然爆了", desc: "峰值、显象：热度到了最高点。", compare: ["午", "未"] },
-    { key: "申", label: "流程卡住、规则不清", desc: "传输、规则：交接不顺，制度没理顺。", compare: ["申", "亥"] },
-    { key: "酉", label: "东西反复打磨", desc: "精密、加工：一直在修细节，怕出错。", compare: ["酉", "卯"] },
-    { key: "戌", label: "平台想收口", desc: "收束、闭环：要把散的东西收进一个平台。", compare: ["戌", "卯"] },
-    { key: "亥", label: "想不通、还没落地", desc: "源头、混沌：想法很多，但还没有结构。", compare: ["亥", "寅"] }
+    { key: "子", label: "深夜还没睡", desc: "潜藏、输入：事情还没定型，正在往里进。", why: "深夜、没定型更像子：一阳藏在地下，还没发芽，但方向已经出现。", compare: ["子", "丑"] },
+    { key: "寅", label: "项目刚启动", desc: "生发、启动：新东西刚开始，还没跑通。", why: "新项目刚启动更像寅：芽破土，方向有了，力量还弱。", compare: ["寅", "亥"] },
+    { key: "辰", label: "数据攒了很多", desc: "大库、缓存：东西存得很多，但还没被用起来。", why: "东西攒得多却没流动更像辰：平地上藏着水库，容量大，但不等于会用。", compare: ["辰", "戌"] },
+    { key: "午", label: "内容突然爆了", desc: "峰值、显象：热度到了最高点。", why: "内容突然爆更像午：正午最亮，也最怕从最高点开始回落。", compare: ["午", "未"] },
+    { key: "申", label: "流程卡住、规则不清", desc: "传输、规则：交接不顺，制度没理顺。", why: "流程卡住更像申：道路和制度没理顺，交接就卡壳。", compare: ["申", "亥"] },
+    { key: "酉", label: "东西反复打磨", desc: "精密、加工：一直在修细节，怕出错。", why: "反复打磨更像酉：精密层要雕，但越精越怕一点偏差。", compare: ["酉", "卯"] },
+    { key: "戌", label: "平台想收口", desc: "收束、闭环：要把散的东西收进一个平台。", why: "想收口更像戌：平台闭环能聚拢，也可能把自己关死。", compare: ["戌", "卯"] },
+    { key: "亥", label: "想不通、还没落地", desc: "源头、混沌：想法很多，但还没有结构。", why: "想法多没落地更像亥：万物收进核里，里面包着来年，外面还没动静。", compare: ["亥", "寅"] }
   ];
   const SITUATION_KEYWORDS = {
     "子": ["深夜", "没睡", "输入", "种子", "开始", "新数据", "刚起步", "夜里", "入局", "还没定", "失眠", "睡不着", "凌晨"],
@@ -2347,7 +2406,7 @@
       const b = document.createElement("button");
       b.type = "button";
       b.className = "scene-btn";
-      b.innerHTML = "<b>" + s.label + "</b><span>" + s.desc + "</span>";
+      b.innerHTML = "<b>" + s.label + "</b><span>" + s.desc + "</span><small class='why'>" + (s.why || "结构相近：见干支本质。") + "</small>";
       b.addEventListener("click", () => stopAtScene(s));
       wrap.appendChild(b);
     });
@@ -2422,6 +2481,10 @@
     return "壬";
   }
 
+  function matchingKeywords(z, text) {
+    return (SITUATION_KEYWORDS[z] || []).filter(kw => text.includes(kw)).slice(0, 3).join("、");
+  }
+
   function explainSituation() {
     const input = document.getElementById("situationInput");
     const out = document.getElementById("situationOut");
@@ -2443,6 +2506,12 @@
     const gan = ganMatches.length ? ganMatches[0][0] : genericGanFor(text);
     const ganText = gan ? " 天干角色 " + gan + "（" + GAN_DATA[gan].name + "）——" + GAN_DATA[gan].edge : "";
     const scene = { key: first, label: DATA[first].name, desc: "你描述的情况最接近 " + first + "：" + DATA[first].edge, compare: [first, second] };
+    const firstKw = matchingKeywords(first, text);
+    const secondKw = matchingKeywords(second, text);
+    const whyBits = [];
+    whyBits.push(firstKw ? first + "：你提到“" + firstKw + "”" : first + "：整体结构像" + DATA[first].edge);
+    whyBits.push(secondKw ? second + "：你提到“" + secondKw + "”" : second + "：整体结构像" + DATA[second].edge);
+    const why = "因为你描述里有“" + text.slice(0, 12) + "…”：" + whyBits.join("；") + "。所以先取它们作候选；不是命中你，是结构相近。";
     const key = relationKeyForPair(first, second);
     const relText = REL_EXPLAIN[key];
     const own = composeDualInterpretation(first, second);
@@ -2450,6 +2519,7 @@
     const compound = matches.length >= 3 ? matches.slice(0, 3).map(([z]) => z + "（" + DATA[z].func + "）").join(" + ") : "";
     const rows = [
       ["象", first + "（" + DATA[first].func + "） · " + second + "（" + DATA[second].func + "）"],
+      ["为什么", why],
       ["用", gan ? gan + "（" + GAN_DATA[gan].name + "）——" + GAN_DATA[gan].edge : "待补"],
       ["关系", key && relText ? key + "：" + relText : "暂无直接关系，需看整体盘面"],
       ["现代", DATA[first].system + " 与 " + DATA[second].system + " 相遇"],
