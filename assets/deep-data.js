@@ -1,3 +1,18 @@
+const DEEP_FIELD_LABELS = [
+  ["source", "出处"],
+  ["benyi", "本义"],
+  ["tian", "天象"],
+  ["di", "地象"],
+  ["ren", "人象"],
+  ["ti", "体"],
+  ["yong", "用"],
+  ["guo", "过"],
+  ["modern", "现代"],
+  ["life", "生活"],
+  ["verify", "验证"],
+  ["luokuan", "落款"]
+];
+
 const DEEP_DATA = {
   "甲": {
     source: "《五行大义》：甲者押也，万物抽甲而出（初笺待复核）",

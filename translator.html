@@ -20,6 +20,7 @@
     --teal-soft: #dce9e2;
     --gold: #b08b4a;
     --ink-deep: #1e2d2a;
+    --paper: #f7f2e6;
     --paper-soft: #fffdf8;
     --wash: #f4efe3;
     --radius-card: 2px;
@@ -349,21 +350,8 @@
       });
       grid.innerHTML = list.map(d => {
         const deepSym = DEEP_DATA[d.term] || {};
-        const deepRows = [
-          ["source", "出处"],
-          ["benyi", "本义"],
-          ["tian", "天象"],
-          ["di", "地象"],
-          ["ren", "人象"],
-          ["ti", "体"],
-          ["yong", "用"],
-          ["guo", "过"],
-          ["modern", "现代"],
-          ["life", "生活"],
-          ["verify", "验证"],
-          ["luokuan", "落款"]
-        ]
-          .filter(([field]) => deepSym[field])
+        const deepRows = DEEP_FIELD_LABELS
+          .filter(([field]) => !["source", "modern", "life"].includes(field) && deepSym[field])
           .map(([field, label]) => `<div class="row"><b>${label}</b>${deepSym[field]}</div>`)
           .join("");
         return `

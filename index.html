@@ -8,9 +8,9 @@
 <style>
   :root {
     --bg: #f4f2ec;
-    --paper-soft: var(--paper-soft);
-    --wash: var(--wash);
-    --surface: var(--paper-soft);
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+    --surface: #faf7ef;
     --ink: #24241f;
     --muted: #6f6d63;
     --line: #d8d3c7;
@@ -25,7 +25,10 @@
     --space-section: 26px;
     --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
     --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
-    --header-muted: var(--header-muted);
+    --header-muted: #c7d3cd;
+    --paper: #f7f2e6;
+    --ink-deep: #1e2d2a;
+    --gold: #b08b4a;
     --text-xs: 11px;
     --text-sm: 12px;
     --text-base: 13px;
@@ -2957,7 +2960,7 @@
     let m;
     while ((m = re.exec(cleaned)) !== null) {
       const token = m[1] || m[2] || m[3];
-      if (!out.includes(token)) out.push(token);
+      out.push(token);
     }
     return out;
   }
@@ -2998,6 +3001,11 @@
     const tokens = parseCombinationTokens(input.value);
     if (tokens.length < 2) {
       out.innerHTML = "<p>请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。</p>";
+      return;
+    }
+    const MAX_COMBINATION_TOKENS = 50;
+    if (tokens.length > MAX_COMBINATION_TOKENS) {
+      out.innerHTML = `<p>一次最多读 ${MAX_COMBINATION_TOKENS} 个对象，避免页面卡死；你可以分批发。</p>`;
       return;
     }
     const singleRows = tokens.map(t => {
@@ -3186,20 +3194,7 @@
       ? `<div class="row"><div class="label">关系</div><div class="value">${d.rel}</div></div>`
       : `<div class="row"><div class="label">五合</div><div class="value">${d.he}</div></div>`;
     const deep = DEEP_DATA[headKey] || {};
-    const deepFieldLabels = [
-      ["source", "出处"],
-      ["benyi", "本义"],
-      ["tian", "天象"],
-      ["di", "地象"],
-      ["ren", "人象"],
-      ["ti", "体"],
-      ["yong", "用"],
-      ["guo", "过"],
-      ["modern", "现代"],
-      ["life", "生活"],
-      ["verify", "验证"],
-      ["luokuan", "落款"]
-    ];
+    const deepFieldLabels = DEEP_FIELD_LABELS;
     const deepRowsFor = key => deepFieldLabels
       .filter(([field]) => DEEP_DATA[key] && DEEP_DATA[key][field])
       .map(([field, label]) => `<div class="row"><div class="label">${label}</div><div class="value">${DEEP_DATA[key][field]}</div></div>`)
@@ -3223,7 +3218,7 @@
       <div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div>
       <div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div>
       ${deepRows}${jiaziRows}${relationFullRows}`;
-    const jiaziHTML = JIAZI_60.map(line => {
+    const jiaziHTML = detailTab === "jiazi" ? JIAZI_60.map(line => {
       const [pair, text] = line.split("：");
       const deep = JIAZI_DEEP[pair] || {};
       return `<details class="corpus-symbol" open>
@@ -3236,9 +3231,8 @@
           <div class="row"><div class="label">落款</div><div class="value">${deep.luokuan || "留白给你"}</div></div>
         </div>
       </details>`;
-    }).join("");
-    const allSymbolKeys = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
-    const corpusHTML = allSymbolKeys.map(key => {
+    }).join("") : "";
+    const corpusHTML = detailTab === "corpus" ? ALL_SYMBOLS.map(key => {
       const meta = DATA[key] || GAN_DATA[key] || {};
       const comboRows = JIAZI_60.filter(line => line.includes(key)).map(line => {
         const [pair, text] = line.split("：");
@@ -3248,7 +3242,7 @@
         <summary>${key} · ${meta.name || ""}（${meta.func || ""}）</summary>
         <div class="rows">${deepRowsFor(key)}${comboRows}${relationRowsFor(key)}</div>
       </details>`;
-    }).join("");
+    }).join("") : "";
     const tabs = [
       ["full", "全盘 · 一项不少"],
       ["jiazi", "六十甲子"],
