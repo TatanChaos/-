@@ -375,6 +375,12 @@ body.theme-liuren {
 }
 
 .live-output.online { color: var(--ink); }
+.live-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
 
 .chart-grid {
   display: grid;

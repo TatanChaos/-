@@ -987,6 +987,17 @@
     color: var(--teal);
   }
   .scene-random-btn:hover { border-color: var(--ink-deep); color: var(--ink-deep); }
+  .scene-today-btn {
+    margin: 14px 10px 0 0;
+    font: inherit;
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--amber);
+  }
+  .scene-today-btn:hover { border-color: var(--red); color: var(--red); }
   .scene-back {
     width: 100%;
     margin-bottom: 10px;
@@ -1375,6 +1386,7 @@
         <div id="situationOut" class="situation-out"></div>
       </div>
       <div class="scene-grid" id="sceneGrid"></div>
+      <button type="button" class="scene-today-btn" id="sceneToday">今日一象</button>
       <button type="button" class="scene-random-btn" id="sceneRandom">随机一象</button>
       <details class="entry-article">
         <summary>先读：两分钟看懂这是什么</summary>
@@ -1454,6 +1466,7 @@
             <textarea id="noteInput" rows="3" placeholder="记下现实观察：时间、场景、现象、结果"></textarea>
             <div class="note-actions">
               <button type="submit" class="note-btn primary">记录当前符号</button>
+              <button type="button" class="note-btn" id="noteExport">导出本地记录</button>
               <button type="button" class="note-btn" id="noteClear">清空</button>
             </div>
           </form>
@@ -1804,6 +1817,21 @@
     return ["辰", "午", "酉", "亥"].includes(z) ? z : ZHI[(ZHI.indexOf(z) + 1) % ZHI.length];
   }
 
+  function todayScene() {
+    const now = new Date();
+    const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    const z = ZHI[seed % ZHI.length];
+    return { key: z, label: DATA[z].name, desc: DATA[z].edge, compare: [z, relatedTo(z)] };
+  }
+
+  function renderTodaySymbol() {
+    const btn = document.getElementById("sceneToday");
+    if (!btn) return;
+    const s = todayScene();
+    btn.textContent = "今日一象 · " + s.key + " " + DATA[s.key].name.split(" · ")[0];
+    btn.addEventListener("click", () => chooseScene(s));
+  }
+
   function randomScene() {
     const z = ZHI[Math.floor(Math.random() * ZHI.length)];
     chooseScene({ key: z, label: DATA[z].name, desc: DATA[z].edge, compare: [z, relatedTo(z)] });
@@ -1914,6 +1942,28 @@
       localStorage.setItem(NOTE_KEY, JSON.stringify(notes));
     } catch {}
     renderNotes();
+  }
+
+  function exportLocalData() {
+    let unmatched = [];
+    try {
+      unmatched = JSON.parse(localStorage.getItem("symbol-situation-unmatched-v1") || "[]");
+    } catch {}
+    const data = {
+      exportedAt: new Date().toISOString(),
+      notes: loadNotes(),
+      compareNotes: loadCompareNotes(),
+      unmatchedSituations: unmatched
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "颐真书房本地记录_" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   function renderNotes() {
@@ -2351,6 +2401,7 @@
 
   restoreState();
   renderScenes();
+  renderTodaySymbol();
   renderModeButtons();
   renderButtons();
   renderRelControls();
@@ -2394,6 +2445,7 @@
   document.getElementById("noteClear").addEventListener("click", () => {
     if (confirm("清空本地样本记录？")) saveNotes([]);
   });
+  document.getElementById("noteExport").addEventListener("click", exportLocalData);
   document.getElementById("compareNoteSave").addEventListener("click", saveCompareNote);
   document.getElementById("compareNoteClear").addEventListener("click", clearCompareNote);
   document.querySelectorAll(".term-btn").forEach(btn => {
