@@ -851,18 +851,43 @@
     margin: 12px auto 0;
   }
   .scene-card {
+    position: relative;
+    overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border-top: 5px double var(--gold);
+    border-radius: 2px;
     box-shadow: var(--shadow);
-    padding: 22px;
+    padding: 30px 28px 26px;
+  }
+  .scene-card::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(176, 139, 74, .28);
+    pointer-events: none;
   }
   .scene-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0 0 8px;
     font-family: "Songti SC", "Noto Serif SC", serif;
     font-size: 24px;
     letter-spacing: .08em;
     color: var(--ink-deep);
+  }
+  .scene-card h2::before {
+    content: "颐";
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    background: var(--red);
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 0;
   }
   .scene-slogan {
     margin: 0 0 8px;
@@ -949,6 +974,10 @@
   }
   .scene-today-btn,
   .scene-random-btn { margin: 0; }
+  .scene-tools .scene-today-btn,
+  .scene-tools .scene-random-btn {
+    letter-spacing: .08em;
+  }
   .scene-extra { margin-top: 12px; }
   .scene-quick-links {
     display: flex;
@@ -976,15 +1005,18 @@
   .scene-quick-links .scene-skip:hover { text-decoration: underline; }
   .situation-box {
     margin-top: 16px;
-    padding: 12px 14px;
+    padding: 16px;
     background: #fffdf8;
     border: 1px solid var(--line);
+    border-left: 3px solid var(--red);
+    border-radius: 2px;
   }
   .situation-box label {
     display: block;
     margin-bottom: 6px;
     font-size: 12px;
     font-weight: 700;
+    letter-spacing: .1em;
     color: var(--ink-deep);
   }
   .situation-row {
@@ -1048,14 +1080,16 @@
     text-align: left;
     background: #fffdf8;
     border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 12px 14px;
+    border-left: 3px solid var(--gold);
+    border-radius: 2px;
+    padding: 14px 16px;
   }
-  .scene-btn:hover { border-color: var(--gold); background: var(--amber-soft); }
+  .scene-btn:hover { border-left-color: var(--red); background: var(--amber-soft); }
   .scene-btn b {
     display: block;
-    font-size: 15px;
-    color: var(--red);
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 16px;
+    color: var(--ink-deep);
   }
   .scene-btn span {
     display: block;
@@ -1135,6 +1169,17 @@
     border-color: var(--red);
     background: var(--red);
     color: #fff;
+  }
+  .stop-blank {
+    margin-top: 14px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--line);
+    background: rgba(255, 253, 248, .5);
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: .14em;
   }
   .scene-random-btn {
     margin: 14px 10px 0 0;
@@ -1681,6 +1726,7 @@
       <p id="stopEssence"></p>
       <p id="stopEdge"></p>
       <p id="stopRelation"></p>
+      <div class="stop-blank">留白 · 你的落款</div>
       <div class="stop-actions">
         <button type="button" id="stopClose">再停一会儿</button>
         <button type="button" class="primary" id="stopEnter">进入沙盘</button>
