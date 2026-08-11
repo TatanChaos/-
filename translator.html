@@ -94,6 +94,17 @@
     color: var(--ink);
   }
   .chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+  .status-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 18px; }
+  .status-chip {
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 10px;
+    cursor: pointer;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .status-chip.active { border-color: var(--teal); background: var(--teal-soft); color: #0b4f4a; }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
   .term {
     position: relative;
@@ -104,6 +115,17 @@
     border-radius: var(--radius-card);
   }
   .term h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink-deep); font-family: var(--font-serif); }
+  .src-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px;
+    font-size: 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+  .src-badge.ok { color: #0b5f58; background: var(--teal-soft); border-color: #9fd6cd; }
+  .src-badge.pending { color: #8a5200; background: var(--amber-soft); border-color: #e6c58f; }
   .term .src { margin: 0 0 8px; font-size: 11px; color: var(--amber); line-height: 1.6; }
   .term .row { margin: 7px 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
   .term .row b { display: block; color: var(--red); font-size: 11px; letter-spacing: .08em; }
@@ -136,6 +158,11 @@
       <input id="search" type="search" placeholder="搜索：子、寅、六合、日主、空亡…">
     </div>
     <div class="chips" id="chips"></div>
+    <div class="status-chips" id="statusChips">
+      <button type="button" class="status-chip active" data-status="all">全部出处</button>
+      <button type="button" class="status-chip" data-status="ok">已对校</button>
+      <button type="button" class="status-chip" data-status="pending">待复核</button>
+    </div>
     <div class="grid" id="grid"></div>
   </main>
   <footer>
@@ -327,6 +354,10 @@
     const chipsWrap = document.getElementById("chips");
     const groups = ["全部", "天干", "地支", "关系", "六十甲子", "纳音", "八字", "三式", "天文", "原理"];
     let activeGroup = "全部";
+    let activeStatus = "all";
+    function sourceStatus(src) {
+      return /待复核|待补|待确认|待收录|待锚定|流派差异/.test(src) ? "pending" : "ok";
+    }
     groups.forEach(g => {
       const b = document.createElement("button");
       b.type = "button";
@@ -339,6 +370,13 @@
       });
       chipsWrap.appendChild(b);
     });
+    document.querySelectorAll("#statusChips .status-chip").forEach(b => {
+      b.addEventListener("click", () => {
+        activeStatus = b.getAttribute("data-status");
+        document.querySelectorAll("#statusChips .status-chip").forEach(x => x.classList.toggle("active", x === b));
+        render();
+      });
+    });
     function render() {
       const q = search.value.trim();
       const list = DATA.filter(d => {
@@ -346,17 +384,19 @@
         const deepJ = JIAZI_DEEP[d.term] || {};
         const deepS = DEEP_DATA[d.term] || {};
         const searchable = d.term + d.plain + d.modern + d.scene + d.source + deep.sharp + deep.limit + deep.verify + deepJ.essence + deepJ.use + deepJ.over + deepJ.verify + deepJ.luokuan + deepS.source + deepS.benyi + deepS.tian + deepS.di + deepS.ren + deepS.ti + deepS.yong + deepS.guo + deepS.modern + deepS.life + deepS.verify + deepS.luokuan;
-        return (activeGroup === "全部" || d.group === activeGroup) && (!q || searchable.includes(q));
+        const status = sourceStatus(d.src);
+        return (activeGroup === "全部" || d.group === activeGroup) && (activeStatus === "all" || status === activeStatus) && (!q || searchable.includes(q));
       });
       grid.innerHTML = list.map(d => {
         const deepSym = DEEP_DATA[d.term] || {};
+        const status = sourceStatus(d.src);
         const deepRows = DEEP_FIELD_LABELS
           .filter(([field]) => !["source", "modern", "life"].includes(field) && deepSym[field])
           .map(([field, label]) => `<div class="row"><b>${label}</b>${deepSym[field]}</div>`)
           .join("");
         return `
         <article class="term">
-          <h3>${d.term}</h3>
+          <h3>${d.term}<span class="src-badge ${status}">${status === "ok" ? "已对校" : "待复核"}</span></h3>
           <p class="src">${d.src}</p>
           <div class="row"><b>人话</b>${d.plain}</div>
           ${deepRows}
