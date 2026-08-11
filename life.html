@@ -26,6 +26,7 @@
     --space-section: 26px;
     --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
     --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+    --header-muted: var(--header-muted);
     --text-xs: 11px;
     --text-sm: 12px;
     --text-base: 13px;
@@ -66,9 +67,9 @@
   .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .brand img { width: 38px; height: 38px; }
   .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
-  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: var(--header-muted); }
   .back {
-    color: #c7d3cd;
+    color: var(--header-muted);
     font-size: 12px;
     text-decoration: none;
     border: 1px solid rgba(247,242,230,.28);

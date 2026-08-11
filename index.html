@@ -25,6 +25,7 @@
     --space-section: 26px;
     --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
     --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+    --header-muted: var(--header-muted);
     --text-xs: 11px;
     --text-sm: 12px;
     --text-base: 13px;
@@ -637,7 +638,7 @@
     font-family: var(--font-serif);
     letter-spacing: .08em;
   }
-  .brand p { color: #c7d3cd; }
+  .brand p { color: var(--header-muted); }
   .mark {
     display: block;
     overflow: hidden;
@@ -652,7 +653,7 @@
     height: 100%;
     object-fit: cover;
   }
-  .status { color: #c7d3cd; }
+  .status { color: var(--header-muted); }
   .dot { background: #d9b45e; }
   .layout {
     position: relative;
@@ -672,7 +673,7 @@
     border-bottom: 1px solid #3f5c53;
   }
   .scene-back {
-    color: #c7d3cd;
+    color: var(--header-muted);
     border-color: #496b61;
   }
   .scene-back:hover { color: var(--paper); border-color: var(--gold); }
@@ -680,7 +681,7 @@
   .mode-btn {
     background: transparent;
     border-color: #496b61;
-    color: #c7d3cd;
+    color: var(--header-muted);
   }
   .mode-btn:hover { border-color: var(--gold); color: var(--paper); }
   .mode-btn[aria-pressed="true"] {

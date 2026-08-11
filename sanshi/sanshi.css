@@ -19,6 +19,7 @@
   --space-section: 26px;
   --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
   --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+  --header-muted: var(--header-muted);
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 13px;
@@ -214,7 +215,7 @@ body.theme-bazi {
 .brand p {
   margin: 2px 0 0;
   font-size: 12px;
-  color: #c7d3cd;
+  color: var(--header-muted);
 }
 
 .sanshi-nav {
@@ -227,7 +228,7 @@ body.theme-bazi {
   padding: 6px 10px;
   border: 1px solid rgba(247, 242, 230, .28);
   border-radius: 2px;
-  color: #c7d3cd;
+  color: var(--header-muted);
   text-decoration: none;
   letter-spacing: .08em;
 }
