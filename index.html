@@ -987,6 +987,11 @@
     line-height: 1.8;
     color: var(--muted);
   }
+  .situation-coverage {
+    margin: 8px 0 0;
+    font-size: 11px;
+    color: var(--muted);
+  }
   .situation-enter {
     margin-top: 8px;
     display: block;
@@ -1444,6 +1449,7 @@
           <input id="situationInput" placeholder="例如：公司想裁员、追一个人、数据堆着没用">
           <button type="button" id="situationGo">用干支解释</button>
         </div>
+        <p class="situation-coverage">任何疑惑都会给一版干支解；未精确匹配时用通用解。</p>
         <div id="situationOut" class="situation-out"></div>
       </div>
       <div class="scene-grid" id="sceneGrid"></div>
@@ -1738,6 +1744,18 @@
     { pattern: /病|痛|睡|焦虑|压力|抑郁|恢复|身体|健康|复查/, pair: ["亥", "未"] },
     { pattern: /选|要不要|该不该|纠结|考虑|哪个|A|B|决定/, pair: ["寅", "申"] }
   ];
+  const SITUATION_GAN_KEYWORDS = {
+    "甲": ["领导", "做主", "支撑", "主干", "框架", "负责", "启动", "开始", "带头"],
+    "乙": ["连接", "协调", "适配", "绕", "柔软", "辅助", "配合", "沟通", "关系", "追", "追求", "喜欢"],
+    "丙": ["曝光", "宣传", "传播", "爆", "被看见", "热度", "走红", "流量"],
+    "丁": ["坚持", "值班", "持续", "点亮", "守护", "耐心", "晚上", "熬夜"],
+    "戊": ["稳定", "后台", "底座", "承载", "数据库", "基础", "靠得住", "安全"],
+    "己": ["运营", "整理", "维护", "沉淀", "滋养", "内容", "日常", "照顾"],
+    "庚": ["改革", "裁员", "切割", "重构", "规则", "执行", "换", "辞退", "仲裁"],
+    "辛": ["打磨", "精修", "工艺", "细节", "质量", "界面", "优化", "改稿"],
+    "壬": ["流动", "分发", "流量", "数据", "网络", "扩散", "迁移", "出差"],
+    "癸": ["渗透", "埋点", "润", "细", "观察", "潜入", "体检", "复查"]
+  };
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const SIX = [["子", "丑"], ["寅", "亥"], ["卯", "戌"], ["辰", "酉"], ["巳", "申"], ["午", "未"]];
@@ -1921,6 +1939,16 @@
     return Object.entries(scores).sort((a, b) => b[1] - a[1]);
   }
 
+  function matchGanSituation(text) {
+    const scores = {};
+    Object.keys(SITUATION_GAN_KEYWORDS).forEach(g => {
+      SITUATION_GAN_KEYWORDS[g].forEach(kw => {
+        if (text.includes(kw)) scores[g] = (scores[g] || 0) + kw.length;
+      });
+    });
+    return Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  }
+
   function saveUnmatchedSituation(text) {
     try {
       const key = "symbol-situation-unmatched-v1";
@@ -1947,11 +1975,15 @@
     }
     const first = matches[0][0];
     const second = matches[1] ? matches[1][0] : relatedTo(first);
+    const ganMatches = matchGanSituation(text);
+    const gan = ganMatches.length ? ganMatches[0][0] : "";
+    const ganText = gan ? " 天干角色 " + gan + "（" + GAN_DATA[gan].name + "）——" + GAN_DATA[gan].edge : "";
     const scene = { key: first, label: DATA[first].name, desc: "你描述的情况最接近 " + first + "：" + DATA[first].edge, compare: [first, second] };
     const key = relationKeyForPair(first, second);
     const relText = REL_EXPLAIN[key];
     const own = composeDualInterpretation(first, second);
-    out.innerHTML = "<strong>" + (generic ? "通用候选解" : "候选解释") + "</strong>：你描述的情况更像 " + first + "（" + DATA[first].func + "），其次是 " + second + "（" + DATA[second].func + "）。" + (key && relText ? " 对照关系：" + key + "：" + relText : "") + "<br>颐真候选解：" + own + "<br>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "真实样本回填前不作断言。";
+    const relPrefix = key && relText ? " 对照关系：" + key + "：" + relText : "";
+    out.innerHTML = "<strong>干支解</strong>（" + (generic ? "通用" : "候选") + "）：你描述的情况更像 " + first + "（" + DATA[first].func + "），其次是 " + second + "（" + DATA[second].func + "）。" + ganText + relPrefix + "<br>颐真候选解：" + own + "<br>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "真实样本回填前不作断言。";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "situation-enter";
