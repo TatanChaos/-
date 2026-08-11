@@ -749,12 +749,41 @@
     letter-spacing: .08em;
     color: var(--ink-deep);
   }
+  .scene-slogan {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "Noto Serif SC", serif;
+    font-size: 13px;
+    color: var(--red);
+    letter-spacing: .12em;
+  }
   .scene-card > p {
     margin: 0;
     font-size: 13px;
     line-height: 1.8;
     color: var(--muted);
   }
+  .entry-article {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+  }
+  .entry-article summary {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--red);
+  }
+  .entry-article-body {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .entry-article-body p { margin: 0 0 8px; }
+  .entry-article-body a { color: var(--red); }
   .scene-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -1170,8 +1199,17 @@
   <section class="scene-entry" id="sceneEntry" aria-label="场景入口">
     <div class="scene-card">
       <h2>从你的场景开始</h2>
+      <p class="scene-slogan">谋事在人，成事在天</p>
       <p>不用先记干支。选一个你现在熟悉的情况，先看它像什么，再认识它叫什么。</p>
       <div class="scene-grid" id="sceneGrid"></div>
+      <details class="entry-article">
+        <summary>先读：两分钟看懂这是什么</summary>
+        <div class="entry-article-body">
+          <p>这里是颐真书房，一个把象数符号当结构来读的文化研究作品，不是算命工具，也不是许愿池。</p>
+          <p>我们保留黑话，人话紧跟；现代对应只是候选，真实样本回填前不作定论。</p>
+          <a href="docs/viewer.html?file=进门.md" target="_blank">读完整进门文章</a>
+        </div>
+      </details>
       <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
     </div>
   </section>
