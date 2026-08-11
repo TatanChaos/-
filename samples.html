@@ -63,7 +63,78 @@
   }
   h2 { margin: 0 0 8px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; font-size: 28px; letter-spacing: .1em; }
   .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .not-pool {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    background: var(--red-soft);
+    border-left: 4px solid var(--red);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .not-pool strong { color: var(--ink-deep); }
   .section-title { margin: 26px 0 12px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); font-size: 17px; }
+  .category-picker { margin-top: 12px; }
+  .category-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .category-btn {
+    font: inherit;
+    font-size: 12px;
+    padding: 8px 11px;
+    cursor: pointer;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .category-btn:hover { border-color: var(--gold); }
+  .category-btn.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .sample-form {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+  }
+  .sample-form label {
+    display: block;
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .sample-form label b {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--ink-deep);
+  }
+  .sample-form input,
+  .sample-form textarea,
+  .sample-form select {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .sample-form textarea {
+    min-height: 70px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+  .form-note {
+    margin-top: 10px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   .sample-box {
     padding: 16px;
     background: var(--surface);
@@ -150,6 +221,7 @@
   <main>
     <h2>为什么需要你</h2>
     <p class="intro">盘面可以一直排，但规则能不能站住，只能靠真实发生的事回填。我们不做“算得准”的承诺，只做“记录、对照、验证”的研究。</p>
+    <div class="not-pool"><strong>这里不是许愿池，是样本站。</strong>我们不给你答案，我们和你一起等真实结果；你提供的每一个问题与结果，都是用来校准候选结构的样本。</div>
 
     <div class="section-title">三步参与</div>
     <div class="steps">
@@ -170,15 +242,21 @@
       </div>
     </div>
 
-    <div class="section-title">四句话就能交</div>
-    <div class="sample-box">
-      <pre>
-时间: 什么时候问的，大概时间也可以
-原话问题: 当时问的原话，不需要专业术语
-实际结果: 事情后来怎么样了
-来源: 自己 / 朋友 / 匿名
-      </pre>
+    <div class="section-title">你遇到的是哪类事</div>
+    <div class="category-picker">
+      <p class="intro">先选一个大类，不用写专业术语；如果几件事叠在一起，选最贴近的那一个。</p>
+      <div id="categoryOptions" class="category-options"></div>
     </div>
+
+    <div class="section-title">四句话就能交</div>
+    <form id="sampleForm" class="sample-form">
+      <label><b>时间</b><input id="sampleTime" name="time" placeholder="什么时候问的，大概时间也可以"></label>
+      <label><b>原话问题</b><textarea id="sampleQuestion" name="question" placeholder="当时问的原话，不需要专业术语"></textarea></label>
+      <label><b>实际结果</b><textarea id="sampleResult" name="result" placeholder="事情后来怎么样了"></textarea></label>
+      <label><b>来源</b><select id="sampleSource" name="source"><option>自己</option><option>朋友</option><option>匿名</option></select></label>
+      <button type="submit" class="btn">生成提交页</button>
+      <p class="form-note">会打开 GitHub 预填页面，确认后再提交；可以分两次：先填时间和原话问题，结果出来再回来补。</p>
+    </form>
 
     <div class="rules">
       <strong>不会排盘也能交</strong>：事前候选、命中说明、评分由维护者补写。你只需要把“问了什么、后来怎样”讲清楚。
@@ -206,5 +284,55 @@
     <br>
     <a href="updates.html">更新公告</a> · <a href="feedback.html">意见与讨论</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
   </footer>
+  <script>
+    const CATEGORIES = [
+      ["财", "收入、生意、投资、欠款"],
+      ["感情", "单身、恋爱、复合、婚姻"],
+      ["事业", "工作、跳槽、升迁、创业"],
+      ["学业", "考试、升学、专业"],
+      ["健康", "自己、家人、就医"],
+      ["家庭", "父母、子女、生育、房产"],
+      ["官非", "纠纷、官司、劳动"],
+      ["出行", "远行、搬家、交通"],
+      ["失物", "东西丢了、找不找得回"],
+      ["应期", "什么时候有结果"],
+      ["选择", "做不做、选哪个"],
+      ["心定", "迷茫、焦虑、状态"]
+    ];
+    let activeCategory = "";
+    const wrap = document.getElementById("categoryOptions");
+    CATEGORIES.forEach(item => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "category-btn";
+      b.textContent = item[0] + " · " + item[1];
+      b.addEventListener("click", () => {
+        activeCategory = item[0];
+        wrap.querySelectorAll(".category-btn").forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+      });
+      wrap.appendChild(b);
+    });
+    document.getElementById("sampleForm").addEventListener("submit", e => {
+      e.preventDefault();
+      if (!activeCategory) {
+        alert("先选一个你遇到的事类。");
+        return;
+      }
+      const time = document.getElementById("sampleTime").value.trim();
+      const question = document.getElementById("sampleQuestion").value.trim();
+      const result = document.getElementById("sampleResult").value.trim();
+      const source = document.getElementById("sampleSource").value;
+      const body = [
+        "类别: " + activeCategory,
+        "时间: " + (time || "未填"),
+        "原话问题: " + (question || "未填"),
+        "实际结果: " + (result || "待补"),
+        "来源: " + source
+      ].join("\n");
+      const title = "样本：" + activeCategory + (time ? " · " + time : "");
+      window.open("https://github.com/TatanChaos/-/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body), "_blank");
+    });
+  </script>
 </body>
 </html>
