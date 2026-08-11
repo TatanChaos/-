@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自己解开自己 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --teal: #1f4a44;
+    --teal-soft: #dce9e2;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  a { color: var(--red); }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: .08em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .back {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247,242,230,.28);
+    padding: 6px 10px;
+  }
+  .back:hover { color: var(--paper); border-color: var(--gold); }
+  main {
+    flex: 1;
+    width: min(100%, 900px);
+    margin: 0 auto;
+    padding: 24px 18px 34px;
+  }
+  h2 { margin: 0 0 8px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; font-size: 28px; letter-spacing: .1em; }
+  .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .principle {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: var(--red-soft);
+    border-left: 4px solid var(--red);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .section-title {
+    margin: 26px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 17px;
+  }
+  .steps { display: grid; gap: 12px; }
+  .step {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+  }
+  .step h3 { margin: 0 0 8px; font-size: 16px; color: var(--ink-deep); }
+  .step p { margin: 0 0 8px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .step a { font-size: 12px; }
+  .knowledge { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .knowledge a {
+    display: block;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--teal);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .knowledge a b { display: block; color: var(--ink-deep); }
+  .knowledge a:hover { border-color: var(--red); }
+  footer {
+    padding: 14px 18px 24px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px dashed var(--line);
+  }
+  footer a { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div>
+        <h1>自己解开自己</h1>
+        <p>自读入门 · 不替你解盘，只把知识摆开</p>
+      </div>
+    </div>
+    <a class="back" href="index.html">返回沙盘</a>
+  </header>
+  <main>
+    <h2>我们不解命盘</h2>
+    <p class="intro">我们不替任何人下断语，也不做命盘解读服务。我们把原文、结构、假设和验证方法实实在在放出来，教你自己读自己的情况。</p>
+    <div class="principle"><strong>自解原则</strong>：现实是你提供的，符号是候选，结果才是答案。你不需要先懂黑话，按下面五步走，就能把自己解开一点。</div>
+
+    <div class="section-title">自读五步</div>
+    <div class="steps">
+      <div class="step">
+        <h3>1 · 先落现实</h3>
+        <p>不急着排盘。先把时间、场景、问题、结果写下来；写不清楚的事，后面全都悬空。</p>
+        <a href="life.html">生活衔接卡</a>
+      </div>
+      <div class="step">
+        <h3>2 · 认识角色与状态</h3>
+        <p>十天干是十种角色，十二地支是十二种状态。先不用背，知道“有这套结构”就够了。</p>
+        <a href="docs/viewer.html?file=十天干详解.md">十天干详解</a> · <a href="docs/viewer.html?file=十二地支详解.md">十二地支详解</a>
+      </div>
+      <div class="step">
+        <h3>3 · 认识关系</h3>
+        <p>六合、三合、六冲、六害、三刑，不是吉凶，是协作、同盟、对立、消耗、摩擦。</p>
+        <a href="docs/viewer.html?file=地支关系稽古工作台.md">地支关系稽古工作台</a>
+      </div>
+      <div class="step">
+        <h3>4 · 进沙盘自己查</h3>
+        <p>说一个情况，进一个符号，双符号对照看关系；系统只给候选解，自己的解由你写。</p>
+        <a href="index.html">进入符号映射沙盘</a>
+      </div>
+      <div class="step">
+        <h3>5 · 写下自己的解，等结果回填</h3>
+        <p>把你猜的结构写下来，事情结果出来后交回样本。能站住的留下，站不住的删掉。</p>
+        <a href="samples.html">交真实样本</a>
+      </div>
+    </div>
+
+    <div class="section-title">公开知识</div>
+    <div class="knowledge">
+      <a href="docs/viewer.html?file=十天干详解.md"><b>十天干详解</b>十种系统角色：主干、连接、曝光、底座、运营、切割、精修、流动、渗透。</a>
+      <a href="docs/viewer.html?file=十二地支详解.md"><b>十二地支详解</b>十二种结构状态：输入、存储、启动、并发、缓存、连接、峰值、沉淀。</a>
+      <a href="docs/viewer.html?file=地支关系稽古工作台.md"><b>地支关系稽古工作台</b>六合、三合、六冲、六害、三刑的原文锚定与复核状态。</a>
+      <a href="docs/viewer.html?file=符号跨域映射工作台.md"><b>符号跨域映射工作台</b>传统本义到现代系统映射的候选方法。</a>
+      <a href="docs/viewer.html?file=进门.md"><b>进门文章</b>两分钟读懂颐真书房在做什么。</a>
+    </div>
+  </main>
+  <footer>
+    © 2026 颐真书房 · 文化研究工具
+    <br>
+    <a href="samples.html">真实样本征集</a> · <a href="life.html">生活衔接卡</a> · <a href="updates.html">更新公告</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
+  </footer>
+</body>
+</html>
