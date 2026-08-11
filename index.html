@@ -1125,6 +1125,22 @@
     line-height: 1.8;
     color: var(--muted);
   }
+  .situation-rows {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .situation-row-item {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .situation-row-item b {
+    flex: 0 0 34px;
+    color: var(--amber);
+    font-weight: 700;
+  }
   .situation-coverage {
     margin: 8px 0 0;
     font-size: 11px;
@@ -2196,6 +2212,14 @@
     } catch {}
   }
 
+  function genericGanFor(text) {
+    if (/想|要|希望|打算|计划|准备/.test(text)) return "甲";
+    if (/怕|担心|焦虑|压力|烦|累|难受|害怕|睡不着/.test(text)) return "丁";
+    if (/钱|生意|投资|工作|公司|事业|裁员|辞职|工资|合同/.test(text)) return "庚";
+    if (/喜欢|追|感情|关系|对象|结婚|恋爱/.test(text)) return "乙";
+    return "壬";
+  }
+
   function explainSituation() {
     const input = document.getElementById("situationInput");
     const out = document.getElementById("situationOut");
@@ -2212,7 +2236,7 @@
     const first = matches[0][0];
     const second = matches[1] ? matches[1][0] : relatedTo(first);
     const ganMatches = matchGanSituation(text);
-    const gan = ganMatches.length ? ganMatches[0][0] : "";
+    const gan = ganMatches.length ? ganMatches[0][0] : genericGanFor(text);
     const ganText = gan ? " 天干角色 " + gan + "（" + GAN_DATA[gan].name + "）——" + GAN_DATA[gan].edge : "";
     const scene = { key: first, label: DATA[first].name, desc: "你描述的情况最接近 " + first + "：" + DATA[first].edge, compare: [first, second] };
     const key = relationKeyForPair(first, second);
@@ -2220,7 +2244,15 @@
     const own = composeDualInterpretation(first, second);
     const relPrefix = key && relText ? " 对照关系：" + key + "：" + relText : "";
     const compound = matches.length >= 3 ? matches.slice(0, 3).map(([z]) => z + "（" + DATA[z].func + "）").join(" + ") : "";
-    out.innerHTML = "<strong>干支解</strong>（" + (generic ? "通用" : "候选") + "）：你描述的情况更像 " + first + "（" + DATA[first].func + "），其次是 " + second + "（" + DATA[second].func + "）。" + ganText + relPrefix + (compound ? "<br>复合结构：" + compound + "：多个维度同时在场，不能只看单象。" : "") + "<br>颐真候选解：" + own + "<br>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "这是陪你拆结构的互动解，不是大师断语；真实样本回填前不作断言。";
+    const rows = [
+      ["象", first + "（" + DATA[first].func + "） · " + second + "（" + DATA[second].func + "）"],
+      ["用", gan ? gan + "（" + GAN_DATA[gan].name + "）——" + GAN_DATA[gan].edge : "待补"],
+      ["关系", key && relText ? key + "：" + relText : "暂无直接关系，需看整体盘面"],
+      ["现代", DATA[first].system + " 与 " + DATA[second].system + " 相遇"],
+      ["验证", "真实样本回填前不作断言"]
+    ];
+    if (compound) rows.push(["复合", compound + "：多个维度同时在场，不能只看单象。"]);
+    out.innerHTML = "<strong>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div><p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "situation-enter";
