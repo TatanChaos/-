@@ -1927,6 +1927,138 @@
     .row { grid-template-columns: 70px minmax(0, 1fr); }
     .subnav-btn { padding: 7px 10px; }
   }
+  /* 苹果式清晰层：层级靠字号、留白和状态，不靠重复加框 */
+  .detail,
+  .map-panel,
+  .symbol-list {
+    border-radius: 8px;
+  }
+  .detail {
+    overflow: hidden;
+  }
+  .detail-head {
+    padding: 20px 22px 16px;
+  }
+  .detail-head h2 {
+    font-size: 30px;
+    letter-spacing: .04em;
+  }
+  .detail-head .tagline {
+    font-size: 13px;
+    letter-spacing: .04em;
+  }
+  .module-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 22px 16px;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-left: 0;
+    box-shadow: none;
+  }
+  .module-seal {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
+  .module-head h3 {
+    font-size: 20px;
+    letter-spacing: .03em;
+  }
+  .module-head p {
+    font-size: 13px;
+  }
+  .module-note {
+    margin: 0 22px 18px;
+    padding: 10px 14px;
+    background: rgba(242, 233, 211, .55);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+  }
+  .compare-row {
+    margin-top: 14px;
+    gap: 10px;
+  }
+  .compare-row select {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(40, 35, 25, .06);
+  }
+  .compare-row > span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .compare-out {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: #f7f2e6;
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .interact-head {
+    margin: 22px 0 8px;
+    font-size: 14px;
+    letter-spacing: .08em;
+    color: var(--ink-deep);
+  }
+  .interact-query {
+    margin-top: 10px;
+    gap: 10px;
+  }
+  .interact-query input {
+    height: 44px;
+    min-width: 220px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .interact-query button {
+    height: 44px;
+    padding: 0 18px;
+    border-color: var(--teal);
+    background: var(--teal);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .interact-query button:hover {
+    background: #155149;
+  }
+  .module-nav button,
+  .module-nav a {
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+  .module-nav button::before,
+  .module-nav a::before {
+    display: none;
+  }
+  @media (max-width: 520px) {
+    .interact-query input {
+      min-width: 100%;
+    }
+    .compare-row select {
+      flex: 1 1 140px;
+    }
+    .module-head {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .module-note {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+  }
 </style>
 </head>
 <body class="theme-sandbox">
