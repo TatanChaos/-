@@ -3509,9 +3509,9 @@
         </div>
         <span class="chapter-note" aria-hidden="true">象数初笺</span>
       </div>
-      <div class="subnav" role="tablist" aria-label="符号详情分节">
+      ${["jiazi", "interact", "combination", "corpus"].includes(detailTab) ? "" : `<div class="subnav" role="tablist" aria-label="符号详情分节">
         ${tabs.map(t => `<button type="button" class="subnav-btn" role="tab" data-tab="${t[0]}" aria-pressed="${detailTab === t[0]}">${t[1]}</button>`).join("")}
-      </div>
+      </div>`}
       <div class="detail-section" role="tabpanel">${section}</div>
       <div class="badges">
         <span class="badge teal">拓展面候选</span>
