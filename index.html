@@ -2590,6 +2590,33 @@
     btn.textContent = "进入沙盘看对照";
     btn.addEventListener("click", () => chooseScene(scene));
     out.appendChild(btn);
+    const deepBtn = document.createElement("button");
+    deepBtn.type = "button";
+    deepBtn.className = "situation-enter";
+    deepBtn.textContent = "再深一层";
+    deepBtn.addEventListener("click", () => {
+      const oldDeep = out.querySelector(".situation-deep");
+      if (oldDeep) oldDeep.remove();
+      const d1 = DATA[first] || {};
+      const d2 = DATA[second] || {};
+      const dd1 = DEEP_DATA[first] || {};
+      const dd2 = DEEP_DATA[second] || {};
+      const gd = GAN_DATA[gan] || {};
+      const deep = document.createElement("div");
+      deep.className = "situation-self situation-deep";
+      deep.innerHTML =
+        "<b>再深一层 · 本地规则深解</b>" +
+        "<span>结构：" + first + "（" + d1.func + "）负责" + d1.system + "；" + second + "（" + d2.func + "）负责" + d2.system + "。</span>" +
+        "<span>本质：" + (dd1.benyi || d1.edge || "待补") + "；" + (dd2.benyi || d2.edge || "待补") + "。</span>" +
+        "<span>怎么用：" + (dd1.yong || "先看结构") + "；" + (dd2.yong || "再看承接") + "。" + (gd.edge ? " 天干角色：" + gan + "——" + gd.edge : "") + "</span>" +
+        "<span>验证：" + (dd1.verify || "记录变化") + "；" + (dd2.verify || "记录结果") + "。</span>" +
+        "<span>批注：" + (dd1.luokuan || "留白给你") + "</span>" +
+        "<span>说明：这是本地规则深解，免费、不传数据；Ollama 本地模型装好后可升级成 AI 换说法。</span>";
+      out.appendChild(deep);
+      deepBtn.disabled = true;
+      deepBtn.textContent = "已展开";
+    });
+    out.appendChild(deepBtn);
   }
 
   function stopAtScene(s) {
