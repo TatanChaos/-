@@ -60,6 +60,7 @@ try {
     "/稽古.html",
     "/ai.html",
     "/静观.html",
+    "/路线.html",
     "/api/huangli",
     "/huangli.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五层路线 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/cinematic.css">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --amber: #8a5c2b;
+    --teal: #1f4a44;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+  }
+  * { box-sizing: border-box; }
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 18px;
+    background: rgba(23, 34, 30, .72);
+    backdrop-filter: blur(12px);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper-soft);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+  }
+  header p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #c7d3cd;
+  }
+  .header-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247, 242, 230, .28);
+    padding: 6px 10px;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 860px);
+    margin: 0 auto;
+    padding: 40px 18px 64px;
+  }
+  .path-hero {
+    text-align: center;
+    color: var(--paper-soft);
+  }
+  .path-hero .seal {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 6px 11px;
+    border: 1px solid var(--red);
+    color: #f3c7c1;
+    font-size: 11px;
+    letter-spacing: .2em;
+    transform: rotate(-2deg);
+  }
+  .path-hero h2 {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: clamp(30px, 7vw, 52px);
+    line-height: 1.2;
+    letter-spacing: .08em;
+  }
+  .path-hero p {
+    max-width: 560px;
+    margin: 14px auto 0;
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(247, 242, 230, .78);
+  }
+  .progress-panel {
+    margin-top: 30px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--teal);
+  }
+  .progress-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .progress-head h3 {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 18px;
+    color: var(--ink-deep);
+  }
+  .progress-head span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .progress-track {
+    height: 8px;
+    margin-top: 12px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+  }
+  .progress-fill {
+    width: 0;
+    height: 100%;
+    background: var(--teal);
+    transition: width .35s ease;
+  }
+  .path-steps {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .path-step-item {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+  }
+  .step-number {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    background: var(--ink-deep);
+    color: var(--paper);
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 20px;
+  }
+  .path-step-item h3 {
+    margin: 0 0 6px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 18px;
+    color: var(--ink-deep);
+  }
+  .path-step-item p {
+    margin: 0 0 10px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .step-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .step-links a {
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--red);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .step-done {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .step-done input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--teal);
+  }
+  .depth-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 22px;
+  }
+  .depth-chip {
+    padding: 10px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--red);
+    text-align: center;
+  }
+  .depth-chip b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ink-deep);
+  }
+  .depth-chip span {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .today-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .today-row button {
+    min-height: 44px;
+    padding: 0 18px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--teal);
+    background: var(--teal);
+    color: #fff;
+    cursor: pointer;
+  }
+  .today-row button.secondary {
+    background: transparent;
+    color: var(--teal);
+  }
+  #pathStatus {
+    margin: 0;
+    min-height: 20px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  @media (max-width: 520px) {
+    header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .path-step-item {
+      grid-template-columns: 1fr;
+    }
+    .step-number {
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>
+</head>
+<body class="theme-life">
+  <header>
+    <div>
+      <h1 data-en="Learning Path">五层路线</h1>
+      <p>入门 → 深读 → 排盘 → 验证 → 收心</p>
+    </div>
+    <div class="header-links">
+      <a href="入口.html">版本入口</a>
+      <a href="静观.html">静观</a>
+    </div>
+  </header>
+  <main>
+    <section class="path-hero">
+      <span class="seal">路线</span>
+      <h2>知识不是堆料<br>是一层一层走出来的</h2>
+      <p>五步一条线。每一步都对应真实页面，走完一步就标记一步；进度只存在本机，不上传。</p>
+    </section>
+    <section class="progress-panel" aria-label="路线进度">
+      <div class="progress-head">
+        <h3>你的路线进度</h3>
+        <span id="progressText">0 / 5</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </section>
+    <section class="path-steps" aria-label="五层路线">
+      <article class="path-step-item" data-step="1">
+        <div class="step-number">一</div>
+        <div>
+          <h3>入门</h3>
+          <p>先认识沙盘，再用自读五步把自己放进结构里。</p>
+          <div class="step-links"><a href="index.html">符号沙盘</a><a href="learn.html">自己解开自己</a></div>
+          <label class="step-done"><input type="checkbox" data-path-step="1"> 已完成这一层</label>
+        </div>
+      </article>
+      <article class="path-step-item" data-step="2">
+        <div class="step-number">二</div>
+        <div>
+          <h3>深读</h3>
+          <p>把黑话翻译成人话，把符号接回生活，再借 AI 深解多问一层。</p>
+          <div class="step-links"><a href="translator.html">术语翻译</a><a href="life.html">生活衔接</a><a href="ai.html">AI 深解</a></div>
+          <label class="step-done"><input type="checkbox" data-path-step="2"> 已完成这一层</label>
+        </div>
+      </article>
+      <article class="path-step-item" data-step="3">
+        <div class="step-number">三</div>
+        <div>
+          <h3>排盘</h3>
+          <p>把时间结构排出来：八字、三式、黄历都是可复现的坐标。</p>
+          <div class="step-links"><a href="排盘/八字.html">八字</a><a href="sanshi/index.html">三式</a><a href="huangli.html">黄历</a></div>
+          <label class="step-done"><input type="checkbox" data-path-step="3"> 已完成这一层</label>
+        </div>
+      </article>
+      <article class="path-step-item" data-step="4">
+        <div class="step-number">四</div>
+        <div>
+          <h3>验证</h3>
+          <p>用真实结果回填样本，用稽古状态检查原文是否站得住。</p>
+          <div class="step-links"><a href="samples.html">真实样本</a><a href="稽古.html">稽古状态</a></div>
+          <label class="step-done"><input type="checkbox" data-path-step="4"> 已完成这一层</label>
+        </div>
+      </article>
+      <article class="path-step-item" data-step="5">
+        <div class="step-number">心</div>
+        <div>
+          <h3>收心</h3>
+          <p>三分钟静观，把判断前提放干净，再决定下一步。</p>
+          <div class="step-links"><a href="静观.html">静观 · 佛道参照</a></div>
+          <label class="step-done"><input type="checkbox" data-path-step="5"> 已完成这一层</label>
+        </div>
+      </article>
+    </section>
+    <div class="today-row">
+      <button type="button" id="pathToday">今日走哪一步</button>
+      <button type="button" id="pathReset" class="secondary">重新开始</button>
+    </div>
+    <p id="pathStatus" aria-live="polite"></p>
+    <section class="depth-strip" aria-label="深度标准">
+      <div class="depth-chip"><b>原文</b><span>先有出处，再说解释</span></div>
+      <div class="depth-chip"><b>结构</b><span>先拆角色与关系</span></div>
+      <div class="depth-chip"><b>生活</b><span>回到你能做的事</span></div>
+      <div class="depth-chip"><b>验证</b><span>真实结果回填</span></div>
+      <div class="depth-chip"><b>留白</b><span>你的批注自己落</span></div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var KEY = "yizhen-path-v1";
+      var status = document.getElementById("pathStatus");
+      var fill = document.getElementById("progressFill");
+      var text = document.getElementById("progressText");
+      var inputs = Array.from(document.querySelectorAll("[data-path-step]"));
+      var state = {};
+      try {
+        state = JSON.parse(localStorage.getItem(KEY) || "{}");
+      } catch {}
+      function save() {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+        } catch {}
+      }
+      function render() {
+        var done = inputs.filter(function (input) { return state[input.getAttribute("data-path-step")]; }).length;
+        fill.style.width = (done / inputs.length * 100) + "%";
+        text.textContent = done + " / " + inputs.length;
+      }
+      inputs.forEach(function (input) {
+        var n = input.getAttribute("data-path-step");
+        input.checked = !!state[n];
+        input.addEventListener("change", function () {
+          state[n] = input.checked;
+          save();
+          render();
+          status.textContent = input.checked ? "已标记第 " + n + " 层完成。" : "已取消第 " + n + " 层标记。";
+        });
+      });
+      document.getElementById("pathToday").addEventListener("click", function () {
+        var next = inputs.find(function (input) { return !state[input.getAttribute("data-path-step")]; });
+        if (!next) {
+          status.textContent = "五层都已走完。下一步不是继续堆知识，是回样本站等真实结果。";
+          return;
+        }
+        var card = next.closest(".path-step-item");
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+        status.textContent = "今天先走这一层，走完回来打勾。";
+      });
+      document.getElementById("pathReset").addEventListener("click", function () {
+        state = {};
+        inputs.forEach(function (input) { input.checked = false; });
+        save();
+        render();
+        status.textContent = "路线已清空，重新开始。";
+      });
+      render();
+    })();
+  </script>
+  <script src="assets/cinematic.js"></script>
+</body>
+</html>
