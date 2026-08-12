@@ -245,6 +245,53 @@
   }
   .btn.secondary { background: transparent; color: var(--red); }
   .btn:hover { opacity: .9; }
+  .draft-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .draft-item {
+    padding: 14px;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+  }
+  .draft-item b {
+    display: block;
+    color: var(--ink-deep);
+    font-size: 14px;
+  }
+  .draft-item p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .draft-item .draft-status {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 7px;
+    font-size: 11px;
+    border: 1px solid var(--line);
+  }
+  .draft-item .draft-status.done { color: #0b5f58; background: var(--teal-soft); border-color: #9fd6cd; }
+  .draft-item .draft-status.pending { color: #8a5200; background: var(--amber-soft); border-color: #e6c58f; }
+  .draft-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .draft-actions button {
+    padding: 7px 10px;
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .draft-actions button:hover { border-color: var(--red); color: var(--red); }
   footer {
     padding: 14px 18px 24px;
     font-size: 11px;
@@ -304,6 +351,8 @@
       <label><b>实际结果</b><textarea id="sampleResult" name="result" placeholder="事情后来怎么样了"></textarea></label>
       <label><b>来源</b><select id="sampleSource" name="source"><option>自己</option><option>朋友</option><option>匿名</option></select></label>
       <button type="submit" class="btn">生成提交页</button>
+      <button type="button" class="btn secondary" id="saveDraft">保存本地草稿</button>
+      <button type="button" class="btn secondary" id="exportSamples">导出样本 JSON</button>
       <p class="form-note">会打开 GitHub 预填页面，确认后再提交；可以分两次：先填时间和原话问题，结果出来再回来补。</p>
     </form>
 
@@ -321,6 +370,12 @@
 评分(0-5): 0 完全落空，5 完全命中
 隐私备注: 哪些信息需要进一步脱敏
       </pre>
+    </div>
+
+    <div class="section-title">本地样本草稿</div>
+    <div class="sample-box">
+      <p class="intro">草稿只存在当前浏览器，不上传。结果出来后回来载入，把“实际结果”补上，再交回样本。</p>
+      <div id="draftList" class="draft-list"></div>
     </div>
 
     <div class="actions">
@@ -349,7 +404,89 @@
       ["心定", "迷茫、焦虑、状态"]
     ];
     let activeCategory = "";
+    const DRAFT_KEY = "yizhen-sample-drafts-v1";
     const wrap = document.getElementById("categoryOptions");
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function loadDrafts() {
+      try {
+        const value = JSON.parse(localStorage.getItem(DRAFT_KEY) || "[]");
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    }
+    function saveDrafts(list) {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(list));
+      } catch {}
+    }
+    function readSampleForm() {
+      return {
+        category: activeCategory,
+        time: document.getElementById("sampleTime").value.trim(),
+        question: document.getElementById("sampleQuestion").value.trim(),
+        result: document.getElementById("sampleResult").value.trim(),
+        source: document.getElementById("sampleSource").value
+      };
+    }
+    function saveCurrentDraft(status) {
+      const data = readSampleForm();
+      if (!data.category) {
+        alert("先选一个你遇到的事类。");
+        return null;
+      }
+      const draft = { id: Date.now(), status: status || "待结果", at: new Date().toISOString(), ...data };
+      saveDrafts([draft, ...loadDrafts()]);
+      renderDrafts();
+      return draft;
+    }
+    function renderDrafts() {
+      const el = document.getElementById("draftList");
+      if (!el) return;
+      const list = loadDrafts();
+      el.innerHTML = list.length ? list.map(d => `
+        <div class="draft-item">
+          <b>${esc(d.category || "未分类")} · ${esc(d.time || "时间未填")}</b>
+          <p>问题：${esc(d.question || "未填")}</p>
+          <p>结果：${esc(d.result || "待补")}</p>
+          <span class="draft-status ${d.status === "已回填" ? "done" : "pending"}">${esc(d.status || "待结果")}</span>
+          <div class="draft-actions">
+            <button type="button" data-load="${d.id}">载入继续填</button>
+            <button type="button" data-del="${d.id}">删除</button>
+          </div>
+        </div>
+      `).join("") : "<p class=\"intro\">还没有本地草稿。</p>";
+      el.querySelectorAll("[data-load]").forEach(btn => btn.addEventListener("click", () => {
+        const draft = loadDrafts().find(x => x.id === Number(btn.getAttribute("data-load")));
+        if (!draft) return;
+        if (draft.category) {
+          const target = wrap.querySelector('.category-btn[data-category="' + draft.category + '"]');
+          if (target) target.click();
+        }
+        document.getElementById("sampleTime").value = draft.time || "";
+        document.getElementById("sampleQuestion").value = draft.question || "";
+        document.getElementById("sampleResult").value = draft.result || "";
+        document.getElementById("sampleSource").value = draft.source || "自己";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }));
+      el.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => {
+        saveDrafts(loadDrafts().filter(x => x.id !== Number(btn.getAttribute("data-del"))));
+        renderDrafts();
+      }));
+    }
+    function exportSamples() {
+      const blob = new Blob([JSON.stringify(loadDrafts(), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "颐真书房样本草稿_" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
     CATEGORIES.forEach(item => {
       const b = document.createElement("button");
       b.type = "button";
@@ -373,6 +510,7 @@
       const question = document.getElementById("sampleQuestion").value.trim();
       const result = document.getElementById("sampleResult").value.trim();
       const source = document.getElementById("sampleSource").value;
+      saveCurrentDraft(result ? "已回填" : "待结果");
       const body = [
         "类别: " + activeCategory,
         "时间: " + (time || "未填"),
@@ -383,6 +521,12 @@
       const title = "样本：" + activeCategory + (time ? " · " + time : "");
       window.open("https://github.com/TatanChaos/-/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body), "_blank");
     });
+    document.getElementById("saveDraft").addEventListener("click", () => {
+      const result = document.getElementById("sampleResult").value.trim();
+      saveCurrentDraft(result ? "已回填" : "待结果");
+    });
+    document.getElementById("exportSamples").addEventListener("click", exportSamples);
+    renderDrafts();
     const params = new URLSearchParams(location.search);
     const cat = params.get("category");
     if (cat) {
