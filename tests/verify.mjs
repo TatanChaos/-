@@ -48,12 +48,7 @@ for (const [key, value] of Object.entries(nayinDeep)) {
   }
 }
 
-const indexHtml = read("index.html");
-const jiaziMatch = indexHtml.match(/const JIAZI_60 = \[([\s\S]*?)\n\s*\];/);
-assert(!!jiaziMatch, "Cannot find JIAZI_60 in index.html");
-const jiazi60 = jiaziMatch
-  ? [...jiaziMatch[1].matchAll(/"([^"]+)"/g)].map(m => m[1])
-  : [];
+const jiazi60 = loadGlobal("assets/jiazi-60.js", "JIAZI_60");
 assert(jiazi60.length === 60, `JIAZI_60 should have 60 entries, got ${jiazi60.length}`);
 for (const line of jiazi60) {
   const key = line.split("：")[0];

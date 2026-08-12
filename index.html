@@ -83,6 +83,21 @@
     color: var(--muted);
     white-space: nowrap;
   }
+  .module-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .module-nav button {
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 9px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .module-nav button:hover { border-color: var(--teal); color: #0b4f4a; }
   .version-chip {
     border: 1px solid var(--gold);
     color: var(--gold);
@@ -1839,6 +1854,12 @@
         <p>以文化为镜 · 认识自己 · 不作计算依据</p>
       </div>
     </div>
+    <nav class="module-nav" aria-label="独立模块">
+      <button type="button" data-module="jiazi">六十甲子</button>
+      <button type="button" data-module="combination">组合盘</button>
+      <button type="button" data-module="corpus">十天干 · 十二地支</button>
+      <button type="button" data-module="interact">任意干支互动</button>
+    </nav>
     <div class="status"><span class="dot"></span><span class="version-chip">体验版 v0.3</span><span>六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
   </header>
   <section class="notice" role="note" aria-label="使用声明">
@@ -2056,6 +2077,7 @@
       <p class="gate-note">未同意前不会展示作品内容</p>
     </div>
   </div>
+<script src="assets/jiazi-60.js"></script>
 <script src="assets/deep-data.js"></script>
 <script src="assets/jiazi-deep.js"></script>
 <script src="assets/combination-engine.js"></script>
@@ -2208,68 +2230,6 @@
     "壬": ["流动", "分发", "流量", "数据", "网络", "扩散", "迁移", "出差"],
     "癸": ["渗透", "埋点", "润", "细", "观察", "潜入", "体检", "复查"]
   };
-  const JIAZI_60 = [
-    "甲子：主干落在种子位，起点低调但根深。",
-    "乙丑：柔的力量被收着，适合暗中准备。",
-    "丙寅：曝光和启动同时来，早期就被看见。",
-    "丁卯：持续输出压过批量噪声。",
-    "戊辰：大承载加大容量，稳但容易积压。",
-    "己巳：运营接住流量，能把热变养料。",
-    "庚午：改革在最高点发生，最锋利也最险。",
-    "辛未：精工正好收成，质量高但可能拖。",
-    "壬申：大流被制度接住，可复制但可能失活。",
-    "癸酉：细渗透进精密层，影响深但难显。",
-    "甲戌：框架进平台收口，能成体系但易封闭。",
-    "乙亥：柔连接未分化需求，能接住想法但难成形。",
-    "丙子：光在最深处，还没到显的时候。",
-    "丁丑：持续维护旧系统，稳定但无新意。",
-    "戊寅：底座托住启动，能支撑但可能压住生长。",
-    "己卯：运营支持批量，能供给但容易忙乱。",
-    "庚辰：改革触动存量，能整理但会流血。",
-    "辛巳：精工接住热度，能变现但压力大。",
-    "壬午：大流撞上高点，声势大但易散。",
-    "癸未：细养接近收成，慢但扎实。",
-    "甲申：框架撞制度，能立规矩也可能被卡。",
-    "乙酉：柔连接精细层，能补位但难独立。",
-    "丙戌：光被收进平台，能形成品牌但易自燃。",
-    "丁亥：持续点亮混沌，能指引但很费劲。",
-    "戊子：底座接输入，稳但可能压住源头。",
-    "己丑：运营资料归档，有序但容易过时。",
-    "庚寅：改革砍向新生，果断但危险。",
-    "辛卯：精工和批量冲突，取舍难。",
-    "壬辰：大流被存储接住，能沉淀但可能静止。",
-    "癸巳：细渗透碰上热连接，影响慢但能入心。",
-    "甲午：框架站在最高点，能定局但易断。",
-    "乙未：柔连接变成成果，能交付但可能不够硬。",
-    "丙申：曝光进入制度，能透明但压力大。",
-    "丁酉：持续精修，质量高但慢。",
-    "戊戌：底座收进平台，稳但封闭。",
-    "己亥：运营滋养混沌需求，能孕育但见效慢。",
-    "庚子：改革从暗处起，能破旧但看不见。",
-    "辛丑：精品被收藏，质量好但可能无人用。",
-    "壬寅：大流浇新芽，能生长但容易冲垮。",
-    "癸卯：细水养批量，能润但不够快。",
-    "甲辰：框架立水库，能建库但容易僵。",
-    "乙巳：藤蔓接热度，能抓住但压力大。",
-    "丙午：太阳当正午，最亮的峰值，最怕回落。",
-    "丁未：灯烛照成果，持续收尾，能完成但慢。",
-    "戊申：底座立规则，能稳但可能太硬。",
-    "己酉：田园收精工，能保质量但累。",
-    "庚戌：改革进平台，能收口但可能一刀切。",
-    "辛亥：大流回到混沌，能孕育但容易迷失。",
-    "壬子：江河归子水，能重启但重复。",
-    "癸丑：细渗透进档案，能保存但难显。",
-    "甲寅：框架立新芽，强强联合但过刚。",
-    "乙卯：藤蔓铺繁茂，能扩张但过软。",
-    "丙辰：太阳照水库，能推动但积压。",
-    "丁巳：灯烛遇热度，能深耕但过热。",
-    "戊午：高山托峰值，能稳住但压力大。",
-    "己未：田园收成果，能落地但节奏慢。",
-    "庚申：改革加制度，果断但可能过狠。",
-    "辛酉：珠玉入精工，质量最高也最难交付。",
-    "壬戌：大流进平台，能整合但可能被收死。",
-    "癸亥：细渗透回到混沌，最内敛也最深远。"
-  ];
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const ALL_SYMBOLS = [...GAN, ...ZHI];
@@ -2597,6 +2557,14 @@
     if (entry) entry.hidden = true;
     if (layout) layout.hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openModule(tab) {
+    detailTab = tab;
+    activeScene = null;
+    showWorkspace();
+    renderDetail();
+    persistState();
   }
 
   function showScenes() {
@@ -3488,15 +3456,9 @@
           <span>2. 你的批注：用你自己的话写一句：我现在真正在做什么。</span>
           <span>3. 验证：接下来 3 天记录一个可观察的变化，回填样本时才算数。</span>
         </div>
-        <div class="full-interact" data-a="${headKey}">
-          <h3 class="interact-head">${headKey} · 与任意干支互动</h3>
-          <div class="compare-row">
-            <strong>${headKey}</strong>
-            <span>与</span>
-            <select id="fullInteractB" aria-label="任意干支"></select>
-          </div>
-          <div id="fullInteractOut" class="compare-out">选任意天干或地支，看它与 ${headKey} 的互动。</div>
-          <button type="button" class="subnav-btn" id="toJiaziPair">六十甲子两柱对照</button>
+        <div class="full-interact">
+          <h3 class="interact-head">想看它和任意干支互动？</h3>
+          <button type="button" class="subnav-btn" data-tab="interact">去任意干支互动</button>
           <span class="compare-caveat">真实样本回填前不作断言。</span>
         </div>`,
       jiazi: `<div class="rows">${jiaziHTML}</div>`,
@@ -3600,14 +3562,6 @@
       jiaziPairB.addEventListener("change", renderJiaziPair);
       renderJiaziPair();
     }
-    const fullInteractB = document.getElementById("fullInteractB");
-    if (fullInteractB) {
-      fillSymbolSelect(fullInteractB, crossPartner(headKey));
-      fullInteractB.addEventListener("change", renderFullInteract);
-      renderFullInteract();
-    }
-    const toJiaziPair = document.getElementById("toJiaziPair");
-    if (toJiaziPair) toJiaziPair.addEventListener("click", () => switchDetail("interact"));
     renderSelectedReadout();
   }
 
@@ -3644,6 +3598,9 @@
   renderWheel();
   renderDetail();
   renderCompareOptions();
+  document.querySelectorAll(".module-nav button").forEach(btn => {
+    btn.addEventListener("click", () => openModule(btn.getAttribute("data-module")));
+  });
   document.getElementById("sceneSkip").addEventListener("click", () => {
     activeScene = null;
     renderDetail();
