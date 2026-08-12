@@ -38,22 +38,54 @@ const MIME = {
   ".md": "text/markdown; charset=utf-8"
 };
 
+function runCombineInWorker(text, page, size) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(path.join(ROOT, "workers", "combine-worker.js"));
+    const timer = setTimeout(() => {
+      worker.terminate();
+      reject(new Error("combine worker timeout"));
+    }, 30000);
+    worker.once("message", msg => {
+      clearTimeout(timer);
+      worker.terminate();
+      resolve(msg);
+    });
+    worker.once("error", err => {
+      clearTimeout(timer);
+      worker.terminate();
+      reject(err);
+    });
+    worker.postMessage({ text, page, size });
+  });
+}
+
 function handleCombine(text, page, size, res) {
   const tokens = Engine.parseTokens(text);
   if (tokens.length < 2) {
     sendJson(res, 400, { error: "请至少写两个对象，例如：甲子 乙丑 丙寅；或 甲 子 午。" });
     return;
   }
-  const result = Engine.pagePairs(tokens, page, size);
-  sendJson(res, 200, {
-    tokens: tokens.slice(0, 100),
-    tokenCount: tokens.length,
-    pairCount: result.pairCount,
-    page: result.page,
-    pageCount: result.pageCount,
-    size: result.size,
-    pairs: result.pairs
-  });
+  const finish = result => {
+    sendJson(res, 200, {
+      tokens: tokens.slice(0, 100),
+      tokenCount: tokens.length,
+      pairCount: result.pairCount,
+      page: result.page,
+      pageCount: result.pageCount,
+      size: result.size,
+      pairs: result.pairs
+    });
+  };
+  if (tokens.length >= 2000) {
+    runCombineInWorker(text, page, size)
+      .then(finish)
+      .catch(() => {
+        const result = Engine.pagePairs(tokens, page, size);
+        finish(result);
+      });
+    return;
+  }
+  finish(Engine.pagePairs(tokens, page, size));
 }
 
 function sendJson(res, status, data) {

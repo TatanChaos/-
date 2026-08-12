@@ -79,6 +79,15 @@ try {
   assert(api.status === 200, "api/combine should return 200");
   assert(data.pairCount === 3, `api/combine pairCount should be 3, got ${data.pairCount}`);
   assert(data.pairs.length === 3, "api/combine should return all 3 pairs");
+  const bigText = "甲子 ".repeat(2100).trim();
+  const bigApi = await fetch(new URL("/api/combine", base), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: bigText, page: 0, size: 50 })
+  });
+  const bigData = await bigApi.json();
+  assert(bigApi.status === 200 && bigData.pairCount === 2100 * 2099 / 2, "api/combine worker should handle large input");
+  assert(bigData.pairs.length === 50, "api/combine worker should paginate large input");
   const hardware = await fetch(new URL("/api/hardware", base));
   const hardwareData = await hardware.json();
   assert(hardware.status === 200 && hardwareData.cores >= 1, "api/hardware should report local cores");
