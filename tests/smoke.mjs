@@ -57,6 +57,8 @@ try {
     "/api/ai",
     "/稽古.html",
     "/ai.html",
+    "/api/huangli",
+    "/huangli.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];
   for (const page of pages) {

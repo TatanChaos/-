@@ -196,6 +196,36 @@ function buildBaziText(dt, gender) {
   ].join("\n");
 }
 
+function buildHuangli(dateStr) {
+  const now = new Date();
+  const match = String(dateStr || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  const year = match ? Number(match[1]) : now.getFullYear();
+  const month = match ? Number(match[2]) : now.getMonth() + 1;
+  const day = match ? Number(match[3]) : now.getDate();
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  return {
+    date: solar.toYmd(),
+    lunar: lunar.toFullString(),
+    dayGanZhi: lunar.getDayInGanZhi(),
+    yi: lunar.getDayYi(),
+    ji: lunar.getDayJi(),
+    jiShen: lunar.getDayJiShen(),
+    xiongSha: lunar.getDayXiongSha(),
+    pengZuGan: lunar.getPengZuGan(),
+    pengZuZhi: lunar.getPengZuZhi(),
+    chong: lunar.getDayChongDesc(),
+    sha: lunar.getDaySha(),
+    positions: {
+      喜神: lunar.getDayPositionXiDesc(),
+      阳贵神: lunar.getDayPositionYangGuiDesc(),
+      阴贵神: lunar.getDayPositionYinGuiDesc(),
+      福神: lunar.getDayPositionFuDesc(),
+      财神: lunar.getDayPositionCaiDesc()
+    }
+  };
+}
+
 const server = http.createServer((req, res) => {
   const parsed = new URL(req.url, "http://127.0.0.1:" + PORT);
 
@@ -312,6 +342,19 @@ const server = http.createServer((req, res) => {
       res.end(text);
     } catch (e) {
       sendJson(res, 400, { error: "排盘参数无法解析：" + e.message });
+    }
+    return;
+  }
+
+  if (parsed.pathname === "/api/huangli" && req.method === "GET") {
+    if (!Solar) {
+      sendJson(res, 501, { error: "lunar-typescript 未安装或路径不可用。" });
+      return;
+    }
+    try {
+      sendJson(res, 200, buildHuangli(parsed.searchParams.get("date") || ""));
+    } catch (e) {
+      sendJson(res, 400, { error: "黄历参数无法解析：" + e.message });
     }
     return;
   }

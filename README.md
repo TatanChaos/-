@@ -73,6 +73,8 @@ learn.html               自己解开自己
 samples.html             真实样本征集
 排盘/八字.html           八字排盘
 稽古.html                出处审计状态页
+ai.html                  AI 深解页
+huangli.html             黄历页（宜忌/冲煞/彭祖百忌）
 prototype/index.html      试墨版：独立粗原型
 v0.2/index.html           内测版 v0.2：历史版本
 assets/                  logo、纸纹、云纹、星宫图背景、深解数据、组合引擎
