@@ -85,6 +85,7 @@ ai.html                  AI 深解页
 huangli.html             黄历页（宜忌/冲煞/彭祖百忌）
 静观.html                 佛道原句与三分钟静观计时
 路线.html                 五层路线与本地进度
+自检.html                 硬件、多线程、Worker、路线与设计原则自检
 prototype/index.html      试墨版（内部草稿，不公开）
 v0.2/index.html           内测版 v0.2（内部草稿，不公开）
 assets/                  logo、纸纹、云纹、星宫图背景、深解数据、组合引擎

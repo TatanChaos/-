@@ -62,6 +62,7 @@ try {
     "/ai.html",
     "/静观.html",
     "/路线.html",
+    "/自检.html",
     "/api/huangli",
     "/huangli.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")

@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>系统自检 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/cinematic.css">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --amber: #8a5c2b;
+    --teal: #1f4a44;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+  }
+  * { box-sizing: border-box; }
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 18px;
+    background: rgba(23, 34, 30, .72);
+    backdrop-filter: blur(12px);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper-soft);
+  }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .header-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247, 242, 230, .28);
+    padding: 6px 10px;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 900px);
+    margin: 0 auto;
+    padding: 40px 18px 64px;
+  }
+  .check-hero {
+    text-align: center;
+    color: var(--paper-soft);
+  }
+  .check-hero .seal {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 6px 11px;
+    border: 1px solid var(--red);
+    color: #f3c7c1;
+    font-size: 11px;
+    letter-spacing: .2em;
+    transform: rotate(-2deg);
+  }
+  .check-hero h2 {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: clamp(30px, 7vw, 52px);
+    line-height: 1.2;
+    letter-spacing: .08em;
+  }
+  .check-hero p {
+    max-width: 580px;
+    margin: 14px auto 0;
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(247, 242, 230, .78);
+  }
+  .check-section {
+    margin-top: 20px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--teal);
+  }
+  .check-section h3 {
+    margin: 0 0 8px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 18px;
+    color: var(--ink-deep);
+  }
+  .check-section p {
+    margin: 0 0 12px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .hardware-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .hardware-grid div {
+    padding: 10px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+  }
+  .hardware-grid b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .hardware-grid span {
+    font-size: 13px;
+    color: var(--ink-deep);
+  }
+  .check-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .check-actions button {
+    min-height: 44px;
+    padding: 0 16px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--teal);
+    background: var(--teal);
+    color: #fff;
+    cursor: pointer;
+  }
+  .check-actions button.secondary {
+    background: transparent;
+    color: var(--teal);
+  }
+  .check-out {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+    white-space: pre-wrap;
+  }
+  .principle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+  }
+  .principle-grid div {
+    padding: 10px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--red);
+  }
+  .principle-grid b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ink-deep);
+  }
+  .principle-grid span {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .layer-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .layer-links a {
+    padding: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--red);
+    text-decoration: none;
+    font-size: 12px;
+  }
+  @media (max-width: 520px) {
+    header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body class="theme-life">
+  <header>
+    <div>
+      <h1 data-en="System Self-Check">系统自检</h1>
+      <p>硬件 · 多线程 · Worker · 路线 · 设计原则</p>
+    </div>
+    <div class="header-links">
+      <a href="入口.html">版本入口</a>
+      <a href="路线.html">五层路线</a>
+      <a href="静观.html">静观</a>
+    </div>
+  </header>
+  <main>
+    <section class="check-hero">
+      <span class="seal">自检</span>
+      <h2>不是嘴上说燃尽<br>是给你一个能按的仪表盘</h2>
+      <p>这里直接检测本机硬件、服务端多线程、浏览器 Worker、组合引擎 Worker、五层路线和设计原则。所有自检都只在本机运行。</p>
+    </section>
+    <section class="check-section" aria-label="硬件与算力">
+      <h3>硬件与算力</h3>
+      <p>数据来自 `/api/hardware`，显示当前本机真实状态。</p>
+      <div class="hardware-grid" id="hardwareGrid">
+        <div><b>芯片</b><span id="hwModel">读取中…</span></div>
+        <div><b>架构</b><span id="hwArch">读取中…</span></div>
+        <div><b>核心</b><span id="hwCores">读取中…</span></div>
+        <div><b>内存</b><span id="hwMem">读取中…</span></div>
+        <div><b>Node</b><span id="hwNode">读取中…</span></div>
+      </div>
+      <div class="check-actions">
+        <button type="button" id="serverBenchmark">服务端多核自检</button>
+        <button type="button" id="browserBenchmark" class="secondary">浏览器 Worker 自检</button>
+        <button type="button" id="combineBenchmark" class="secondary">组合 Worker 自检</button>
+      </div>
+      <div class="check-out" id="checkOut" aria-live="polite">等待自检…</div>
+    </section>
+    <section class="check-section" aria-label="五层路线">
+      <h3>五层路线</h3>
+      <p>主次已经收成一条线，不是功能超市。</p>
+      <div class="layer-links">
+        <a href="index.html">入门 · 沙盘</a>
+        <a href="translator.html">深读 · 术语</a>
+        <a href="排盘/八字.html">排盘 · 八字</a>
+        <a href="samples.html">验证 · 样本</a>
+        <a href="静观.html">收心 · 静观</a>
+      </div>
+    </section>
+    <section class="check-section" aria-label="设计原则">
+      <h3>设计原则</h3>
+      <p>经史子集佛道转成系统规则，不是塞金句。</p>
+      <div class="principle-grid">
+        <div><b>少则得</b><span>顶栏只留少量主入口</span></div>
+        <div><b>物有本末</b><span>五层路线有先后</span></div>
+        <div><b>知止</b><span>候选不进公开版</span></div>
+        <div><b>致中和</b><span>界面安静克制动效</span></div>
+        <div><b>清静</b><span>不制造焦虑</span></div>
+        <div><b>无住</b><span>断语都是候选</span></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var out = document.getElementById("checkOut");
+      var hw = {
+        model: document.getElementById("hwModel"),
+        arch: document.getElementById("hwArch"),
+        cores: document.getElementById("hwCores"),
+        mem: document.getElementById("hwMem"),
+        node: document.getElementById("hwNode")
+      };
+      function setOut(text) {
+        out.textContent = text;
+      }
+      function gb(n) {
+        return Math.round(n / 1024 / 1024 / 1024) + " GB";
+      }
+      fetch("/api/hardware").then(function (r) { return r.json(); }).then(function (d) {
+        hw.model.textContent = d.model || "unknown";
+        hw.arch.textContent = d.arch || "unknown";
+        hw.cores.textContent = d.cores + " 核";
+        hw.mem.textContent = gb(d.totalMem);
+        hw.node.textContent = d.node || "unknown";
+      }).catch(function () {
+        hw.model.textContent = "未连接";
+        setOut("硬件接口未连接，请用本地服务端模式打开。");
+      });
+      document.getElementById("serverBenchmark").addEventListener("click", function () {
+        setOut("正在调度服务端全部核心…");
+        fetch("/api/benchmark").then(function (r) { return r.json(); }).then(function (d) {
+          setOut(d.model + " · " + d.arch + "\n并行核心：" + d.cores + "\n总耗时：" + d.wallMs + " ms\n总算力：" + d.totalOps.toLocaleString() + " ops");
+        }).catch(function () {
+          setOut("服务端算力自检失败。");
+        });
+      });
+      document.getElementById("browserBenchmark").addEventListener("click", function () {
+        var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16);
+        setOut("正在调度浏览器 " + cores + " 个 Worker…");
+        var started = performance.now();
+        var jobs = [];
+        for (var i = 0; i < cores; i += 1) {
+          jobs.push(new Promise(function (resolve, reject) {
+            var worker = new Worker("assets/benchmark-worker.js");
+            worker.onmessage = function (e) { worker.terminate(); resolve(e.data.ops); };
+            worker.onerror = function (e) { worker.terminate(); reject(e); };
+            worker.postMessage({ duration: 600 });
+          }));
+        }
+        Promise.all(jobs).then(function (results) {
+          var total = results.reduce(function (a, b) { return a + b; }, 0);
+          setOut("浏览器并行 Worker：" + cores + "\n总耗时：" + Math.round(performance.now() - started) + " ms\n总算力：" + total.toLocaleString() + " ops");
+        }).catch(function () {
+          setOut("浏览器 Worker 不可用。");
+        });
+      });
+      document.getElementById("combineBenchmark").addEventListener("click", function () {
+        var text = "甲子 ".repeat(2100).trim();
+        setOut("正在向组合 Worker 提交 2100 个对象…");
+        fetch("/api/combine", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text, page: 0, size: 50 })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          setOut("对象：" + d.tokenCount + "\n两两关系：" + d.pairCount.toLocaleString() + "\n分页：" + d.pageCount.toLocaleString() + " 页\n本页返回：" + d.pairs.length + " 对");
+        }).catch(function () {
+          setOut("组合 Worker 自检失败。");
+        });
+      });
+    })();
+  </script>
+  <script src="assets/cinematic.js"></script>
+</body>
+</html>
