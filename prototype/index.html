@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>颐真书房 · 试墨版</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+<style>
+  :root {
+    --bg: #edf0ea;
+    --paper: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --amber: #8a5c2b;
+    --teal: #1f4a44;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("../assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    padding: 14px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .head-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 40px; height: 40px; }
+  .brand h1 { margin: 0; font-size: 18px; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .badge { font-size: 11px; padding: 4px 8px; border: 1px solid var(--gold); color: var(--gold); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  nav button {
+    font: inherit;
+    font-size: 12px;
+    padding: 7px 11px;
+    cursor: pointer;
+    border: 1px solid rgba(247,242,230,.24);
+    background: rgba(247,242,230,.07);
+    color: #e9ece4;
+  }
+  nav button.active, nav button:hover { border-color: var(--red); background: var(--red); color: #fff; }
+  main { width: min(100%, 1000px); margin: 0 auto; padding: 24px 18px 40px; }
+  .module-head { padding: 14px; margin-bottom: 14px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--red); }
+  .module-head h2 { margin: 0; font-size: 22px; }
+  .module-head p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .card { padding: 14px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--gold); }
+  .card h3 { margin: 0 0 8px; font-size: 16px; }
+  .card p { margin: 5px 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+  details.card summary { cursor: pointer; font-size: 15px; font-weight: 700; }
+  .tool { padding: 16px; background: var(--paper); border: 1px solid var(--line); }
+  .tool input, .tool select {
+    width: 100%;
+    margin: 6px 0 10px;
+    padding: 10px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: #fffdf8;
+    color: var(--ink);
+  }
+  .tool button { padding: 10px 16px; font: inherit; border: 1px solid var(--red); background: var(--red); color: #fff; cursor: pointer; }
+  .output { margin-top: 12px; padding: 14px; background: #f4efe3; border-left: 3px solid var(--gold); font-size: 13px; line-height: 1.9; }
+  .footnote { margin-top: 20px; padding: 12px; background: #f2e6d2; border-left: 4px solid var(--amber); font-size: 12px; line-height: 1.8; color: var(--muted); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="head-inner">
+      <div class="brand">
+        <img src="../assets/logo.svg" alt="颐真">
+        <div><h1>颐真书房 · 试墨版</h1><p>独立原型 · 不完整 · 不依赖服务</p></div>
+      </div>
+      <span class="badge">试墨</span>
+    </div>
+    <nav id="nav">
+      <button type="button" data-view="jiazi">六十甲子</button>
+      <button type="button" data-view="symbols">十天干 · 十二地支</button>
+      <button type="button" data-view="combination">组合盘</button>
+      <button type="button" data-view="interact">任意干支互动</button>
+    </nav>
+  </header>
+  <main id="content"></main>
+  <div class="footnote" style="max-width:1000px;margin:0 auto 30px;width:calc(100% - 36px);">
+    <strong>试墨说明</strong>：这是独立原型，双击本文件即可打开。它不完整，不接数据库，不上传数据；只用来试手感、看结构、验思路。
+  </div>
+  <script src="../assets/combination-engine.js"></script>
+  <script src="../assets/jiazi-60.js"></script>
+  <script src="../assets/deep-data.js"></script>
+  <script src="../assets/jiazi-deep.js"></script>
+  <script src="../assets/nayin-deep.js"></script>
+  <script>
+    const content = document.getElementById("content");
+    const nav = document.getElementById("nav");
+    const GAN = CombinationEngine.GAN;
+    const ZHI = CombinationEngine.ZHI;
+    const ALL = [...GAN, ...ZHI];
+    let view = "jiazi";
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function header(title, desc) {
+      return `<div class="module-head"><h2>${esc(title)}</h2><p>${esc(desc)}</p></div>`;
+    }
+
+    function render() {
+      nav.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.getAttribute("data-view") === view));
+      if (view === "jiazi") renderJiazi();
+      if (view === "symbols") renderSymbols();
+      if (view === "combination") renderCombination();
+      if (view === "interact") renderInteract();
+    }
+
+    function renderJiazi() {
+      const cards = JIAZI_60.map(line => {
+        const [pair, text] = line.split("：");
+        const d = JIAZI_DEEP[pair] || {};
+        return `<details class="card"><summary>${esc(pair)} · ${esc(text)}</summary>
+          <p>开门见山：${esc(d.essence || text)}</p>
+          <p>怎么用：${esc(d.use || "待补")}</p>
+          <p>过与不及：${esc(d.over || "待补")}</p>
+          <p>怎么验证：${esc(d.verify || "待样本")}</p>
+          <p>批注：${esc(d.luokuan || "留白给你")}</p>
+        </details>`;
+      }).join("");
+      content.innerHTML = header("六十甲子", "60 组，点开看完整结构。") + `<div class="card-grid">${cards}</div>`;
+    }
+
+    function renderSymbols() {
+      const cards = ALL.map(key => {
+        const d = DEEP_DATA[key] || {};
+        return `<details class="card"><summary>${esc(key)}</summary>
+          <p>出处：${esc(d.source || "待补")}</p>
+          <p>本义：${esc(d.benyi || "待补")}</p>
+          <p>天象：${esc(d.tian || "待补")}</p>
+          <p>地象：${esc(d.di || "待补")}</p>
+          <p>人象：${esc(d.ren || "待补")}</p>
+          <p>体：${esc(d.ti || "待补")}</p>
+          <p>用：${esc(d.yong || "待补")}</p>
+          <p>过：${esc(d.guo || "待补")}</p>
+          <p>现代：${esc(d.modern || "待补")}</p>
+          <p>生活：${esc(d.life || "待补")}</p>
+          <p>验证：${esc(d.verify || "待样本")}</p>
+          <p>批注：${esc(d.luokuan || "留白给你")}</p>
+        </details>`;
+      }).join("");
+      content.innerHTML = header("十天干 · 十二地支", "22 个符号全盘展开。") + `<div class="card-grid">${cards}</div>`;
+    }
+
+    function renderCombination() {
+      content.innerHTML = header("组合盘", "输入任意干支组合，按规则逐对生成。") + `<div class="tool">
+        <input id="comboInput" placeholder="例如：甲子 乙丑 丙寅">
+        <button id="comboGo">读组合</button>
+        <div id="comboOut" class="output">等待输入…</div>
+      </div>`;
+      document.getElementById("comboGo").addEventListener("click", runCombo);
+      document.getElementById("comboInput").addEventListener("keydown", e => { if (e.key === "Enter") runCombo(); });
+    }
+
+    function runCombo() {
+      const text = document.getElementById("comboInput").value.trim();
+      const tokens = CombinationEngine.parseTokens(text);
+      if (tokens.length < 2) {
+        document.getElementById("comboOut").textContent = "请至少写两个对象。";
+        return;
+      }
+      const total = CombinationEngine.pairCount(tokens.length);
+      const page = CombinationEngine.pagePairs(tokens, 0, 30);
+      const rows = page.pairs.map(([a, b]) => {
+        const key = a + b;
+        const d = JIAZI_DEEP[key] || {};
+        return `${a} × ${b}：${d.essence || "待补"}`;
+      }).join("\n");
+      document.getElementById("comboOut").textContent = `共 ${tokens.length} 个对象，${total} 对关系。\n${rows}`;
+    }
+
+    function renderInteract() {
+      const opts = ALL.map(k => `<option value="${k}">${k}</option>`).join("");
+      content.innerHTML = header("任意干支互动", "任选两个符号，看结构。") + `<div class="tool">
+        <select id="ia">${opts}</select>
+        <select id="ib">${opts}</select>
+        <button id="interactGo">读互动</button>
+        <div id="interactOut" class="output">等待选择…</div>
+      </div>`;
+      document.getElementById("interactGo").addEventListener("click", runInteract);
+      document.getElementById("ia").value = "甲";
+      document.getElementById("ib").value = "子";
+      runInteract();
+    }
+
+    function runInteract() {
+      const a = document.getElementById("ia").value;
+      const b = document.getElementById("ib").value;
+      const key = a + b;
+      const d = JIAZI_DEEP[key] || {};
+      document.getElementById("interactOut").textContent = `${a} × ${b}\n${d.essence || "暂未覆盖，待补。"}\n真实样本回填前不作断言。`;
+    }
+
+    nav.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      view = b.getAttribute("data-view");
+      render();
+    }));
+    render();
+  </script>
+</body>
+</html>
