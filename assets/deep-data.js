@@ -10,7 +10,7 @@ const DEEP_FIELD_LABELS = [
   ["modern", "现代"],
   ["life", "生活"],
   ["verify", "验证"],
-  ["luokuan", "落款"]
+  ["luokuan", "你的批注"]
 ];
 
 const DEEP_DATA = {

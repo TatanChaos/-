@@ -1943,8 +1943,8 @@
           </div>
           <div id="compareOut" class="compare-out">选任意天干/地支：干支相配看六十甲子，同系统看关系。</div>
           <div class="compare-note">
-            <label for="compareNoteInput"><span class="compare-seal" aria-hidden="true">印</span>落款 · 你的解</label>
-            <textarea id="compareNoteInput" placeholder="像在画上落款：写你自己读出的这一笔"></textarea>
+            <label for="compareNoteInput"><span class="compare-seal" aria-hidden="true">印</span>你的批注</label>
+            <textarea id="compareNoteInput" placeholder="像在画上写你的批注：写你自己读出的这一笔"></textarea>
             <div class="compare-note-actions">
               <button type="button" class="compare-note-btn primary" id="compareNoteSave">盖印保存</button>
               <button type="button" class="compare-note-btn" id="compareNoteClear">清空</button>
@@ -2014,7 +2014,7 @@
       <p id="stopEssence"></p>
       <p id="stopEdge"></p>
       <p id="stopRelation"></p>
-      <div class="stop-blank">留白 · 你的落款</div>
+      <div class="stop-blank">留白 · 你的批注</div>
       <div class="stop-actions">
         <button type="button" id="stopClose">再停一会儿</button>
         <button type="button" class="primary" id="stopEnter">进入沙盘</button>
@@ -2544,7 +2544,7 @@
     ];
     if (generic) rows.splice(1, 0, ["甲子", jiazi]);
     if (compound) rows.push(["复合", compound + "：多个维度同时在场，不能只看单象。"]);
-    const selfSteps = "<div class=\"situation-self\"><b>自己解开自己</b><span>1. 对照：你描述的情况里，最像 " + first + " 或 " + second + " 的部分是哪一块？像在哪里？</span><span>2. 落款：用你自己的话写一句：我现在真正在做什么。</span><span>3. 验证：接下来 3 天记录一个可观察的变化，回填样本时才算数。</span></div>";
+    const selfSteps = "<div class=\"situation-self\"><b>自己解开自己</b><span>1. 对照：你描述的情况里，最像 " + first + " 或 " + second + " 的部分是哪一块？像在哪里？</span><span>2. 你的批注：用你自己的话写一句：我现在真正在做什么。</span><span>3. 验证：接下来 3 天记录一个可观察的变化，回填样本时才算数。</span></div>";
     out.innerHTML = "<strong><span class=\"situation-seal\">解</span>干支解</strong>（" + (generic ? "通用" : "候选") + "）<div class=\"situation-rows\">" + rows.map(r => "<div class=\"situation-row-item\"><b>" + r[0] + "</b><span>" + r[1] + "</span></div>").join("") + "</div>" + selfSteps + "<p>" + (generic ? "这是未精确匹配时的通用结构解；" : "") + "陪你拆结构，不是大师断语。</p>";
     const btn = document.createElement("button");
     btn.type = "button";
@@ -2914,7 +2914,7 @@
     if (deep) {
       return {
         title: "六十甲子 · " + key,
-        body: "<b>一针见血</b>：" + deep.essence + "<br><b>怎么用</b>：" + deep.use + "<br><b>过与不及</b>：" + deep.over + "<br><b>怎么验证</b>：" + deep.verify
+        body: "<b>开门见山</b>：" + deep.essence + "<br><b>怎么用</b>：" + deep.use + "<br><b>过与不及</b>：" + deep.over + "<br><b>怎么验证</b>：" + deep.verify
       };
     }
     if (key && text) {
@@ -3442,11 +3442,11 @@
       return `<details class="corpus-symbol" open>
         <summary>${pair} · ${text}</summary>
         <div class="rows">
-          <div class="row"><div class="label">一针见血</div><div class="value">${deep.essence || text}</div></div>
+          <div class="row"><div class="label">开门见山</div><div class="value">${deep.essence || text}</div></div>
           <div class="row"><div class="label">怎么用</div><div class="value">${deep.use || "待补"}</div></div>
           <div class="row"><div class="label">过与不及</div><div class="value">${deep.over || "待补"}</div></div>
           <div class="row"><div class="label">怎么验证</div><div class="value">${deep.verify || "待真实样本"}</div></div>
-          <div class="row"><div class="label">落款</div><div class="value">${deep.luokuan || "留白给你"}</div></div>
+          <div class="row"><div class="label">你的批注</div><div class="value">${deep.luokuan || "留白给你"}</div></div>
         </div>
       </details>`;
     }).join("") : "";
@@ -3484,7 +3484,7 @@
         <div class="situation-self">
           <b>自己解开自己</b>
           <span>1. 对照：你现在的处境里，哪一部分最像 ${headKey} 的结构？</span>
-          <span>2. 落款：用你自己的话写一句：我现在真正在做什么。</span>
+          <span>2. 你的批注：用你自己的话写一句：我现在真正在做什么。</span>
           <span>3. 验证：接下来 3 天记录一个可观察的变化，回填样本时才算数。</span>
         </div>
         <div class="full-interact" data-a="${headKey}">

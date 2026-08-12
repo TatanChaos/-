@@ -224,7 +224,7 @@
       { term: "驿马", group: "三式", src: "三式通行术语（流派差异待复核）", plain: "变动和触发的信号。", modern: "迁移、变化、动态点。", scene: "出行、调动、突发变化。", note: "信号要等样本验证。", source: "三式" },
       { term: "河图洛书", group: "三式", src: "易学通行体系（待复核）", plain: "古人的矩阵和拓扑。", modern: "数字结构、空间模型。", scene: "把复杂关系放进格子。", note: "模型不是咒语。", source: "易学" },
       { term: "象", group: "原理", src: "《周易·系辞》：圣人立象以尽意", plain: "语言说不清时，用符号搭桥。", modern: "结构模型、系统映射。", scene: "把现实翻译成可检查的结构。", note: "象是桥，不是终点。", source: "周易" },
-      { term: "留白", group: "原理", src: "《老子》：有之以为利，无之以为用；《文心雕龙》：隐也者，文外之重旨者也", plain: "空处才是用。", modern: "界面留白、系统留接口、判断留余地。", scene: "系统讲完，留给你落款。", note: "墨给够，但不能铺满。", source: "老子/文心雕龙" },
+      { term: "留白", group: "原理", src: "《老子》：有之以为利，无之以为用；《文心雕龙》：隐也者，文外之重旨者也", plain: "空处才是用。", modern: "界面留白、系统留接口、判断留余地。", scene: "系统讲完，留给你写自己的解。", note: "墨给够，但不能铺满。", source: "老子/文心雕龙" },
       { term: "谋事在人成事在天", group: "原理", src: "俗语，作品定位语", plain: "人负责如实做事，结果由现实给。", modern: "过程可控，结果待验证。", scene: "做样本、做记录、不承诺结果。", note: "这是边界，不是口号。", source: "俗语" },
       { term: "太极", group: "原理", src: "《周易·系辞》：易有太极，是生两仪", plain: "还没分之前的整体。", modern: "系统未拆分前的全量。", scene: "一个问题还没拆开时的混沌感。", note: "太极不是空，是包含一切。", source: "周易" },
       { term: "两仪", group: "原理", src: "《周易·系辞》：是生两仪", plain: "阴阳两股势。", modern: "二分类、主客、正反。", scene: "任何事拆开都有两边。", note: "两仪是分，不是争。", source: "周易" },
@@ -406,8 +406,8 @@
           <p class="src">${d.src}</p>
           <div class="row"><b>人话</b>${d.plain}</div>
           ${deepRows}
-          ${JIAZI_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>落款</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
-          ${NAYIN_DEEP[d.term] ? `<div class="row"><b>一针见血</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
+          ${JIAZI_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>你的批注</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
+          ${NAYIN_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
           <div class="row"><b>现代结构</b>${d.modern}</div>
           <div class="row"><b>生活场景</b>${d.scene}</div>
           <div class="row"><b>边界</b>${d.note}</div>
