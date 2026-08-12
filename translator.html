@@ -131,6 +131,38 @@
   .term .src { margin: 0 0 8px; font-size: 11px; color: var(--amber); line-height: 1.6; }
   .term .row { margin: 7px 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
   .term .row b { display: block; color: var(--red); font-size: 11px; letter-spacing: .08em; }
+  .term-group {
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+  }
+  .term-group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    color: var(--ink-deep);
+  }
+  .term-group summary span {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .term-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .term summary {
+    cursor: pointer;
+  }
   footer {
     padding: 14px 18px 24px;
     font-size: 11px;
@@ -397,26 +429,41 @@
         const status = sourceStatus(d.src);
         return (activeGroup === "全部" || d.group === activeGroup) && (activeStatus === "all" || status === activeStatus) && (!q || searchable.includes(q));
       });
-      grid.innerHTML = list.map(d => {
-        const deepSym = DEEP_DATA[d.term] || {};
-        const status = sourceStatus(d.src);
-        const deepRows = DEEP_FIELD_LABELS
-          .filter(([field]) => !["source", "modern", "life"].includes(field) && deepSym[field])
-          .map(([field, label]) => `<div class="row"><b>${label}</b>${deepSym[field]}</div>`)
-          .join("");
-        return `
-        <article class="term">
-          <h3>${d.term}<span class="src-badge ${status}">${status === "ok" ? "已对校" : status === "synthetic" ? "初笺/通行" : "待复核"}</span></h3>
-          <p class="src">${d.src}</p>
-          <div class="row"><b>人话</b>${d.plain}</div>
-          ${deepRows}
-          ${JIAZI_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>你的批注</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
-          ${NAYIN_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
-          <div class="row"><b>现代结构</b>${d.modern}</div>
-          <div class="row"><b>生活场景</b>${d.scene}</div>
-          <div class="row"><b>边界</b>${d.note}</div>
-          <div class="row"><b>出处</b>${d.source}</div>
-        </article>`;
+      const grouped = {};
+      list.forEach(d => {
+        (grouped[d.group] = grouped[d.group] || []).push(d);
+      });
+      const groupOrder = ["天干", "地支", "关系", "六十甲子", "纳音", "八字", "三式", "天文", "原理"];
+      const keys = Object.keys(grouped).sort((a, b) => {
+        const ia = groupOrder.indexOf(a);
+        const ib = groupOrder.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+      const openGroups = !!(q || activeStatus !== "all" || activeGroup !== "全部");
+      grid.innerHTML = keys.map(group => {
+        const items = grouped[group];
+        const cards = items.map(d => {
+          const deepSym = DEEP_DATA[d.term] || {};
+          const status = sourceStatus(d.src);
+          const deepRows = DEEP_FIELD_LABELS
+            .filter(([field]) => !["source", "modern", "life"].includes(field) && deepSym[field])
+            .map(([field, label]) => `<div class="row"><b>${label}</b>${deepSym[field]}</div>`)
+            .join("");
+          return `
+          <details class="term">
+            <summary><h3>${d.term}<span class="src-badge ${status}">${status === "ok" ? "已对校" : status === "synthetic" ? "初笺/通行" : "待复核"}</span></h3></summary>
+            <p class="src">${d.src}</p>
+            <div class="row"><b>人话</b>${d.plain}</div>
+            ${deepRows}
+            ${JIAZI_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${JIAZI_DEEP[d.term].essence}</div><div class="row"><b>怎么用</b>${JIAZI_DEEP[d.term].use}</div><div class="row"><b>过与不及</b>${JIAZI_DEEP[d.term].over}</div><div class="row"><b>怎么验证</b>${JIAZI_DEEP[d.term].verify}</div><div class="row"><b>你的批注</b>${JIAZI_DEEP[d.term].luokuan}</div>` : ""}
+            ${NAYIN_DEEP[d.term] ? `<div class="row"><b>开门见山</b>${NAYIN_DEEP[d.term].sharp}</div><div class="row"><b>过与不及</b>${NAYIN_DEEP[d.term].limit}</div><div class="row"><b>怎么验证</b>${NAYIN_DEEP[d.term].verify}</div>` : ""}
+            <div class="row"><b>现代结构</b>${d.modern}</div>
+            <div class="row"><b>生活场景</b>${d.scene}</div>
+            <div class="row"><b>边界</b>${d.note}</div>
+            <div class="row"><b>出处</b>${d.source}</div>
+          </details>`;
+        }).join("");
+        return `<details class="term-group"${openGroups ? " open" : ""}><summary>${group}<span>${items.length} 项</span></summary><div class="term-grid">${cards}</div></details>`;
       }).join("");
     }
     search.addEventListener("input", render);
