@@ -51,6 +51,7 @@ try {
     "/assets/jiazi-deep.js",
     "/assets/nayin-deep.js",
     "/assets/combination-engine.js",
+    "/assets/benchmark-worker.js",
     "/api/status",
     "/api/audit",
     "/api/samples",

@@ -3670,6 +3670,47 @@
     }
   }
 
+  function runBrowserBenchmark() {
+    var out = document.getElementById("combinationOut");
+    var btn = document.getElementById("browserBenchmarkGo");
+    if (!out || !btn) return;
+    var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16);
+    btn.disabled = true;
+    out.innerHTML = '<div class="compare-out">正在调度浏览器 ' + cores + ' 个 Worker 并行计算…</div>';
+    var started = performance.now();
+    var jobs = [];
+    for (var i = 0; i < cores; i += 1) {
+      jobs.push(new Promise(function (resolve, reject) {
+        var worker = new Worker("assets/benchmark-worker.js");
+        worker.onmessage = function (e) {
+          worker.terminate();
+          resolve(Number(e.data.ops) || 0);
+        };
+        worker.onerror = function (e) {
+          worker.terminate();
+          reject(e);
+        };
+        worker.postMessage({ duration: 600 });
+      }));
+    }
+    Promise.all(jobs).then(function (results) {
+      var wallMs = Math.round(performance.now() - started);
+      var total = results.reduce(function (a, b) { return a + b; }, 0);
+      out.innerHTML = `
+        <div class="rows">
+          <div class="row"><div class="label">浏览器</div><div class="value">${navigator.userAgent}</div></div>
+          <div class="row"><div class="label">并行 Worker</div><div class="value">${cores} 个</div></div>
+          <div class="row"><div class="label">总耗时</div><div class="value">${wallMs} ms</div></div>
+          <div class="row"><div class="label">总算力</div><div class="value">${total.toLocaleString()} ops / 600ms 每 Worker</div></div>
+        </div>
+        <span class="compare-caveat">浏览器本地自检，不上传。</span>`;
+    }).catch(function () {
+      out.innerHTML = '<div class="compare-out">浏览器 Worker 不可用，已回退到服务端算力自检。</div>';
+    }).finally(function () {
+      btn.disabled = false;
+    });
+  }
+
   function renderCompareOptions() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
@@ -3952,6 +3993,7 @@
           <button type="button" id="combinationGo">读组合</button>
           <button type="button" id="combinationDemo10k" class="subnav-btn">1万对象演示</button>
           <button type="button" id="benchmarkGo" class="subnav-btn">M5 Pro 算力自检</button>
+          <button type="button" id="browserBenchmarkGo" class="subnav-btn">浏览器多核自检</button>
         </div>
         <div id="combinationOut" class="compare-out">组合数量不靠写死，按规则逐对生成；真实样本回填前全部是候选。</div>
         <span class="compare-caveat">真实样本回填前不作断言。</span>`,
@@ -4020,6 +4062,8 @@
     if (combinationDemo10k) combinationDemo10k.addEventListener("click", run10kDemo);
     const benchmarkGo = document.getElementById("benchmarkGo");
     if (benchmarkGo) benchmarkGo.addEventListener("click", runHardwareBenchmark);
+    const browserBenchmarkGo = document.getElementById("browserBenchmarkGo");
+    if (browserBenchmarkGo) browserBenchmarkGo.addEventListener("click", runBrowserBenchmark);
     const jiaziPairA = document.getElementById("jiaziPairA");
     const jiaziPairB = document.getElementById("jiaziPairB");
     if (jiaziPairA && jiaziPairB) {

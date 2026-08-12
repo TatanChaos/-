@@ -228,6 +228,50 @@
     line-height: 1.6;
     color: var(--muted);
   }
+  .design-principles {
+    margin-top: 22px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+  }
+  .design-principles h3 {
+    margin: 0 0 6px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 18px;
+    color: var(--ink-deep);
+  }
+  .design-principles > p {
+    margin: 0 0 12px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .principle-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .principle-list div {
+    padding: 10px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+  }
+  .principle-list b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ink-deep);
+  }
+  .principle-list span {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .design-principles a {
+    color: var(--red);
+  }
   .today-row {
     display: flex;
     gap: 10px;
@@ -352,6 +396,19 @@
       <div class="depth-chip"><b>生活</b><span>回到你能做的事</span></div>
       <div class="depth-chip"><b>验证</b><span>真实结果回填</span></div>
       <div class="depth-chip"><b>留白</b><span>你的批注自己落</span></div>
+    </section>
+    <section class="design-principles" aria-label="系统设计原则">
+      <h3>这套系统怎么来的</h3>
+      <p>不是金句墙，是六条可执行原则。每一条都对应一个具体设计决定。</p>
+      <div class="principle-list">
+        <div><b>少则得</b><span>主线只留少量入口，模块收进抽屉</span></div>
+        <div><b>物有本末</b><span>五层路线，先入门再验证</span></div>
+        <div><b>知止</b><span>候选不成熟，不进公开版</span></div>
+        <div><b>致中和</b><span>安静界面，克制动效</span></div>
+        <div><b>清静</b><span>不制造焦虑，不逼你马上决定</span></div>
+        <div><b>无住</b><span>断语全是候选，样本回填才算数</span></div>
+      </div>
+      <p><a href="docs/viewer.html?file=设计原则_2026-08-12.md" target="_blank">读完整设计原则</a></p>
     </section>
   </main>
   <script>
