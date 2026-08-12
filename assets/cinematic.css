@@ -12,6 +12,16 @@ select,
 textarea {
   touch-action: manipulation;
 }
+h1[data-en]::after {
+  content: "/ " attr(data-en);
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--header-muted, #c7d3cd);
+}
 body::before {
   content: "";
   position: fixed;
