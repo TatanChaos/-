@@ -92,15 +92,37 @@
   .module-nav a {
     font: inherit;
     font-size: 12px;
-    padding: 6px 9px;
+    padding: 7px 11px;
     cursor: pointer;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: var(--ink);
+    border: 1px solid rgba(247, 242, 230, .24);
+    background: rgba(247, 242, 230, .07);
+    color: #e9ece4;
     text-decoration: none;
   }
+  .module-nav button::before,
+  .module-nav a::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
   .module-nav button:hover,
-  .module-nav a:hover { border-color: var(--teal); color: #0b4f4a; }
+  .module-nav a:hover {
+    border-color: var(--red);
+    background: var(--red);
+    color: #fff;
+  }
+  .module-nav a.active {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--ink-deep);
+    font-weight: 700;
+  }
+  .module-nav a.active::before { background: var(--ink-deep); }
+  .status-detail { opacity: .78; }
   .version-chip {
     border: 1px solid var(--gold);
     color: var(--gold);
@@ -699,6 +721,8 @@
     .layout { grid-template-columns: 1fr; }
     .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
     .workspace { grid-template-columns: 1fr; }
+    .module-nav { width: 100%; }
+    .status-detail { display: none; }
   }
   @media (max-width: 520px) {
     .topbar { flex-direction: column; align-items: flex-start; }
@@ -1913,7 +1937,7 @@
       <a href="index.html?module=corpus">十天干 · 十二地支</a>
       <a href="index.html?module=interact">任意干支互动</a>
     </nav>
-    <div class="status"><span class="dot"></span><span class="version-chip">体验版 v0.3</span><span>六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
+    <div class="status"><span class="dot"></span><span class="version-chip">体验版 v0.3</span><span class="status-detail">六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
   </header>
   <section class="notice" role="note" aria-label="使用声明">
     <h2>声明 · 文化研究工具</h2>
@@ -3693,6 +3717,9 @@
     showWorkspace();
     renderDetail();
     persistState();
+    document.querySelectorAll(".module-nav a").forEach(a => {
+      if (a.getAttribute("href").includes(moduleParam)) a.classList.add("active");
+    });
   }
   function openNotesFromLink() {
     chooseScene(SCENARIOS[0]);
