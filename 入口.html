@@ -47,6 +47,15 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 12px;
   }
+  .section-label {
+    margin: 22px 0 10px;
+    padding-left: 10px;
+    border-left: 4px solid var(--gold);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-deep);
+  }
+  .cards.one { grid-template-columns: minmax(220px, 420px); }
   .card {
     display: block;
     padding: 16px;
@@ -75,8 +84,12 @@
   </header>
   <main>
     <p class="intro">这里把当前所有可进入的版本和功能摆出来。你想进哪个就点哪个，不用记网址。</p>
-    <div class="cards">
+    <div class="section-label">标准版</div>
+    <div class="cards one">
       <a class="card primary" href="index.html"><b>标准版 v0.3</b><span>当前唯一公开版本：沙盘、六十甲子、组合盘、互动、深解。</span><span class="tag">标准版</span></a>
+    </div>
+    <div class="section-label">功能</div>
+    <div class="cards">
       <a class="card" href="稽古.html"><b>稽古状态</b><span>195 条出处审计，待复核 0。</span><span class="tag">审计</span></a>
       <a class="card" href="ai.html"><b>AI 深解</b><span>把生活问题翻译成结构语言。</span><span class="tag">本地规则</span></a>
       <a class="card" href="huangli.html"><b>黄历</b><span>宜忌、冲煞、彭祖百忌，本地历法。</span><span class="tag">黄历</span></a>
@@ -85,8 +98,11 @@
       <a class="card" href="samples.html"><b>真实样本站</b><span>四句话交样本，本地草稿回填。</span><span class="tag">样本</span></a>
       <a class="card" href="排盘/八字.html"><b>八字排盘</b><span>输入出生时间，排四柱结构。</span><span class="tag">排盘</span></a>
       <a class="card" href="sanshi/index.html"><b>古三式入口</b><span>太乙、奇门、六壬内测。</span><span class="tag">三式</span></a>
-      <a class="card" href="门户/index.html"><b>旧门户</b><span>早期独立入口，保留查看。</span><span class="tag">历史</span></a>
       <a class="card" href="learn.html"><b>自己解开自己</b><span>自读入门，知识公开。</span><span class="tag">自读</span></a>
+    </div>
+    <div class="section-label">其他</div>
+    <div class="cards">
+      <a class="card" href="门户/index.html"><b>旧门户</b><span>早期独立入口，保留查看。</span><span class="tag">历史</span></a>
       <a class="card" href="updates.html"><b>更新公告</b><span>版本记录与未来计划。</span><span class="tag">公告</span></a>
       <a class="card disabled" href="#"><b>正式版 v1</b><span>待真实样本与公开上线。</span><span class="tag">未开放</span></a>
     </div>
