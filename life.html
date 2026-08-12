@@ -173,6 +173,24 @@
   .card .row { margin: 8px 0; font-size: 12px; line-height: 1.75; color: var(--muted); }
   .card .row b { display: block; margin-bottom: 3px; color: var(--amber); font-size: 11px; letter-spacing: .08em; }
   .card a { font-size: 12px; }
+  .card.collapsible summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  .card.collapsible summary::-webkit-details-marker {
+    display: none;
+  }
+  .card.collapsible summary::before {
+    content: "▸ ";
+    color: var(--red);
+  }
+  .card.collapsible[open] summary::before {
+    content: "▾ ";
+  }
+  .card.collapsible summary h3 {
+    display: inline;
+    margin: 0;
+  }
   .week {
     margin-top: 12px;
     padding: 16px;
@@ -567,12 +585,26 @@
     <a href="samples.html">真实样本征集</a> · <a href="稽古.html">稽古状态</a> · <a href="updates.html">更新公告</a> · <a href="feedback.html">意见与讨论</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
   </footer>
   <script>
+    document.querySelectorAll(".cards .card").forEach(card => {
+      const title = card.querySelector("h3");
+      if (!title || card.tagName === "DETAILS") return;
+      const details = document.createElement("details");
+      details.className = card.className + " collapsible";
+      const summary = document.createElement("summary");
+      summary.appendChild(title);
+      details.appendChild(summary);
+      Array.from(card.children).forEach(child => {
+        if (child !== title) details.appendChild(child);
+      });
+      card.replaceWith(details);
+    });
     const comboSearch = document.getElementById("comboSearch");
     if (comboSearch) {
       comboSearch.addEventListener("input", () => {
         const q = comboSearch.value.trim();
         document.querySelectorAll("#comboGrid .card").forEach(card => {
           card.hidden = !!q && !card.innerText.includes(q);
+          if (!card.hidden && q) card.open = true;
         });
       });
     }
