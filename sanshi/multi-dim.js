@@ -17,7 +17,13 @@
         { x: 0, y: 2, z: 0 },
         { x: 2, y: 4, z: 2 }
       ],
-      state: ["主算31", "客算16", "定算29", "文昌艮", "始击巳"]
+      state: ["主算31", "客算16", "定算29", "文昌艮", "始击巳"],
+      read: [
+        ["空间", "九宫"],
+        ["时间", "局"],
+        ["状态", "主客算"]
+      ],
+      why: "现实局面同时有空间、时间、力量大小和状态。九宫给空间，局给时间，主客算给力量，所以一张平面图装不下。"
     },
     qimen: {
       title: "奇门 · 多维盘",
@@ -33,7 +39,13 @@
         { x: 0, y: 4, z: 0 },
         { x: 0, y: 6, z: 0 }
       ],
-      state: ["年家", "月家", "日家", "时家", "门星神"]
+      state: ["年家", "月家", "日家", "时家", "门星神"],
+      read: [
+        ["空间", "九宫"],
+        ["时间", "年/月/日/时"],
+        ["状态", "门星神"]
+      ],
+      why: "同一件事会同时按年、月、日、时四个尺度发生。九宫是空间骨架，四层时间叠起来，才能表达当前在哪个尺度上。"
     },
     liuren: {
       title: "六壬 · 多维盘",
@@ -48,7 +60,13 @@
         { x: -1.5, y: 2.5, z: 2.6 },
         { x: -2.6, y: 5, z: 1.5 }
       ],
-      state: ["重审", "四课", "三传", "旬空", "神煞"]
+      state: ["重审", "四课", "三传", "旬空", "神煞"],
+      read: [
+        ["空间", "天地盘"],
+        ["时间", "月将加时"],
+        ["状态", "四课三传"]
+      ],
+      why: "一件事不是静态的，而是从起点经路径到结果。天地盘是空间，月将加时是时间旋转，四课三传是演化过程。"
     }
   };
 
@@ -120,11 +138,16 @@
       '<div class="md-controls"><button type="button" id="mdPlay">暂停</button>',
       '<input type="range" min="0" max="1" step="0.001" value="0" aria-label="时间维度">',
       '<span id="mdState">时间 · 0%</span></div>',
+      '<div class="md-read">' + cfg.read.map(function (item) {
+        return '<div><b>' + item[0] + '</b><span>' + item[1] + "</span></div>";
+      }).join("") + "</div>",
+      '<div class="md-why"><b>为什么用多维</b>：' + cfg.why + "</div>",
       '<div class="md-legend"><b>读法</b><span>3D 空间</span><span>4D 时间</span><span>5D 状态</span><span>6D 样本</span><span>7D 口径</span><span>8D-10D 观察/验证/流派</span></div>'
     ].join("");
     panel.appendChild(container);
 
     var canvasHolder = container;
+    var wrap = panel.closest(".multi-dim-wrap");
     var renderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -268,6 +291,11 @@
       camera.updateProjectionMatrix();
     }
     resize();
+    if (wrap) {
+      wrap.addEventListener("toggle", function () {
+        if (wrap.open) resize();
+      });
+    }
     window.addEventListener("resize", resize);
     if (window.ResizeObserver) {
       new ResizeObserver(resize).observe(canvasHolder);

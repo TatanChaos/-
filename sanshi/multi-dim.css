@@ -1,3 +1,17 @@
+.multi-dim-wrap {
+  margin: 14px 0;
+}
+.multi-dim-wrap summary {
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.multi-dim-wrap[open] summary {
+  border-bottom: 0;
+}
 .multi-dim {
   position: relative;
   margin: 14px 0;
@@ -104,6 +118,40 @@
 }
 .md-legend span {
   color: #79d3c1;
+}
+.md-read {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.md-read div {
+  padding: 10px;
+  background: rgba(121, 211, 193, .06);
+  border: 1px solid rgba(121, 211, 193, .22);
+}
+.md-read b {
+  display: block;
+  margin-bottom: 4px;
+  color: #79d3c1;
+  font-size: 12px;
+}
+.md-read span {
+  color: #c2d7d1;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.md-why {
+  margin-top: 10px;
+  padding: 12px;
+  background: rgba(224, 90, 79, .08);
+  border-left: 3px solid #e05a4f;
+  color: #d7e2dd;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.md-why b {
+  color: #e05a4f;
 }
 @media (max-width: 520px) {
   .md-canvas {
