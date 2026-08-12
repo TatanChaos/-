@@ -3439,7 +3439,7 @@
     const jiaziHTML = detailTab === "jiazi" ? JIAZI_60.map(line => {
       const [pair, text] = line.split("：");
       const deep = JIAZI_DEEP[pair] || {};
-      return `<details class="corpus-symbol" open>
+      return `<details class="corpus-symbol">
         <summary>${pair} · ${text}</summary>
         <div class="rows">
           <div class="row"><div class="label">开门见山</div><div class="value">${deep.essence || text}</div></div>
@@ -3456,7 +3456,7 @@
         const [pair, text] = line.split("：");
         return `<div class="row"><div class="label">${pair}</div><div class="value">${text}</div></div>`;
       }).join("");
-      return `<details class="corpus-symbol" open>
+      return `<details class="corpus-symbol">
         <summary>${key} · ${meta.name || ""}（${meta.func || ""}）</summary>
         <div class="rows">${deepRowsFor(key)}${comboRows}${relationRowsFor(key)}</div>
       </details>`;
