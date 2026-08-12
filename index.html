@@ -1978,6 +1978,41 @@
     border-left: 3px solid var(--gold);
     border-radius: 6px;
   }
+  .module-drawer {
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .module-drawer summary {
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-deep);
+    cursor: pointer;
+  }
+  .module-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 8px;
+    border-top: 1px solid var(--line);
+  }
+  .module-links a {
+    padding: 8px 9px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--red);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .module-links a:hover {
+    border-color: var(--red);
+  }
+  .module-links a.active {
+    border-color: var(--red);
+    background: var(--red-soft);
+    color: var(--red);
+  }
   .compare-row {
     margin-top: 14px;
     gap: 10px;
@@ -2158,6 +2193,9 @@
       width: calc(100% - 24px);
       padding: 12px;
     }
+    .module-links {
+      grid-template-columns: 1fr;
+    }
     .ledger-quote {
       padding: 0 0 10px;
       border-right: 0;
@@ -2177,10 +2215,6 @@
     </div>
     <nav class="module-nav" aria-label="独立模块">
       <a href="入口.html">版本入口</a>
-      <a href="index.html?module=jiazi">六十甲子</a>
-      <a href="index.html?module=combination">组合盘</a>
-      <a href="index.html?module=corpus">十天干 · 十二地支</a>
-      <a href="index.html?module=interact">任意干支互动</a>
       <a href="ai.html">AI 深解</a>
       <a href="静观.html">静观</a>
     </nav>
@@ -2254,12 +2288,9 @@
         </div>
       </details>
       <div class="scene-portals">
-        <a class="portal-card" href="samples.html"><b>真实样本</b><span>四句话，把现实交回验证</span></a>
-        <a class="portal-card" href="排盘/八字.html"><b>八字排盘</b><span>输入出生时间，排四柱结构</span></a>
-        <a class="portal-card" href="life.html"><b>生活衔接卡</b><span>12 类现实事件，从生活进入</span></a>
         <a class="portal-card" href="learn.html"><b>自己解开自己</b><span>五步自读，知识公开可查</span></a>
-        <a class="portal-card" href="translator.html"><b>术语翻译</b><span>黑话 → 人话 → 现代结构，一一对应</span></a>
-        <a class="portal-card" href="稽古.html"><b>稽古状态</b><span>195 条出处审计，实时可见</span></a>
+        <a class="portal-card" href="life.html"><b>生活衔接卡</b><span>12 类现实事件，从生活进入</span></a>
+        <a class="portal-card" href="samples.html"><b>真实样本</b><span>四句话，把现实交回验证</span></a>
       </div>
       <div class="scene-skip-row">
         <button type="button" class="scene-skip" id="sceneSkip">直接看符号目录</button>
@@ -2275,6 +2306,23 @@
   <main class="layout" hidden>
   <aside class="symbol-list" aria-label="象数目录">
       <button type="button" class="scene-back" id="sceneBack">返回场景入口</button>
+      <details class="module-drawer">
+        <summary>模块目录 · 更多功能</summary>
+        <div class="module-links">
+          <a href="index.html?module=jiazi">六十甲子</a>
+          <a href="index.html?module=combination">组合盘</a>
+          <a href="index.html?module=corpus">十天干 · 十二地支</a>
+          <a href="index.html?module=interact">任意干支互动</a>
+          <a href="排盘/八字.html">八字排盘</a>
+          <a href="sanshi/index.html">古三式</a>
+          <a href="huangli.html">黄历</a>
+          <a href="translator.html">术语翻译</a>
+          <a href="稽古.html">稽古状态</a>
+          <a href="samples.html">真实样本</a>
+          <a href="路线.html">五层路线</a>
+          <a href="静观.html">静观</a>
+        </div>
+      </details>
       <details class="catalog" id="catalogPanel">
         <summary class="list-head">深入研究 · 象数目录</summary>
       <div class="mode-switch" id="modeSwitch" role="group" aria-label="符号体系">
@@ -4057,7 +4105,9 @@
     showWorkspace();
     renderDetail();
     persistState();
-    document.querySelectorAll(".module-nav a").forEach(a => {
+    const moduleDrawer = document.querySelector(".module-drawer");
+    if (moduleDrawer) moduleDrawer.open = true;
+    document.querySelectorAll(".module-nav a, .module-links a").forEach(a => {
       if (a.getAttribute("href").includes(moduleParam)) a.classList.add("active");
     });
   }
