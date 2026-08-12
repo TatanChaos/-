@@ -298,6 +298,7 @@
   }
   .draft-item .draft-status.done { color: #0b5f58; background: var(--teal-soft); border-color: #9fd6cd; }
   .draft-item .draft-status.pending { color: #8a5200; background: var(--amber-soft); border-color: #e6c58f; }
+  .draft-item .draft-status.refuted { color: #8f2d24; background: var(--red-soft); border-color: #e3b7af; }
   .draft-actions {
     display: flex;
     flex-wrap: wrap;
@@ -372,6 +373,15 @@
       <label><b>原话问题</b><textarea id="sampleQuestion" name="question" placeholder="当时问的原话，不需要专业术语"></textarea></label>
       <label><b>实际结果</b><textarea id="sampleResult" name="result" placeholder="事情后来怎么样了"></textarea></label>
       <label><b>来源</b><select id="sampleSource" name="source"><option>自己</option><option>朋友</option><option>匿名</option></select></label>
+      <label><b>验证状态</b>
+        <select id="sampleStatus" name="status">
+          <option value="待验证">待验证</option>
+          <option value="已应验">已应验</option>
+          <option value="已证伪">已证伪</option>
+        </select>
+      </label>
+      <label><b>判断方法/规则</b><input id="sampleMethod" name="method" placeholder="例如：巳申六合：连接层与规则层配合"></label>
+      <label><b>复盘</b><textarea id="sampleReview" name="review" placeholder="事后回看：哪条对、哪条错、下次怎么改"></textarea></label>
       <button type="submit" class="btn">生成提交页</button>
       <button type="button" class="btn secondary" id="saveDraft">保存本地草稿</button>
       <button type="button" class="btn secondary" id="exportSamples">导出样本 JSON</button>
@@ -462,16 +472,19 @@
         candidate: document.getElementById("sampleCandidate").value.trim(),
         hit: document.getElementById("sampleHit").value.trim(),
         score: document.getElementById("sampleScore").value,
-        privacy: document.getElementById("samplePrivacy").value.trim()
+        privacy: document.getElementById("samplePrivacy").value.trim(),
+        status: document.getElementById("sampleStatus").value,
+        method: document.getElementById("sampleMethod").value.trim(),
+        review: document.getElementById("sampleReview").value.trim()
       };
     }
-    function saveCurrentDraft(status) {
+    function saveCurrentDraft() {
       const data = readSampleForm();
       if (!data.category) {
         alert("先选一个你遇到的事类。");
         return null;
       }
-      const draft = { id: Date.now(), status: status || "待结果", at: new Date().toISOString(), ...data };
+      const draft = { id: Date.now(), status: data.status || "待验证", at: new Date().toISOString(), ...data };
       saveDrafts([draft, ...loadDrafts()]);
       renderDrafts();
       return draft;
@@ -487,9 +500,11 @@
           <p>结果：${esc(d.result || "待补")}</p>
           ${d.candidate ? `<p>候选：${esc(d.candidate)}</p>` : ""}
           ${d.hit ? `<p>命中说明：${esc(d.hit)}</p>` : ""}
+          ${d.method ? `<p>方法：${esc(d.method)}</p>` : ""}
+          ${d.review ? `<p>复盘：${esc(d.review)}</p>` : ""}
           ${d.score ? `<p>评分：${esc(d.score)}</p>` : ""}
           ${d.privacy ? `<p>隐私备注：${esc(d.privacy)}</p>` : ""}
-          <span class="draft-status ${d.status === "已回填" ? "done" : "pending"}">${esc(d.status || "待结果")}</span>
+          <span class="draft-status ${d.status === "已应验" ? "done" : d.status === "已证伪" ? "refuted" : "pending"}">${esc(d.status || "待验证")}</span>
           <div class="draft-actions">
             <button type="button" data-load="${d.id}">载入继续填</button>
             <button type="button" data-del="${d.id}">删除</button>
@@ -511,6 +526,9 @@
         document.getElementById("sampleHit").value = draft.hit || "";
         document.getElementById("sampleScore").value = draft.score || "";
         document.getElementById("samplePrivacy").value = draft.privacy || "";
+        document.getElementById("sampleStatus").value = draft.status || "待验证";
+        document.getElementById("sampleMethod").value = draft.method || "";
+        document.getElementById("sampleReview").value = draft.review || "";
         window.scrollTo({ top: 0, behavior: "smooth" });
       }));
       el.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => {
@@ -566,7 +584,7 @@
       const question = data.question;
       const result = data.result;
       const source = data.source;
-      saveCurrentDraft(result ? "已回填" : "待结果");
+      saveCurrentDraft();
       pushToSampleInbox(data).then(ok => {
         if (ok) alert("已存入本地样本箱。");
       });
@@ -576,8 +594,11 @@
         "原话问题: " + (question || "未填"),
         "实际结果: " + (result || "待补"),
         "来源: " + source,
+        "验证状态: " + data.status,
         ...(data.candidate ? ["事前候选: " + data.candidate] : []),
         ...(data.hit ? ["命中/落空说明: " + data.hit] : []),
+        ...(data.method ? ["判断方法/规则: " + data.method] : []),
+        ...(data.review ? ["复盘: " + data.review] : []),
         ...(data.score ? ["评分: " + data.score] : []),
         ...(data.privacy ? ["隐私备注: " + data.privacy] : [])
       ].join("\n");
@@ -586,7 +607,7 @@
     });
     document.getElementById("saveDraft").addEventListener("click", () => {
       const result = document.getElementById("sampleResult").value.trim();
-      saveCurrentDraft(result ? "已回填" : "待结果");
+      saveCurrentDraft();
     });
     document.getElementById("exportSamples").addEventListener("click", exportSamples);
     renderDrafts();

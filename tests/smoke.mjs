@@ -75,7 +75,7 @@ try {
   const sample = await fetch(new URL("/api/samples", base), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ category: "测试", time: "2026-08-12", question: "smoke test", result: "ok", source: "匿名" })
+    body: JSON.stringify({ category: "测试", time: "2026-08-12", question: "smoke test", result: "ok", source: "匿名", status: "待验证", method: "测试规则", review: "待复盘" })
   });
   const sampleData = await sample.json();
   assert(sample.status === 200 && sampleData.ok, "api/samples POST should save a sample");

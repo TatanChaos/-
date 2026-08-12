@@ -275,7 +275,10 @@ const server = http.createServer((req, res) => {
             time: String(data.time || "").slice(0, 120),
             question: String(data.question || "").slice(0, 2000),
             result: String(data.result || "").slice(0, 4000),
-            source: String(data.source || "").slice(0, 40)
+            source: String(data.source || "").slice(0, 40),
+            status: String(data.status || "待验证").slice(0, 20),
+            method: String(data.method || "").slice(0, 500),
+            review: String(data.review || "").slice(0, 4000)
           };
           if (!sample.category || !sample.question) {
             sendJson(res, 400, { error: "类别和原话问题不能为空。" });
