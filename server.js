@@ -65,6 +65,35 @@ function appendSample(sample) {
   fs.appendFileSync(SAMPLES_FILE, JSON.stringify(sample) + "\n");
 }
 
+function auditStatus(src) {
+  if (/待补原文|待确认|待收录|待锚定|初笺待复核/.test(src)) return "pending";
+  if (/待复核/.test(src) && !/通行|流派差异/.test(src)) return "pending";
+  if (/颐真初笺|初笺|通行|流派差异/.test(src)) return "synthetic";
+  if (src.includes("已对校")) return "verified";
+  return "verified";
+}
+
+function auditSummary() {
+  const deepText = fs.readFileSync(path.join(ROOT, "assets/deep-data.js"), "utf8");
+  const deepSources = [...deepText.matchAll(/source: "([^"]+)"/g)].map(m => m[1]);
+  const translator = fs.readFileSync(path.join(ROOT, "translator.html"), "utf8");
+  const terms = [...translator.matchAll(/\{ term: "([^"]+)", group: "([^"]+)", src: "([^"]+)"/g)].map(m => m[3]);
+  const all = [...deepSources, ...terms];
+  const counts = { total: all.length, verified: 0, synthetic: 0, pending: 0 };
+  for (const src of all) {
+    const status = auditStatus(src);
+    counts[status] += 1;
+  }
+  const docs = fs.readdirSync(path.join(ROOT, "docs")).filter(f => f.endsWith(".md"));
+  let docsPending = 0;
+  for (const file of docs) {
+    const content = fs.readFileSync(path.join(ROOT, "docs", file), "utf8");
+    const matches = content.match(/待复核|待补原文|待确认|待收录|待锚定/g);
+    docsPending += matches ? matches.length : 0;
+  }
+  return { ...counts, docsPending };
+}
+
 function buildBaziText(dt, gender) {
   const now = new Date();
   const match = String(dt || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?/);
@@ -103,6 +132,11 @@ const server = http.createServer((req, res) => {
       engine: true,
       serverTime: new Date().toISOString()
     });
+    return;
+  }
+
+  if (parsed.pathname === "/api/audit") {
+    sendJson(res, 200, auditSummary());
     return;
   }
 

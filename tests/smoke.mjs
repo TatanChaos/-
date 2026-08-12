@@ -52,7 +52,9 @@ try {
     "/assets/nayin-deep.js",
     "/assets/combination-engine.js",
     "/api/status",
+    "/api/audit",
     "/api/samples",
+    "/稽古.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];
   for (const page of pages) {
