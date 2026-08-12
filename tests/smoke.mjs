@@ -54,6 +54,7 @@ try {
     "/api/status",
     "/api/audit",
     "/api/samples",
+    "/api/ai",
     "/稽古.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];

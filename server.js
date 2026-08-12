@@ -181,22 +181,40 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (parsed.pathname === "/api/ai" && req.method === "POST") {
-    let body = "";
-    req.on("data", chunk => {
-      body += chunk;
-      if (body.length > 50000) req.destroy();
-    });
-    req.on("end", () => {
-      try {
-        const data = JSON.parse(body || "{}");
-        const text = String(data.text || "").slice(0, 2000);
-        const result = aiReply(text);
-        sendJson(res, 200, { ok: true, engine: result.engine, ollamaReady: ollamaAvailable(), reply: result.reply });
-      } catch {
-        sendJson(res, 400, { error: "请求体不是有效 JSON。" });
-      }
-    });
+  if (parsed.pathname === "/api/ai") {
+    if (req.method === "POST") {
+      let body = "";
+      req.on("data", chunk => {
+        body += chunk;
+        if (body.length > 50000) req.destroy();
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body || "{}");
+          const text = String(data.text || "").slice(0, 2000);
+          const result = aiReply(text);
+          sendJson(res, 200, { ok: true, engine: result.engine, ollamaReady: ollamaAvailable(), reply: result.reply });
+        } catch {
+          sendJson(res, 400, { error: "请求体不是有效 JSON。" });
+        }
+      });
+      return;
+    }
+    if (req.method === "GET") {
+      sendJson(res, 200, {
+        ok: true,
+        note: "这是一个 JSON 接口，不是网页。浏览器直接打开可以看状态；调用请用 POST。",
+        usage: {
+          method: "POST",
+          url: "/api/ai",
+          body: { text: "客户不回复" }
+        },
+        engine: "rule",
+        ollamaReady: ollamaAvailable()
+      });
+      return;
+    }
+    sendJson(res, 405, { error: "Method Not Allowed" });
     return;
   }
 
