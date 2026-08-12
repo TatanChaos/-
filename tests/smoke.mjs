@@ -55,6 +55,8 @@ try {
     "/api/audit",
     "/api/samples",
     "/api/ai",
+    "/api/hardware",
+    "/api/benchmark",
     "/稽古.html",
     "/ai.html",
     "/api/huangli",
@@ -74,6 +76,12 @@ try {
   assert(api.status === 200, "api/combine should return 200");
   assert(data.pairCount === 3, `api/combine pairCount should be 3, got ${data.pairCount}`);
   assert(data.pairs.length === 3, "api/combine should return all 3 pairs");
+  const hardware = await fetch(new URL("/api/hardware", base));
+  const hardwareData = await hardware.json();
+  assert(hardware.status === 200 && hardwareData.cores >= 1, "api/hardware should report local cores");
+  const benchmark = await fetch(new URL("/api/benchmark", base));
+  const benchmarkData = await benchmark.json();
+  assert(benchmark.status === 200 && benchmarkData.ok && benchmarkData.cores >= 1, "api/benchmark should run across local cores");
   const sample = await fetch(new URL("/api/samples", base), {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -1,6 +1,8 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
+const { Worker } = require("worker_threads");
 const { execSync } = require("child_process");
 const vm = require("vm");
 const Engine = require("./assets/combination-engine.js");
@@ -12,6 +14,7 @@ try {
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
 const HOST = process.env.HOST || "0.0.0.0";
+process.env.UV_THREADPOOL_SIZE ||= String(Math.max(4, os.cpus().length));
 const SAMPLES_FILE = path.join(ROOT, "data", "samples-inbox.ndjson");
 
 function loadGlobal(rel, name) {
@@ -56,6 +59,69 @@ function handleCombine(text, page, size, res) {
 function sendJson(res, status, data) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
   res.end(JSON.stringify(data));
+}
+
+function hardwareStatus() {
+  const cpus = os.cpus();
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
+  return {
+    ok: true,
+    platform: os.platform(),
+    arch: os.arch(),
+    hostname: os.hostname(),
+    cores: cpus.length,
+    model: cpus[0] ? cpus[0].model : "unknown",
+    speedMHz: cpus[0] ? cpus[0].speed : 0,
+    totalMem,
+    freeMem,
+    memoryUsedPercent: totalMem ? Math.round((1 - freeMem / totalMem) * 100) : 0,
+    loadAvg: os.loadavg(),
+    node: process.version,
+    pid: process.pid,
+    uptime: process.uptime()
+  };
+}
+
+function runBenchmark() {
+  return new Promise((resolve, reject) => {
+    const cores = Math.max(1, os.cpus().length);
+    const started = Date.now();
+    let remaining = cores;
+    let totalOps = 0;
+    let failed = false;
+    const workers = [];
+    const finish = () => {
+      if (failed) return;
+      if (remaining > 0) return;
+      resolve({
+        ok: true,
+        cores,
+        wallMs: Date.now() - started,
+        totalOps,
+        opsPerCore: Math.round(totalOps / cores),
+        model: os.cpus()[0] ? os.cpus()[0].model : "unknown",
+        arch: os.arch()
+      });
+    };
+    for (let i = 0; i < cores; i += 1) {
+      const worker = new Worker(path.join(ROOT, "workers", "benchmark-worker.js"));
+      workers.push(worker);
+      worker.once("message", msg => {
+        totalOps += Number(msg.ops || 0);
+        remaining -= 1;
+        worker.terminate();
+        finish();
+      });
+      worker.once("error", err => {
+        if (failed) return;
+        failed = true;
+        workers.forEach(w => w.terminate());
+        reject(err);
+      });
+      worker.postMessage({ duration: 600 });
+    }
+  });
 }
 
 function countKeys(rel) {
@@ -239,6 +305,18 @@ const server = http.createServer((req, res) => {
       engine: true,
       serverTime: new Date().toISOString()
     });
+    return;
+  }
+
+  if (parsed.pathname === "/api/hardware") {
+    sendJson(res, 200, hardwareStatus());
+    return;
+  }
+
+  if (parsed.pathname === "/api/benchmark" && req.method === "GET") {
+    runBenchmark()
+      .then(result => sendJson(res, 200, result))
+      .catch(err => sendJson(res, 500, { ok: false, error: err.message }));
     return;
   }
 

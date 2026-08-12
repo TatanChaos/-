@@ -31,6 +31,8 @@ node server.js
 
 组合盘在服务端模式下按页计算，不把全部组合一次性塞给浏览器；`file://` 下自动回退到前端分页。
 服务状态可查：`http://127.0.0.1:8780/api/status`。
+本地算力可查：`http://127.0.0.1:8780/api/hardware`；算力自检会用本机全部核心并行跑一次短压测：`http://127.0.0.1:8780/api/benchmark`。
+`npm start` 会按 M5 Pro 这类多核机器放开 libuv 线程池，并给 Node 堆预留更大空间；多核 Worker 任务放在 `workers/`。
 本地样本箱：提交的样本写入 `data/samples-inbox.ndjson`，不会进公开页面，也不会被 Git 追踪。
 样本字段含验证状态、判断方法、复盘与评分，形成“方法 → 结论 → 回测 → 反哺”的闭环。
 公开部署步骤见 [docs/部署说明.md](docs/部署说明.md)。

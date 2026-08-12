@@ -6,6 +6,7 @@
 <title>符号映射沙盘</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="stylesheet" href="assets/cinematic.css">
+<link rel="stylesheet" href="assets/tactical.css">
 <style>
   :root {
     --bg: #f4f2ec;
@@ -2061,7 +2062,7 @@
   }
 </style>
 </head>
-<body class="theme-sandbox">
+<body class="theme-sandbox ui-tactical">
   <header class="topbar">
     <div class="brand">
       <div class="mark"><img src="assets/logo.svg" alt="颐真 · 象数"></div>
@@ -2078,7 +2079,7 @@
       <a href="index.html?module=interact">任意干支互动</a>
       <a href="ai.html">AI 深解</a>
     </nav>
-    <div class="status"><span class="dot"></span><span class="version-chip">标准版 v0.3</span><span class="status-detail">六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
+    <div class="status"><span class="dot"></span><span class="version-chip">标准版 v0.3</span><span class="hardware-chip" id="hardwareStatus">本地算力 · 自检中</span><span class="status-detail">六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
   </header>
   <section class="notice" role="note" aria-label="使用声明">
     <h2>声明 · 文化研究工具</h2>
@@ -3454,6 +3455,46 @@
     await loadCombinationApiPage(0);
   }
 
+  async function runHardwareBenchmark() {
+    const out = document.getElementById("combinationOut");
+    const btn = document.getElementById("benchmarkGo");
+    if (!out || !btn) return;
+    btn.disabled = true;
+    out.innerHTML = '<div class="compare-out">正在调度本机所有核心并行计算…</div>';
+    try {
+      const res = await fetch("/api/benchmark");
+      if (!res.ok) throw new Error("benchmark error");
+      const d = await res.json();
+      out.innerHTML = `
+        <div class="rows">
+          <div class="row"><div class="label">芯片</div><div class="value">${d.model} · ${d.arch}</div></div>
+          <div class="row"><div class="label">并行核心</div><div class="value">${d.cores} 核同时满载</div></div>
+          <div class="row"><div class="label">总耗时</div><div class="value">${d.wallMs} ms</div></div>
+          <div class="row"><div class="label">总算力</div><div class="value">${Number(d.totalOps).toLocaleString()} ops / 600ms 每核</div></div>
+        </div>
+        <span class="compare-caveat">本地压力自检，不采集、不上传。</span>`;
+    } catch {
+      out.innerHTML = '<div class="compare-out">算力自检接口未连接。请用本地服务端模式打开。</div>';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function loadHardwareStatus() {
+    const el = document.getElementById("hardwareStatus");
+    if (!el) return;
+    try {
+      const res = await fetch("/api/hardware");
+      if (!res.ok) throw new Error("hardware error");
+      const d = await res.json();
+      el.textContent = (d.model || d.arch || "本地") + " · " + d.cores + " 核";
+      const totalGb = Math.round(d.totalMem / 1024 / 1024 / 1024);
+      el.title = "内存 " + totalGb + " GB · Node " + d.node;
+    } catch {
+      el.textContent = "本地算力 · 未连接";
+    }
+  }
+
   function renderCompareOptions() {
     const aEl = document.getElementById("compareA");
     const bEl = document.getElementById("compareB");
@@ -3735,6 +3776,7 @@
           <input id="combinationInput" placeholder="例如：甲子 乙丑 丙寅；或 甲 子 午">
           <button type="button" id="combinationGo">读组合</button>
           <button type="button" id="combinationDemo10k" class="subnav-btn">1万对象演示</button>
+          <button type="button" id="benchmarkGo" class="subnav-btn">M5 Pro 算力自检</button>
         </div>
         <div id="combinationOut" class="compare-out">组合数量不靠写死，按规则逐对生成；真实样本回填前全部是候选。</div>
         <span class="compare-caveat">真实样本回填前不作断言。</span>`,
@@ -3801,6 +3843,8 @@
     }
     const combinationDemo10k = document.getElementById("combinationDemo10k");
     if (combinationDemo10k) combinationDemo10k.addEventListener("click", run10kDemo);
+    const benchmarkGo = document.getElementById("benchmarkGo");
+    if (benchmarkGo) benchmarkGo.addEventListener("click", runHardwareBenchmark);
     const jiaziPairA = document.getElementById("jiaziPairA");
     const jiaziPairB = document.getElementById("jiaziPairB");
     if (jiaziPairA && jiaziPairB) {
@@ -3839,6 +3883,7 @@
   }
 
   restoreState();
+  loadHardwareStatus();
   renderScenes();
   renderTodaySymbol();
   renderModeButtons();
@@ -3958,6 +4003,7 @@
   });
   renderNotes();
 </script>
-<script src="assets/cinematic.js"></script>
+  <script src="assets/cinematic.js"></script>
+  <script src="assets/tactical.js"></script>
 </body>
 </html>

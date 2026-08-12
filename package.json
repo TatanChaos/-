@@ -4,7 +4,7 @@
   "private": true,
   "description": "颐真书房：把干支、六十甲子、关系与验证做成可互动的文化研究工具",
   "scripts": {
-    "start": "node server.js",
+    "start": "UV_THREADPOOL_SIZE=16 node --max-old-space-size=4096 server.js",
     "check": "node tests/verify.mjs",
     "audit": "node tests/audit-sources.mjs",
     "test": "node tests/verify.mjs",
