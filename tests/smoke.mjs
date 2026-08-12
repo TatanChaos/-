@@ -59,6 +59,7 @@ try {
     "/api/benchmark",
     "/稽古.html",
     "/ai.html",
+    "/静观.html",
     "/api/huangli",
     "/huangli.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
