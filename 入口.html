@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>版本入口 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --amber: #8a5c2b;
+    --teal: #1f4a44;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    padding: 14px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper-soft);
+  }
+  .head-inner { max-width: 1000px; margin: 0 auto; }
+  .head-inner h1 { margin: 0; font-size: 20px; }
+  .head-inner p { margin: 3px 0 0; font-size: 12px; color: #c7d3cd; }
+  main { width: min(100%, 1000px); margin: 0 auto; padding: 26px 18px 40px; }
+  .intro { margin: 0 0 20px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    display: block;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .card:hover { border-left-color: var(--red); background: var(--paper-soft); }
+  .card b { display: block; font-size: 16px; color: var(--ink-deep); }
+  .card span { display: block; margin-top: 5px; font-size: 12px; line-height: 1.7; color: var(--muted); }
+  .card .tag { display: inline-block; margin-top: 9px; font-size: 11px; padding: 3px 7px; border: 1px solid var(--line); color: var(--amber); }
+  .card.primary { border-left-color: var(--red); }
+  .card.primary .tag { color: var(--red); border-color: var(--red); }
+  .card.disabled { opacity: .45; pointer-events: none; }
+  .note { margin-top: 20px; padding: 14px; background: var(--wash); border-left: 4px solid var(--teal); font-size: 12px; line-height: 1.8; color: var(--muted); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="head-inner">
+      <h1>颐真书房 · 版本入口</h1>
+      <p>试墨最粗 → 体验版最全 → 正式版未来</p>
+    </div>
+  </header>
+  <main>
+    <p class="intro">这里把当前所有可进入的版本和功能摆出来。你想进哪个就点哪个，不用记网址。</p>
+    <div class="cards">
+      <a class="card primary" href="prototype/index.html"><b>试墨版</b><span>独立原型，最粗，只试手感，不依赖服务。</span><span class="tag">原型</span></a>
+      <a class="card primary" href="index.html"><b>体验版 v0.3</b><span>当前主版本：沙盘、六十甲子、组合盘、互动、深解。</span><span class="tag">当前</span></a>
+      <a class="card" href="稽古.html"><b>稽古状态</b><span>195 条出处审计，待复核 0。</span><span class="tag">审计</span></a>
+      <a class="card" href="ai.html"><b>AI 深解</b><span>把生活问题翻译成结构语言。</span><span class="tag">本地规则</span></a>
+      <a class="card" href="translator.html"><b>术语翻译工作台</b><span>173 个词条，黑话、人话、现代结构。</span><span class="tag">词典</span></a>
+      <a class="card" href="life.html"><b>生活衔接卡</b><span>28 组常见组合拆解。</span><span class="tag">生活</span></a>
+      <a class="card" href="samples.html"><b>真实样本站</b><span>四句话交样本，本地草稿回填。</span><span class="tag">样本</span></a>
+      <a class="card" href="排盘/八字.html"><b>八字排盘</b><span>输入出生时间，排四柱结构。</span><span class="tag">排盘</span></a>
+      <a class="card" href="sanshi/index.html"><b>古三式入口</b><span>太乙、奇门、六壬内测。</span><span class="tag">三式</span></a>
+      <a class="card" href="门户/index.html"><b>旧门户</b><span>早期独立入口，保留查看。</span><span class="tag">历史</span></a>
+      <a class="card" href="learn.html"><b>自己解开自己</b><span>自读入门，知识公开。</span><span class="tag">自读</span></a>
+      <a class="card" href="updates.html"><b>更新公告</b><span>版本记录与未来计划。</span><span class="tag">公告</span></a>
+      <a class="card disabled" href="#"><b>正式版 v1</b><span>待真实样本与公开上线。</span><span class="tag">未开放</span></a>
+    </div>
+    <div class="note"><strong>版本关系</strong>：试墨版只试手感；体验版是当前完整功能；正式版 v1 等真实样本、稽核、发布流程完成后才开放。</div>
+  </main>
+</body>
+</html>
