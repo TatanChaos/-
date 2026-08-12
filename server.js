@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { execSync } = require("child_process");
 const Engine = require("./assets/combination-engine.js");
 let Solar = null;
 try {
@@ -102,6 +103,15 @@ function auditSummary() {
   return { ...counts, docsPending };
 }
 
+function ollamaAvailable() {
+  try {
+    execSync("which ollama", { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function buildBaziText(dt, gender) {
   const now = new Date();
   const match = String(dt || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?/);
@@ -145,6 +155,28 @@ const server = http.createServer((req, res) => {
 
   if (parsed.pathname === "/api/audit") {
     sendJson(res, 200, auditSummary());
+    return;
+  }
+
+  if (parsed.pathname === "/api/ai" && req.method === "POST") {
+    let body = "";
+    req.on("data", chunk => {
+      body += chunk;
+      if (body.length > 50000) req.destroy();
+    });
+    req.on("end", () => {
+      try {
+        const data = JSON.parse(body || "{}");
+        const text = String(data.text || "").slice(0, 2000);
+        const tokens = Engine.parseTokens(text).slice(0, 6);
+        const reply = tokens.length
+          ? "结构：" + tokens.join("、") + "。先把现实拆成可验证的动作，再用样本回填；这是本地规则深解，不是外部 AI 断语。"
+          : "暂时没读到干支结构。请再写一个具体生活问题，例如：客户不回复、钱卡住、想太多不动。";
+        sendJson(res, 200, { ok: true, engine: "rule", ollamaReady: ollamaAvailable(), reply });
+      } catch {
+        sendJson(res, 400, { error: "请求体不是有效 JSON。" });
+      }
+    });
     return;
   }
 

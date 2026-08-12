@@ -80,6 +80,13 @@ try {
   const exportRes = await fetch(new URL("/api/samples/export", base));
   const exportData = await exportRes.json();
   assert(exportRes.status === 200 && Array.isArray(exportData.samples), "api/samples/export should return an array");
+  const ai = await fetch(new URL("/api/ai", base), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: "客户不回复" })
+  });
+  const aiData = await ai.json();
+  assert(ai.status === 200 && aiData.ok && aiData.engine === "rule", "api/ai should return rule fallback");
 
   if (errors.length) {
     console.error(errors.join("\n"));
