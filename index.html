@@ -98,6 +98,7 @@
     background: rgba(247, 242, 230, .07);
     color: #e9ece4;
     text-decoration: none;
+    transition: border-color .16s ease, background .16s ease, color .16s ease;
   }
   .module-nav button::before,
   .module-nav a::before {
@@ -171,6 +172,7 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
+    transition: border-color .16s ease, background .16s ease, transform .16s ease;
   }
   .symbol-btn:hover { border-color: var(--teal); }
   .symbol-btn[aria-pressed="true"] {
@@ -220,6 +222,7 @@
     background: var(--surface);
     color: var(--muted);
     cursor: pointer;
+    transition: border-color .16s ease, background .16s ease, color .16s ease;
   }
   .subnav-btn:hover { border-color: var(--teal); }
   .subnav-btn[aria-pressed="true"] {
@@ -1218,6 +1221,7 @@
     border-top: 3px solid var(--gold);
     color: var(--ink);
     text-decoration: none;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
   }
   .portal-card b {
     display: block;
@@ -1235,6 +1239,8 @@
   .portal-card:hover {
     border-color: var(--red);
     background: var(--amber-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(40, 35, 25, .08);
   }
   .scene-skip-row {
     margin-top: 10px;
