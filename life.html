@@ -136,6 +136,31 @@
     background: var(--paper-soft);
     color: var(--ink);
   }
+  .life-question {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .life-question input {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--ink);
+  }
+  .life-question button {
+    padding: 10px 16px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+  }
   .card {
     padding: 14px;
     background: var(--surface);
@@ -196,6 +221,11 @@
     <h2>虚实怎么平衡</h2>
     <p class="intro">虚的是符号、黑话、候选解释；实的是时间、事件、结果。一条内容要能落地，就必须两头都有：先给一句人话，再给一个能做的动作，最后把结果交回样本。</p>
     <div class="balance"><strong>落地原则</strong>：符号只负责提供结构，不负责替你决定。现实里发生了什么、什么时候发生、后来怎样，才是真正的地基。</div>
+
+    <form class="life-question" action="index.html" method="get">
+      <input type="search" name="q" placeholder="说一个生活问题，例如：客户不回复、钱卡住、想太多不动">
+      <button type="submit">进沙盘拆解</button>
+    </form>
 
     <div class="section-title">十二类生活事件</div>
     <div class="cards">

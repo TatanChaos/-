@@ -3665,6 +3665,14 @@
     if (e.key === "Enter") explainSituation();
   });
   const urlParams = new URLSearchParams(location.search);
+  const initialSituation = urlParams.get("q") || urlParams.get("situation");
+  if (initialSituation) {
+    const situationInput = document.getElementById("situationInput");
+    if (situationInput) {
+      situationInput.value = initialSituation;
+      explainSituation();
+    }
+  }
   function openNotesFromLink() {
     chooseScene(SCENARIOS[0]);
     setTimeout(() => {
