@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const vm = require("vm");
 const Engine = require("./assets/combination-engine.js");
 let Solar = null;
 try {
@@ -12,6 +13,16 @@ const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
 const HOST = process.env.HOST || "0.0.0.0";
 const SAMPLES_FILE = path.join(ROOT, "data", "samples-inbox.ndjson");
+
+function loadGlobal(rel, name) {
+  const sandbox = {};
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, rel), "utf8"), sandbox);
+  return vm.runInContext(name, sandbox);
+}
+
+const JIAZI_60 = loadGlobal("assets/jiazi-60.js", "JIAZI_60");
+const JIAZI_DEEP = loadGlobal("assets/jiazi-deep.js", "JIAZI_DEEP");
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -114,6 +125,7 @@ function ollamaAvailable() {
 
 function ruleDeepReply(text) {
   const rules = [
+    { re: /杯|摔|碎|打翻|碰倒|掉地|掉到/, reply: "结构：酉+卯：精工/成品遇上并发冲击。判：东西在手里没拿稳，说明注意力被分散，像卯的忙碌撞上酉的易碎。用：先把手上非必要的事放下，一次只拿一件。验：记录专注做一件事后，意外是否减少。批注：摔的不是杯子，是节奏？" },
     { re: /客户|不回复|回复|联系/, reply: "结构：巳+丑：热连接进入冷库。判：对方不是没看见，是还没决定。用：停止追问，给一个明确选择项。验：记录给选择后是否回应。批注：你等的是客户，还是确认自己有用？" },
     { re: /钱.*卡|卡.*钱|钱不到位|缺钱|欠款|没到账/, reply: "结构：辰+申：库里有，规则卡住。判：不是没钱，是钱进不了该进的流程。用：先理清一条收支或交付规则。验：三天记录钱具体卡在哪一步。批注：你缺的是钱，还是路径？" },
     { re: /感情|喜欢|追求|对象|冷淡|复合|分手/, reply: "结构：巳+亥：热连接撞上没打开的源头。判：越追，对方越退回亥。用：停止加温，先确认对方需求。验：三天不主动联系后的反应。批注：你在乎的是人，还是回应？" },
@@ -128,9 +140,19 @@ function ruleDeepReply(text) {
     if (rule.re.test(text)) return rule.reply + " 真实样本回填前不作断言。";
   }
   const tokens = Engine.parseTokens(text).slice(0, 6);
-  return tokens.length
-    ? "结构：" + tokens.join("、") + "。先把现实拆成可验证的动作，再用样本回填；这是本地规则深解，不是外部 AI 断语。"
-    : "暂时没读到干支结构。请再写一个具体生活问题，例如：客户不回复、钱卡住、想太多不动。";
+  if (tokens.length) {
+    return "结构：" + tokens.join("、") + "。先把现实拆成可验证的动作，再用样本回填；这是本地规则深解，不是外部 AI 断语。";
+  }
+  const hash = [...String(text)].reduce((s, c) => s + c.codePointAt(0), 0);
+  const line = JIAZI_60[hash % JIAZI_60.length];
+  const pair = line.split("：")[0];
+  const d = JIAZI_DEEP[pair] || {};
+  return "结构：" + line +
+    "\n怎么用：" + (d.use || "先记录现实，再看结构是否变化。") +
+    "\n过与不及：" + (d.over || "过则重复，不及则没有开始。") +
+    "\n验证：" + (d.verify || "记录接下来 3 天的可观察变化。") +
+    "\n批注：" + (d.luokuan || "留白给你。") +
+    "\n这是通用结构解：真实样本回填前不作断言。";
 }
 
 function aiReply(text) {
