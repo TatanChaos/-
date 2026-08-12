@@ -3644,7 +3644,7 @@
       out.innerHTML = `
         <div class="rows">
           <div class="row"><div class="label">芯片</div><div class="value">${d.model} · ${d.arch}</div></div>
-          <div class="row"><div class="label">并行核心</div><div class="value">${d.cores} 核同时满载</div></div>
+          <div class="row"><div class="label">并行核心</div><div class="value">${d.cores} 核同时满载${d.limitedByMemory ? " · 内存保护降核" : ""}</div></div>
           <div class="row"><div class="label">总耗时</div><div class="value">${d.wallMs} ms</div></div>
           <div class="row"><div class="label">总算力</div><div class="value">${Number(d.totalOps).toLocaleString()} ops / 600ms 每核</div></div>
         </div>
@@ -3675,7 +3675,8 @@
     var out = document.getElementById("combinationOut");
     var btn = document.getElementById("browserBenchmarkGo");
     if (!out || !btn) return;
-    var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16);
+    var deviceMem = Number(navigator.deviceMemory) || 8;
+    var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16, deviceMem < 8 ? 8 : 16);
     btn.disabled = true;
     out.innerHTML = '<div class="compare-out">正在调度浏览器 ' + cores + ' 个 Worker 并行计算…</div>';
     var started = performance.now();

@@ -117,7 +117,10 @@ function hardwareStatus() {
 
 function runBenchmark() {
   return new Promise((resolve, reject) => {
-    const cores = Math.max(1, os.cpus().length);
+    const physicalCores = Math.max(1, os.cpus().length);
+    const freeGb = os.freemem() / 1024 / 1024 / 1024;
+    const memoryLimited = freeGb < 3;
+    const cores = memoryLimited ? Math.max(4, Math.floor(physicalCores * 0.6)) : physicalCores;
     const started = Date.now();
     let remaining = cores;
     let totalOps = 0;
@@ -133,7 +136,9 @@ function runBenchmark() {
         totalOps,
         opsPerCore: Math.round(totalOps / cores),
         model: os.cpus()[0] ? os.cpus()[0].model : "unknown",
-        arch: os.arch()
+        arch: os.arch(),
+        limitedByMemory: memoryLimited,
+        freeMemGb: Math.round(freeGb * 10) / 10
       });
     };
     for (let i = 0; i < cores; i += 1) {

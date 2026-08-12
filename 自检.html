@@ -301,13 +301,14 @@
       document.getElementById("serverBenchmark").addEventListener("click", function () {
         setOut("正在调度服务端全部核心…");
         fetch("/api/benchmark").then(function (r) { return r.json(); }).then(function (d) {
-          setOut(d.model + " · " + d.arch + "\n并行核心：" + d.cores + "\n总耗时：" + d.wallMs + " ms\n总算力：" + d.totalOps.toLocaleString() + " ops");
+          setOut(d.model + " · " + d.arch + "\n并行核心：" + d.cores + (d.limitedByMemory ? "（内存保护降核）" : "") + "\n总耗时：" + d.wallMs + " ms\n总算力：" + d.totalOps.toLocaleString() + " ops");
         }).catch(function () {
           setOut("服务端算力自检失败。");
         });
       });
       document.getElementById("browserBenchmark").addEventListener("click", function () {
-        var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16);
+        var deviceMem = Number(navigator.deviceMemory) || 8;
+        var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16, deviceMem < 8 ? 8 : 16);
         setOut("正在调度浏览器 " + cores + " 个 Worker…");
         var started = performance.now();
         var jobs = [];
