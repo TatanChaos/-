@@ -1,0 +1,61 @@
+body {
+  position: relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: url("star-chart-portal.jpg") center / cover no-repeat;
+  animation: kenburns 34s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(15, 22, 20, .78), rgba(25, 38, 34, .62), rgba(18, 24, 20, .84));
+}
+header,
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(23, 34, 30, .72) !important;
+  backdrop-filter: blur(12px);
+}
+main,
+.layout,
+.page-head,
+.grid,
+.cards {
+  position: relative;
+  z-index: 1;
+}
+.detail,
+.map-panel,
+.term,
+.sample-box,
+.sample-form,
+.tool,
+.ai-card,
+.chart-card,
+.card,
+.portal-card {
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.card:hover,
+.portal-card:hover,
+.term:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24);
+}
+@keyframes kenburns {
+  from { transform: scale(1) translateY(0); }
+  to { transform: scale(1.08) translateY(-1.2%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before, .card, .portal-card, .term { animation: none; transition: none; }
+}
