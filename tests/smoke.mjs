@@ -52,6 +52,7 @@ try {
     "/assets/nayin-deep.js",
     "/assets/combination-engine.js",
     "/api/status",
+    "/api/samples",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];
   for (const page of pages) {
@@ -67,6 +68,13 @@ try {
   assert(api.status === 200, "api/combine should return 200");
   assert(data.pairCount === 3, `api/combine pairCount should be 3, got ${data.pairCount}`);
   assert(data.pairs.length === 3, "api/combine should return all 3 pairs");
+  const sample = await fetch(new URL("/api/samples", base), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ category: "测试", time: "2026-08-12", question: "smoke test", result: "ok", source: "匿名" })
+  });
+  const sampleData = await sample.json();
+  assert(sample.status === 200 && sampleData.ok, "api/samples POST should save a sample");
 
   if (errors.length) {
     console.error(errors.join("\n"));

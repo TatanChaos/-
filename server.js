@@ -6,6 +6,7 @@ const Engine = require("./assets/combination-engine.js");
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
 const HOST = process.env.HOST || "0.0.0.0";
+const SAMPLES_FILE = path.join(ROOT, "data", "samples-inbox.ndjson");
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -47,6 +48,19 @@ function countKeys(rel) {
   return matches ? matches.length : 0;
 }
 
+function readSampleCount() {
+  try {
+    return fs.readFileSync(SAMPLES_FILE, "utf8").split("\n").filter(Boolean).length;
+  } catch {
+    return 0;
+  }
+}
+
+function appendSample(sample) {
+  fs.mkdirSync(path.dirname(SAMPLES_FILE), { recursive: true });
+  fs.appendFileSync(SAMPLES_FILE, JSON.stringify(sample) + "\n");
+}
+
 const server = http.createServer((req, res) => {
   const parsed = new URL(req.url, "http://127.0.0.1:" + PORT);
 
@@ -60,6 +74,45 @@ const server = http.createServer((req, res) => {
       engine: true,
       serverTime: new Date().toISOString()
     });
+    return;
+  }
+
+  if (parsed.pathname === "/api/samples") {
+    if (req.method === "GET") {
+      sendJson(res, 200, { ok: true, count: readSampleCount() });
+      return;
+    }
+    if (req.method === "POST") {
+      let body = "";
+      req.on("data", chunk => {
+        body += chunk;
+        if (body.length > 200000) req.destroy();
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body || "{}");
+          const sample = {
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+            at: new Date().toISOString(),
+            category: String(data.category || "").slice(0, 40),
+            time: String(data.time || "").slice(0, 120),
+            question: String(data.question || "").slice(0, 2000),
+            result: String(data.result || "").slice(0, 4000),
+            source: String(data.source || "").slice(0, 40)
+          };
+          if (!sample.category || !sample.question) {
+            sendJson(res, 400, { error: "类别和原话问题不能为空。" });
+            return;
+          }
+          appendSample(sample);
+          sendJson(res, 200, { ok: true, id: sample.id });
+        } catch {
+          sendJson(res, 400, { error: "请求体不是有效 JSON。" });
+        }
+      });
+      return;
+    }
+    sendJson(res, 405, { error: "Method Not Allowed" });
     return;
   }
 

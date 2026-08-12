@@ -353,7 +353,7 @@
       <button type="submit" class="btn">生成提交页</button>
       <button type="button" class="btn secondary" id="saveDraft">保存本地草稿</button>
       <button type="button" class="btn secondary" id="exportSamples">导出样本 JSON</button>
-      <p class="form-note">会打开 GitHub 预填页面，确认后再提交；可以分两次：先填时间和原话问题，结果出来再回来补。</p>
+      <p class="form-note">会打开 GitHub 预填页面，确认后再提交；服务端模式下会同时存入本地样本箱。可以分两次：先填时间和原话问题，结果出来再回来补。</p>
     </form>
 
     <div class="rules">
@@ -487,6 +487,19 @@
       a.remove();
       URL.revokeObjectURL(url);
     }
+    async function pushToSampleInbox(data) {
+      if (location.protocol === "file:") return false;
+      try {
+        const res = await fetch("/api/samples", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    }
     CATEGORIES.forEach(item => {
       const b = document.createElement("button");
       b.type = "button";
@@ -506,11 +519,15 @@
         alert("先选一个你遇到的事类。");
         return;
       }
-      const time = document.getElementById("sampleTime").value.trim();
-      const question = document.getElementById("sampleQuestion").value.trim();
-      const result = document.getElementById("sampleResult").value.trim();
-      const source = document.getElementById("sampleSource").value;
+      const data = readSampleForm();
+      const time = data.time;
+      const question = data.question;
+      const result = data.result;
+      const source = data.source;
       saveCurrentDraft(result ? "已回填" : "待结果");
+      pushToSampleInbox(data).then(ok => {
+        if (ok) alert("已存入本地样本箱。");
+      });
       const body = [
         "类别: " + activeCategory,
         "时间: " + (time || "未填"),
