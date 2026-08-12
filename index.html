@@ -6,7 +6,6 @@
 <title>符号映射沙盘</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="stylesheet" href="assets/cinematic.css">
-<link rel="stylesheet" href="assets/tactical.css">
 <style>
   :root {
     --bg: #f4f2ec;
@@ -2044,6 +2043,101 @@
   .module-nav a::before {
     display: none;
   }
+  .hardware-chip {
+    padding: 3px 8px;
+    border: 1px solid var(--gold);
+    color: var(--amber);
+    font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+  .subnav-btn:disabled {
+    opacity: .55;
+    cursor: wait;
+  }
+  .classic-ledger {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 14px;
+    width: calc(100% - 36px);
+    max-width: 1240px;
+    margin: 12px auto 0;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    box-shadow: var(--shadow);
+  }
+  .ledger-quote {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding-right: 14px;
+    border-right: 1px solid var(--line);
+  }
+  .ledger-quote span {
+    font-size: 11px;
+    letter-spacing: .2em;
+    color: var(--red);
+  }
+  .ledger-quote b {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink-deep);
+  }
+  .ledger-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 8px;
+  }
+  .ledger-grid > div {
+    padding: 9px 10px;
+    background: var(--wash);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+  }
+  .ledger-grid b {
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: var(--ink-deep);
+  }
+  .ledger-grid span {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .ledger-luoshu {
+    grid-column: span 1;
+    text-align: center;
+  }
+  .luoshu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 26px);
+    justify-content: center;
+    gap: 2px;
+    margin: 8px 0 6px;
+  }
+  .luoshu-grid span {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--red);
+    font-family: var(--font-serif);
+    font-size: 13px;
+  }
+  .luoshu-grid span.center {
+    background: var(--red);
+    color: #fff;
+  }
   @media (max-width: 520px) {
     .interact-query input {
       min-width: 100%;
@@ -2059,10 +2153,20 @@
       margin-left: 16px;
       margin-right: 16px;
     }
+    .classic-ledger {
+      grid-template-columns: 1fr;
+      width: calc(100% - 24px);
+      padding: 12px;
+    }
+    .ledger-quote {
+      padding: 0 0 10px;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
   }
 </style>
 </head>
-<body class="theme-sandbox ui-tactical">
+<body class="theme-sandbox">
   <header class="topbar">
     <div class="brand">
       <div class="mark"><img src="assets/logo.svg" alt="颐真 · 象数"></div>
@@ -2084,6 +2188,28 @@
   <section class="notice" role="note" aria-label="使用声明">
     <h2>声明 · 文化研究工具</h2>
     <p>本页用于传统文化与象数符号的概念研究，所有干支、星图、系统映射均为<strong>拓展面候选</strong>，不构成预测、医疗、法律、投资或重大决策依据。本地样本记录仅保存在当前浏览器，不上传，不要求填写真实姓名与联系方式。请理性使用，勿据此作出重要决定。</p>
+  </section>
+  <section class="classic-ledger" aria-label="古代术数坐标系">
+    <div class="ledger-quote">
+      <span>易传 · 系辞</span>
+      <b>仰则观象于天，俯则观法于地</b>
+    </div>
+    <div class="ledger-grid">
+      <div class="ledger-luoshu">
+        <b>洛书九宫</b>
+        <div class="luoshu-grid" aria-label="洛书数字排列">
+          <span>四</span><span>九</span><span>二</span>
+          <span>三</span><span class="center">五</span><span>七</span>
+          <span>八</span><span>一</span><span>六</span>
+        </div>
+        <span>戴九履一 · 左三右七 · 二四为肩 · 六八为足</span>
+      </div>
+      <div><b>河图</b><span>生成数 · 五行 · 十干方位</span></div>
+      <div><b>天干地支</b><span>22 符号 · 60 甲子 · 纳音 30</span></div>
+      <div><b>二十四节气</b><span>月建 · 三元 · 置闰参照</span></div>
+      <div><b>二十八宿</b><span>四象 · 七政 · 星曜分野</span></div>
+      <div><b>古三式</b><span>太乙 · 奇门 · 六壬</span></div>
+    </div>
   </section>
   <section class="scene-entry" id="sceneEntry" aria-label="场景入口">
     <div class="scene-card">
@@ -4004,6 +4130,5 @@
   renderNotes();
 </script>
   <script src="assets/cinematic.js"></script>
-  <script src="assets/tactical.js"></script>
 </body>
 </html>
