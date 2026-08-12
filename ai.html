@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 深解 · 颐真书房</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --surface: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --red-soft: #f3e1dc;
+    --amber: #8a5c2b;
+    --amber-soft: #f2e6d2;
+    --teal: #1f4a44;
+    --teal-soft: #dce9e2;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper-soft);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img { width: 38px; height: 38px; }
+  .brand h1 { margin: 0; font-size: 17px; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .back { color: #c7d3cd; font-size: 12px; text-decoration: none; border: 1px solid rgba(247,242,230,.28); padding: 6px 10px; }
+  main {
+    width: min(100%, 820px);
+    margin: 0 auto;
+    padding: 28px 18px 44px;
+  }
+  h2 { margin: 0 0 8px; font-size: 28px; font-family: "Songti SC", "STSong", "Noto Serif SC", serif; letter-spacing: .1em; }
+  .intro { margin: 0 0 22px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .ai-card {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    box-shadow: 0 1px 3px rgba(40, 35, 25, .08);
+  }
+  .ai-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ai-input input {
+    flex: 1;
+    min-width: 220px;
+    padding: 11px 12px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--ink);
+  }
+  .ai-input button {
+    padding: 11px 18px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+  }
+  .ai-output {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--wash);
+    border-left: 3px solid var(--gold);
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--ink);
+    white-space: pre-wrap;
+  }
+  .ai-status {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 8px;
+    font-size: 11px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .note { margin-top: 16px; padding: 14px; background: var(--amber-soft); border-left: 4px solid var(--amber); font-size: 12px; line-height: 1.8; color: var(--muted); }
+  footer { padding: 14px 18px 24px; font-size: 11px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="颐真">
+      <div><h1>AI 深解</h1><p>把生活问题翻译成结构语言</p></div>
+    </div>
+    <a class="back" href="index.html">返回沙盘</a>
+  </header>
+  <main>
+    <h2>再深一层</h2>
+    <p class="intro">输入一个生活问题，页面会把现实拆成结构、为什么、怎么用、验证和批注。它不是断语，是陪你拆。</p>
+    <div class="ai-card">
+      <div class="ai-input">
+        <input id="aiText" placeholder="例如：客户不回复、钱卡住、想太多不动">
+        <button type="button" id="aiGo">读结构</button>
+      </div>
+      <div id="aiOut" class="ai-output">等待输入…</div>
+      <span id="aiStatus" class="ai-status">当前：本地规则深解</span>
+    </div>
+    <div class="note">以后 Ollama 本地模型装好后，同一个页面会自动切到本地 AI 换说法；所有内容仍标为候选，不构成定论。</div>
+  </main>
+  <footer>© 2026 颐真书房 · 文化研究工具</footer>
+  <script>
+    const input = document.getElementById("aiText");
+    const out = document.getElementById("aiOut");
+    const status = document.getElementById("aiStatus");
+    async function run() {
+      const text = input.value.trim();
+      if (!text) { out.textContent = "先写一个具体生活问题。"; return; }
+      out.textContent = "正在拆…";
+      try {
+        const res = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        out.textContent = data.reply || "没有返回内容。";
+        status.textContent = data.engine === "ollama" ? "当前：本地 Ollama 模型" : "当前：本地规则深解";
+      } catch {
+        out.textContent = "读取失败。请用服务端模式打开 http://127.0.0.1:8780/ai.html";
+      }
+    }
+    document.getElementById("aiGo").addEventListener("click", run);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+  </script>
+</body>
+</html>

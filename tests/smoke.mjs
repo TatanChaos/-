@@ -56,6 +56,7 @@ try {
     "/api/samples",
     "/api/ai",
     "/稽古.html",
+    "/ai.html",
     "/docs/viewer.html?file=" + encodeURIComponent("进门.md")
   ];
   for (const page of pages) {
@@ -88,6 +89,7 @@ try {
   });
   const aiData = await ai.json();
   assert(ai.status === 200 && aiData.ok && aiData.engine === "rule", "api/ai should return rule fallback");
+  assert(aiData.reply.includes("结构"), "api/ai should return a structural reply");
 
   if (errors.length) {
     console.error(errors.join("\n"));
