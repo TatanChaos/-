@@ -18,13 +18,13 @@
     --amber-soft: #f2e6d2;
     --gold: #b08b4a;
     --ink-deep: #1e2d2a;
-    --paper-soft: var(--paper-soft);
-    --wash: var(--wash);
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
     --radius-card: 2px;
     --space-section: 26px;
     --font-body: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
     --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
-    --header-muted: var(--header-muted);
+    --header-muted: #c7d3cd;
     --text-xs: 11px;
     --text-sm: 12px;
     --text-base: 13px;
@@ -176,6 +176,28 @@
     resize: vertical;
     line-height: 1.7;
   }
+  .mini-field {
+    display: block;
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .mini-field b {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--ink-deep);
+  }
+  .mini-field textarea,
+  .mini-field select {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    background: var(--paper-soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .mini-field textarea { min-height: 64px; resize: vertical; line-height: 1.7; }
   .form-note {
     margin-top: 10px;
     font-size: 11px;
@@ -364,12 +386,20 @@
 
     <div class="section-title">会排盘的朋友可以加写</div>
     <div class="sample-box">
-      <pre>
-事前候选: 结果出来前写下的盘面结构
-命中/落空说明: 哪条候选命中，哪条落空
-评分(0-5): 0 完全落空，5 完全命中
-隐私备注: 哪些信息需要进一步脱敏
-      </pre>
+      <label class="mini-field"><b>事前候选</b><textarea id="sampleCandidate" placeholder="结果出来前写下的盘面结构"></textarea></label>
+      <label class="mini-field"><b>命中/落空说明</b><textarea id="sampleHit" placeholder="哪条候选命中，哪条落空"></textarea></label>
+      <label class="mini-field"><b>评分（0-5）</b>
+        <select id="sampleScore">
+          <option value="">未评分</option>
+          <option value="0">0 · 完全落空</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 · 完全命中</option>
+        </select>
+      </label>
+      <label class="mini-field"><b>隐私备注</b><textarea id="samplePrivacy" placeholder="哪些信息需要进一步脱敏"></textarea></label>
     </div>
 
     <div class="section-title">本地样本草稿</div>
@@ -428,7 +458,11 @@
         time: document.getElementById("sampleTime").value.trim(),
         question: document.getElementById("sampleQuestion").value.trim(),
         result: document.getElementById("sampleResult").value.trim(),
-        source: document.getElementById("sampleSource").value
+        source: document.getElementById("sampleSource").value,
+        candidate: document.getElementById("sampleCandidate").value.trim(),
+        hit: document.getElementById("sampleHit").value.trim(),
+        score: document.getElementById("sampleScore").value,
+        privacy: document.getElementById("samplePrivacy").value.trim()
       };
     }
     function saveCurrentDraft(status) {
@@ -451,6 +485,10 @@
           <b>${esc(d.category || "未分类")} · ${esc(d.time || "时间未填")}</b>
           <p>问题：${esc(d.question || "未填")}</p>
           <p>结果：${esc(d.result || "待补")}</p>
+          ${d.candidate ? `<p>候选：${esc(d.candidate)}</p>` : ""}
+          ${d.hit ? `<p>命中说明：${esc(d.hit)}</p>` : ""}
+          ${d.score ? `<p>评分：${esc(d.score)}</p>` : ""}
+          ${d.privacy ? `<p>隐私备注：${esc(d.privacy)}</p>` : ""}
           <span class="draft-status ${d.status === "已回填" ? "done" : "pending"}">${esc(d.status || "待结果")}</span>
           <div class="draft-actions">
             <button type="button" data-load="${d.id}">载入继续填</button>
@@ -469,6 +507,10 @@
         document.getElementById("sampleQuestion").value = draft.question || "";
         document.getElementById("sampleResult").value = draft.result || "";
         document.getElementById("sampleSource").value = draft.source || "自己";
+        document.getElementById("sampleCandidate").value = draft.candidate || "";
+        document.getElementById("sampleHit").value = draft.hit || "";
+        document.getElementById("sampleScore").value = draft.score || "";
+        document.getElementById("samplePrivacy").value = draft.privacy || "";
         window.scrollTo({ top: 0, behavior: "smooth" });
       }));
       el.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", () => {
@@ -533,7 +575,11 @@
         "时间: " + (time || "未填"),
         "原话问题: " + (question || "未填"),
         "实际结果: " + (result || "待补"),
-        "来源: " + source
+        "来源: " + source,
+        ...(data.candidate ? ["事前候选: " + data.candidate] : []),
+        ...(data.hit ? ["命中/落空说明: " + data.hit] : []),
+        ...(data.score ? ["评分: " + data.score] : []),
+        ...(data.privacy ? ["隐私备注: " + data.privacy] : [])
       ].join("\n");
       const title = "样本：" + activeCategory + (time ? " · " + time : "");
       window.open("https://github.com/TatanChaos/-/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body), "_blank");
