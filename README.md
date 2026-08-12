@@ -41,6 +41,7 @@ node server.js
 开发者入口见 [docs/开发者指南.md](docs/开发者指南.md)。
 系统设计原则见 [docs/设计原则_2026-08-12.md](docs/设计原则_2026-08-12.md)。
 多维盘设计见 [docs/多维盘设计_2026-08-12.md](docs/多维盘设计_2026-08-12.md)。
+系统当前状态见 [docs/系统当前状态_2026-08-12.md](docs/系统当前状态_2026-08-12.md)。
 English developer guide: [docs/DEVELOPER.md](docs/DEVELOPER.md).
 
 ## AI 层
