@@ -60,6 +60,14 @@ function readSampleCount() {
   }
 }
 
+function readSamples() {
+  try {
+    return fs.readFileSync(SAMPLES_FILE, "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line));
+  } catch {
+    return [];
+  }
+}
+
 function appendSample(sample) {
   fs.mkdirSync(path.dirname(SAMPLES_FILE), { recursive: true });
   fs.appendFileSync(SAMPLES_FILE, JSON.stringify(sample) + "\n");
@@ -176,6 +184,11 @@ const server = http.createServer((req, res) => {
       return;
     }
     sendJson(res, 405, { error: "Method Not Allowed" });
+    return;
+  }
+
+  if (parsed.pathname === "/api/samples/export" && req.method === "GET") {
+    sendJson(res, 200, { ok: true, samples: readSamples() });
     return;
   }
 

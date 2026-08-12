@@ -77,6 +77,9 @@ try {
   });
   const sampleData = await sample.json();
   assert(sample.status === 200 && sampleData.ok, "api/samples POST should save a sample");
+  const exportRes = await fetch(new URL("/api/samples/export", base));
+  const exportData = await exportRes.json();
+  assert(exportRes.status === 200 && Array.isArray(exportData.samples), "api/samples/export should return an array");
 
   if (errors.length) {
     console.error(errors.join("\n"));
