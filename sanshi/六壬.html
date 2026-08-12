@@ -69,6 +69,15 @@
     </figure>
     <article class="chart-card">
       <h3>盘面快照</h3>
+      <div class="live-query" role="group" aria-label="实时六壬排盘">
+        <label>时间 <input type="datetime-local" id="liveDate" required></label>
+        <label>口径 <select id="liveFlow">
+          <option value="A">A · 古籍720课表</option>
+          <option value="B">B · 别家口径</option>
+          <option value="ENGINE">规则层</option>
+        </select></label>
+        <button type="button" id="liveGo">排此课</button>
+      </div>
       <div class="live-panel"><pre id="liveOutput" class="live-output">正在连接实时盘…</pre></div>
       <div class="chart-grid">
         <div class="chart-item"><span class="label">八字</span><span class="value">丙午 丙申 丙辰 戊戌</span></div>
