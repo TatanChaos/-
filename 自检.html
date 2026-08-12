@@ -261,6 +261,7 @@
       </div>
       <div class="system-state" id="systemState" aria-live="polite">读取中…</div>
       <div class="check-actions">
+        <button type="button" id="allCheck">一键全检</button>
         <button type="button" id="serverBenchmark">服务端多核自检</button>
         <button type="button" id="browserBenchmark" class="secondary">浏览器 Worker 自检</button>
         <button type="button" id="combineBenchmark" class="secondary">组合 Worker 自检</button>
@@ -375,6 +376,60 @@
           setOut("对象：" + d.tokenCount + "\n两两关系：" + d.pairCount.toLocaleString() + "\n分页：" + d.pageCount.toLocaleString() + " 页\n本页返回：" + d.pairs.length + " 对");
         }).catch(function () {
           setOut("组合 Worker 自检失败。");
+        });
+      });
+      document.getElementById("allCheck").addEventListener("click", function () {
+        var btn = this;
+        btn.disabled = true;
+        setOut("一键全检开始：硬件 → 服务端 → 浏览器 → 组合…");
+        var browserPromise = function () {
+          return new Promise(function (resolve, reject) {
+            var deviceMem = Number(navigator.deviceMemory) || 8;
+            var cores = Math.min(Number(navigator.hardwareConcurrency) || 4, 16, deviceMem < 8 ? 8 : 16);
+            var started = performance.now();
+            var jobs = [];
+            for (var i = 0; i < cores; i += 1) {
+              jobs.push(new Promise(function (r2, j2) {
+                var worker = new Worker("assets/benchmark-worker.js");
+                worker.onmessage = function (e) { worker.terminate(); r2(e.data.ops); };
+                worker.onerror = function (e) { worker.terminate(); j2(e); };
+                worker.postMessage({ duration: 600 });
+              }));
+            }
+            Promise.all(jobs).then(function (results) {
+              resolve({
+                cores: cores,
+                wallMs: Math.round(performance.now() - started),
+                total: results.reduce(function (a, b) { return a + b; }, 0)
+              });
+            }).catch(reject);
+          });
+        };
+        Promise.all([
+          fetch("/api/hardware").then(function (r) { return r.json(); }),
+          fetch("/api/benchmark").then(function (r) { return r.json(); }),
+          fetch("/api/combine", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: "甲子 ".repeat(2100).trim(), page: 0, size: 50 })
+          }).then(function (r) { return r.json(); }),
+          browserPromise()
+        ]).then(function (arr) {
+          var hw = arr[0];
+          var bench = arr[1];
+          var comb = arr[2];
+          var browser = arr[3];
+          setOut(
+            "硬件：" + hw.model + " · " + hw.arch + " · " + hw.cores + " 核\n" +
+            "服务端：" + bench.cores + " 核" + (bench.limitedByMemory ? "（内存保护降核）" : "") + " · " + bench.wallMs + " ms · " + bench.totalOps.toLocaleString() + " ops\n" +
+            "浏览器：" + browser.cores + " Worker · " + browser.wallMs + " ms · " + browser.total.toLocaleString() + " ops\n" +
+            "组合：" + comb.tokenCount + " 对象 · " + comb.pairCount.toLocaleString() + " 对 · " + comb.pageCount.toLocaleString() + " 页\n" +
+            "全检完成，全部在本机运行。"
+          );
+        }).catch(function () {
+          setOut("一键全检失败，请确认本地服务端已启动。");
+        }).finally(function () {
+          btn.disabled = false;
         });
       });
     })();
