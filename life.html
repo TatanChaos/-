@@ -126,6 +126,16 @@
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
   }
+  .search-input {
+    width: 100%;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--ink);
+  }
   .card {
     padding: 14px;
     background: var(--surface);
@@ -276,7 +286,8 @@
     </div>
 
     <div class="section-title">常见组合拆解</div>
-    <div class="cards">
+    <input id="comboSearch" class="search-input" placeholder="搜索：钱、感情、客户、平台…">
+    <div class="cards" id="comboGrid">
       <div class="card">
         <h3>钱卡住</h3>
         <div class="row"><b>拆</b>辰+申：库里有，规则卡住。</div>
@@ -521,5 +532,16 @@
     <br>
     <a href="samples.html">真实样本征集</a> · <a href="稽古.html">稽古状态</a> · <a href="updates.html">更新公告</a> · <a href="feedback.html">意见与讨论</a> · <a href="docs/viewer.html?file=../AGREEMENT.md">用户协议</a>
   </footer>
+  <script>
+    const comboSearch = document.getElementById("comboSearch");
+    if (comboSearch) {
+      comboSearch.addEventListener("input", () => {
+        const q = comboSearch.value.trim();
+        document.querySelectorAll("#comboGrid .card").forEach(card => {
+          card.hidden = !!q && !card.innerText.includes(q);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
