@@ -70,6 +70,19 @@
     }
   };
 
+  var AXES = [
+    { key: "space", name: "空间", desc: "九宫 / 天地盘", defaultOn: true },
+    { key: "time", name: "时间", desc: "局 / 四层 / 三传", defaultOn: true },
+    { key: "state", name: "状态", desc: "主客算 / 门星神 / 四课", defaultOn: true },
+    { key: "sample", name: "样本", desc: "真实回填" },
+    { key: "perspective", name: "口径", desc: "流派 / 历法" },
+    { key: "observation", name: "观察", desc: "观察尺度" },
+    { key: "verification", name: "验证", desc: "候选 / 已验" },
+    { key: "lineage", name: "流派", desc: "规则差异" },
+    { key: "flow", name: "流转", desc: "盘面重排" },
+    { key: "context", name: "上下文", desc: "生活 / 事件" }
+  ];
+
   function makeTextSprite(text, color, scale) {
     var canvas = document.createElement("canvas");
     canvas.width = 256;
@@ -130,9 +143,9 @@
     container.className = "md-canvas";
     panel.innerHTML = [
       '<div class="md-head"><div><h3>' + cfg.title + '</h3><p>' + cfg.desc + "</p></div>",
-      '<div class="md-dimensions" aria-label="维度">' +
-        [3, 4, 5, 6, 7, 8, 9, 10].map(function (n) {
-          return '<button type="button" data-dim="' + n + '" aria-pressed="' + (n === 4 ? "true" : "false") + '">' + n + "D</button>";
+      '<div class="md-dimensions" aria-label="维度轴">' +
+        AXES.map(function (axis) {
+          return '<button type="button" data-axis="' + axis.key + '" aria-pressed="' + (axis.defaultOn ? "true" : "false") + '" title="' + axis.desc + '">' + axis.name + "</button>";
         }).join("") +
       "</div></div>",
       '<div class="md-controls"><button type="button" id="mdPlay">暂停</button>',
@@ -142,7 +155,7 @@
         return '<div><b>' + item[0] + '</b><span>' + item[1] + "</span></div>";
       }).join("") + "</div>",
       '<div class="md-why"><b>为什么用多维</b>：' + cfg.why + "</div>",
-      '<div class="md-legend"><b>读法</b><span>3D 空间</span><span>4D 时间</span><span>5D 状态</span><span>6D 样本</span><span>7D 口径</span><span>8D-10D 观察/验证/流派</span></div>'
+      '<div class="md-legend"><b>读法</b><span>维度轴不是物理维度</span><span>有多少轴就显示多少轴</span><span>上限由数据定义</span></div>'
     ].join("");
     panel.appendChild(container);
 
@@ -204,11 +217,14 @@
     var extra = new THREE.Group();
     root.add(extra);
 
-    var dimButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-dim]"));
+    var axisButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-axis]"));
     var slider = panel.querySelector("input");
     var state = panel.querySelector("#mdState");
     var playBtn = panel.querySelector("#mdPlay");
-    var currentDim = 4;
+    var activeAxes = {};
+    AXES.forEach(function (axis) {
+      if (axis.defaultOn) activeAxes[axis.key] = true;
+    });
     var playing = true;
 
     function clearExtra() {
@@ -256,25 +272,24 @@
       ));
     }
 
-    function applyDimension() {
+    function applyDimensions() {
       clearExtra();
-      if (currentDim >= 5) addStateAxis();
-      if (currentDim >= 6) addSampleAxis();
-      if (currentDim >= 7) addPerspectiveAxis(0xc9a85d);
-      if (currentDim >= 8) addPerspectiveAxis(0x79d3c1);
-      if (currentDim >= 9) addPerspectiveAxis(0xe05a4f);
-      if (currentDim >= 10) {
-        var ring = makeRing(5.4, 1.2, 0xf0ead9, 0.18);
-        extra.add(ring);
-      }
+      if (activeAxes.state) addStateAxis();
+      if (activeAxes.sample) addSampleAxis();
+      if (activeAxes.perspective) addPerspectiveAxis(0xc9a85d);
+      if (activeAxes.observation) addPerspectiveAxis(0x79d3c1);
+      if (activeAxes.verification) addPerspectiveAxis(0xe05a4f);
+      if (activeAxes.lineage) addPerspectiveAxis(0xf0ead9);
+      if (activeAxes.flow) extra.add(makeRing(5.4, 1.2, 0x79d3c1, 0.18));
+      if (activeAxes.context) extra.add(makeRing(6.0, 1.2, 0xe05a4f, 0.12));
     }
 
-    dimButtons.forEach(function (btn) {
+    axisButtons.forEach(function (btn) {
       btn.addEventListener("click", function () {
-        currentDim = Number(btn.getAttribute("data-dim"));
-        dimButtons.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
-        btn.setAttribute("aria-pressed", "true");
-        applyDimension();
+        var key = btn.getAttribute("data-axis");
+        activeAxes[key] = !activeAxes[key];
+        btn.setAttribute("aria-pressed", String(activeAxes[key]));
+        applyDimensions();
       });
     });
 
@@ -310,13 +325,14 @@
         root.rotation.y += delta * 0.12;
       }
       var t = Number(slider.value);
-      state.textContent = currentDim + "D · " + Math.round(t * 100) + "%";
+      var axisNames = AXES.filter(function (axis) { return activeAxes[axis.key]; }).map(function (axis) { return axis.name; }).join(" · ");
+      state.textContent = axisNames + " · " + Math.round(t * 100) + "%";
       var point = curve.getPoint(t);
       marker.position.copy(point);
       marker.rotation.y = t * Math.PI * 2;
       renderer.render(scene, camera);
     }
     animate();
-    applyDimension();
+    applyDimensions();
   });
 })();
