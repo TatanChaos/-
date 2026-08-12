@@ -67,7 +67,7 @@
         <div><strong>现代结构</strong><p>四柱＝四个时间层；干支＝系统角色与状态；十神＝关系标签；纳音＝风格；大运＝阶段周期。</p></div>
         <div><strong>验证方式</strong><p>同一出生时间、同一历法口径，盘面应可复现；早晚子时、节气起月等流派差异必须显式标注；真实样本回填前不作定论。</p></div>
       </div>
-      <p class="mainline-note">完整底稿：待补；当前引用本地 lunar_python 通行历法口径。</p>
+      <p class="mainline-note">完整底稿：待补；当前使用本地 lunar-typescript 通行历法口径，流派差异仍需显式标注。</p>
     </article>
   </main>
   <footer class="footer">
@@ -160,7 +160,7 @@
         if (dt) q.set("dt", dt);
         q.set("gender", gender || "男");
         try {
-          const res = await fetch("http://127.0.0.1:8778/api/bazi?" + q.toString());
+          const res = await fetch("/api/bazi?" + q.toString());
           const text = await res.text();
           out.textContent = text;
           render(text);

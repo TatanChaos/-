@@ -2,6 +2,10 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const Engine = require("./assets/combination-engine.js");
+let Solar = null;
+try {
+  ({ Solar } = require(process.env.LUNAR_TYPESCRIPT || "/Users/tatanchaos/Documents/Codex/tools/ziwei/node_modules/lunar-typescript"));
+} catch {}
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 8780);
@@ -61,6 +65,31 @@ function appendSample(sample) {
   fs.appendFileSync(SAMPLES_FILE, JSON.stringify(sample) + "\n");
 }
 
+function buildBaziText(dt, gender) {
+  const now = new Date();
+  const match = String(dt || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?/);
+  const year = match ? Number(match[1]) : now.getFullYear();
+  const month = match ? Number(match[2]) : now.getMonth() + 1;
+  const day = match ? Number(match[3]) : now.getDate();
+  const hour = match && match[4] ? Number(match[4]) : now.getHours();
+  const minute = match && match[5] ? Number(match[5]) : now.getMinutes();
+  const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+  const lunar = solar.getLunar();
+  const ec = lunar.getEightChar();
+  const yun = ec.getYun(gender === "女" ? 1 : 0, 1);
+  const dayun = yun.getDaYun(8).map(d => d.getGanZhi()).join(" ");
+  return [
+    "八字: " + [ec.getYear(), ec.getMonth(), ec.getDay(), ec.getTime()].join(" "),
+    "藏干: 年[" + ec.getYearHideGan().join("") + "] 月[" + ec.getMonthHideGan().join("") + "] 日[" + ec.getDayHideGan().join("") + "] 时[" + ec.getTimeHideGan().join("") + "]",
+    "十神: 年[" + ec.getYearShiShenGan() + "] 月[" + ec.getMonthShiShenGan() + "] 日主[" + ec.getDayShiShenGan() + "] 时[" + ec.getTimeShiShenGan() + "]",
+    "纳音: 年[" + ec.getYearNaYin() + "] 月[" + ec.getMonthNaYin() + "] 日[" + ec.getDayNaYin() + "] 时[" + ec.getTimeNaYin() + "]",
+    "农历: " + lunar.toFullString(),
+    "日空: " + ec.getDayXunKong(),
+    "起运: " + yun.getStartSolar().toYmd(),
+    "大运: " + dayun
+  ].join("\n");
+}
+
 const server = http.createServer((req, res) => {
   const parsed = new URL(req.url, "http://127.0.0.1:" + PORT);
 
@@ -113,6 +142,21 @@ const server = http.createServer((req, res) => {
       return;
     }
     sendJson(res, 405, { error: "Method Not Allowed" });
+    return;
+  }
+
+  if (parsed.pathname === "/api/bazi" && req.method === "GET") {
+    if (!Solar) {
+      sendJson(res, 501, { error: "lunar-typescript 未安装或路径不可用。" });
+      return;
+    }
+    try {
+      const text = buildBaziText(parsed.searchParams.get("dt"), parsed.searchParams.get("gender") || "男");
+      res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end(text);
+    } catch (e) {
+      sendJson(res, 400, { error: "排盘参数无法解析：" + e.message });
+    }
     return;
   }
 
