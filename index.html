@@ -236,6 +236,56 @@
     padding: 0 12px 12px;
     border-top: 1px solid var(--line);
   }
+  .module-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    box-shadow: var(--shadow);
+  }
+  .module-seal {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: var(--red);
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 19px;
+  }
+  .module-head h3 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--ink-deep);
+  }
+  .module-head p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .module-note {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .module-panel {
+    padding: 14px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
   .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .badge {
     font-size: 11px;
@@ -3460,8 +3510,12 @@
           <button type="button" class="subnav-btn" data-tab="interact">去任意干支互动</button>
           <span class="compare-caveat">真实样本回填前不作断言。</span>
         </div>`,
-      jiazi: `<div class="rows">${jiaziHTML}</div>`,
-      interact: `<div class="compare-row">
+      jiazi: `<div class="module-head"><span class="module-seal">甲</span><div><h3>六十甲子</h3><p>六十组逐对展开，点开看完整深解。</p></div></div>
+        <div class="module-note">每一柱都是干支相配后的结构候选，真实样本回填前不作结论。</div>
+        <div class="rows">${jiaziHTML}</div>`,
+      interact: `<div class="module-head"><span class="module-seal">合</span><div><h3>任意干支互动</h3><p>任意两柱、任意干支，按规则生成关系。</p></div></div>
+        <div class="module-note">天干×地支合成六十甲子；天干×天干走五合；地支×地支走合冲害刑。</div>
+        <div class="compare-row">
         <select id="interactA" aria-label="互动符号 A"></select>
         <span>与</span>
         <select id="interactB" aria-label="互动符号 B"></select>
@@ -3482,7 +3536,9 @@
       </div>
       <div id="jiaziPairOut" class="compare-out">任选两柱六十甲子，看天干层、地支层和两柱合读。</div>
       <span class="compare-caveat">真实样本回填前不作断言。</span>`,
-      combination: `<h3 class="interact-head">输入任意组合</h3>
+      combination: `<div class="module-head"><span class="module-seal">盘</span><div><h3>组合盘</h3><p>输入任意数量干支，按规则逐对生成。</p></div></div>
+        <div class="module-note">组合不靠写死；服务端按页计算，文件模式自动回退前端分页。</div>
+        <h3 class="interact-head">输入任意组合</h3>
         <div class="interact-query">
           <input id="combinationInput" placeholder="例如：甲子 乙丑 丙寅；或 甲 子 午">
           <button type="button" id="combinationGo">读组合</button>
@@ -3490,7 +3546,9 @@
         </div>
         <div id="combinationOut" class="compare-out">组合数量不靠写死，按规则逐对生成；真实样本回填前全部是候选。</div>
         <span class="compare-caveat">真实样本回填前不作断言。</span>`,
-      corpus: `<div class="rows">${corpusHTML}</div>`,
+      corpus: `<div class="module-head"><span class="module-seal">象</span><div><h3>十天干 · 十二地支</h3><p>22 个符号全盘展开，点开看全部内容。</p></div></div>
+        <div class="module-note">每个符号都给出出处、本义、三象、体用、现代、生活、验证、批注。</div>
+        <div class="rows">${corpusHTML}</div>`,
       overview: `<div class="rows">${sceneRow}${metaHTML}<div class="row"><div class="label">本质</div><div class="value">${essence}</div></div><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
