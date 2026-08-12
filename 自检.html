@@ -139,6 +139,25 @@
     font-size: 13px;
     color: var(--ink-deep);
   }
+  .system-state {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+    background: var(--paper-soft);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-deep);
+  }
+  .system-state.warn {
+    border-left-color: var(--amber);
+    background: var(--amber-soft);
+  }
+  .system-state.danger {
+    border-left-color: var(--red);
+    background: var(--red-soft);
+    color: #6d241f;
+  }
   .check-actions {
     display: flex;
     flex-wrap: wrap;
@@ -170,27 +189,26 @@
     color: var(--muted);
     white-space: pre-wrap;
   }
-  .principle-grid {
+  .design-landing {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 8px;
   }
-  .principle-grid div {
-    padding: 10px;
-    background: var(--wash);
+  .design-landing a {
+    padding: 12px;
+    background: var(--paper-soft);
     border: 1px solid var(--line);
-    border-top: 2px solid var(--red);
-  }
-  .principle-grid b {
-    display: block;
-    margin-bottom: 4px;
+    color: var(--red);
+    text-decoration: none;
     font-size: 13px;
-    color: var(--ink-deep);
+    text-align: center;
   }
-  .principle-grid span {
-    font-size: 11px;
-    line-height: 1.6;
-    color: var(--muted);
+  .design-landing a:hover {
+    border-color: var(--red);
+  }
+  .design-landing a.disabled {
+    opacity: .45;
+    pointer-events: none;
   }
   .layer-links {
     display: grid;
@@ -217,7 +235,7 @@
   <header>
     <div>
       <h1 data-en="System Self-Check">系统自检</h1>
-      <p>硬件 · 多线程 · Worker · 路线 · 设计原则</p>
+      <p>硬件 · 多线程 · Worker · 路线 · 设计落地</p>
     </div>
     <div class="header-links">
       <a href="入口.html">版本入口</a>
@@ -229,7 +247,7 @@
     <section class="check-hero">
       <span class="seal">自检</span>
       <h2>不是嘴上说燃尽<br>是给你一个能按的仪表盘</h2>
-      <p>这里直接检测本机硬件、服务端多线程、浏览器 Worker、组合引擎 Worker、五层路线和设计原则。所有自检都只在本机运行。</p>
+      <p>这里直接检测本机硬件、服务端多线程、浏览器 Worker、组合引擎 Worker、五层路线和设计落地。所有自检都只在本机运行。</p>
     </section>
     <section class="check-section" aria-label="硬件与算力">
       <h3>硬件与算力</h3>
@@ -241,6 +259,7 @@
         <div><b>内存</b><span id="hwMem">读取中…</span></div>
         <div><b>Node</b><span id="hwNode">读取中…</span></div>
       </div>
+      <div class="system-state" id="systemState" aria-live="polite">读取中…</div>
       <div class="check-actions">
         <button type="button" id="serverBenchmark">服务端多核自检</button>
         <button type="button" id="browserBenchmark" class="secondary">浏览器 Worker 自检</button>
@@ -259,16 +278,15 @@
         <a href="静观.html">收心 · 静观</a>
       </div>
     </section>
-    <section class="check-section" aria-label="设计原则">
-      <h3>设计原则</h3>
-      <p>经史子集佛道转成系统规则，不是塞金句。</p>
-      <div class="principle-grid">
-        <div><b>少则得</b><span>顶栏只留少量主入口</span></div>
-        <div><b>物有本末</b><span>五层路线有先后</span></div>
-        <div><b>知止</b><span>候选不进公开版</span></div>
-        <div><b>致中和</b><span>界面安静克制动效</span></div>
-        <div><b>清静</b><span>不制造焦虑</span></div>
-        <div><b>无住</b><span>断语都是候选</span></div>
+    <section class="check-section" aria-label="设计落地">
+      <h3>设计落地</h3>
+      <p>原则已经变成页面结构，不在这里念出来。</p>
+      <div class="design-landing">
+        <a href="index.html">主导航</a>
+        <a href="路线.html">五层路线</a>
+        <a class="disabled" href="入口.html" aria-disabled="true">正式版 v1</a>
+        <a href="samples.html">候选与验证</a>
+        <a href="静观.html">静观</a>
       </div>
     </section>
   </main>
@@ -294,8 +312,27 @@
         hw.cores.textContent = d.cores + " 核";
         hw.mem.textContent = gb(d.totalMem);
         hw.node.textContent = d.node || "unknown";
+        var freeGb = d.freeMem / 1024 / 1024 / 1024;
+        var load = d.loadAvg && d.loadAvg[0] ? d.loadAvg[0] : 0;
+        var stateEl = document.getElementById("systemState");
+        var base = "空闲内存 " + freeGb.toFixed(1) + " GB · 负载 " + load.toFixed(1);
+        if (freeGb < 1) {
+          stateEl.className = "system-state danger";
+          stateEl.textContent = base + " · 内存高压，自检会自动降核";
+        } else if (freeGb < 3) {
+          stateEl.className = "system-state warn";
+          stateEl.textContent = base + " · 内存偏紧，自检会自动降核保护";
+        } else {
+          stateEl.className = "system-state";
+          stateEl.textContent = base + " · 内存充足，可满核自检";
+        }
       }).catch(function () {
         hw.model.textContent = "未连接";
+        var stateEl = document.getElementById("systemState");
+        if (stateEl) {
+          stateEl.className = "system-state danger";
+          stateEl.textContent = "硬件接口未连接，无法判断当前压力。";
+        }
         setOut("硬件接口未连接，请用本地服务端模式打开。");
       });
       document.getElementById("serverBenchmark").addEventListener("click", function () {
