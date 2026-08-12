@@ -58,6 +58,8 @@ try {
     "/api/ai",
     "/api/hardware",
     "/api/benchmark",
+    "/sanshi/dimension.css",
+    "/sanshi/dimension.js",
     "/稽古.html",
     "/ai.html",
     "/静观.html",

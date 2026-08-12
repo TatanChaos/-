@@ -1,0 +1,203 @@
+.dimension-panel {
+  position: relative;
+  margin: 14px 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--teal);
+}
+.dimension-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dimension-head h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--ink-deep);
+}
+.dimension-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.dimension-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dimension-controls button {
+  min-height: 34px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  background: var(--paper-soft);
+  color: var(--teal);
+  cursor: pointer;
+}
+.dimension-controls button[aria-pressed="true"] {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.dimension-stage {
+  height: 320px;
+  margin-top: 10px;
+  overflow: hidden;
+  perspective: 1100px;
+  background:
+    linear-gradient(rgba(246, 244, 234, .32), rgba(246, 244, 234, .32)),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(183, 171, 146, .12) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(183, 171, 146, .12) 39px 40px);
+}
+.dimension-stack {
+  position: relative;
+  width: min(560px, 90%);
+  height: 260px;
+  margin: 30px auto 0;
+  transform-style: preserve-3d;
+  transform: rotateX(55deg) rotateZ(0deg);
+  transition: transform .5s ease;
+}
+.dimension-stack.orbit {
+  animation: dimensionOrbit 18s linear infinite;
+}
+.pan-layer {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(var(--z, 0));
+  padding: 12px;
+  background: rgba(250, 247, 239, .94);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 20px rgba(30, 30, 20, .16);
+}
+.pan-layer.active {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px rgba(159, 58, 49, .14), 0 8px 22px rgba(30, 30, 20, .2);
+}
+.pan-layer h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--ink-deep);
+  text-align: center;
+}
+.pan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  height: calc(100% - 30px);
+}
+.pan-cell {
+  display: grid;
+  place-items: center;
+  min-height: 28px;
+  border: 1px solid var(--line);
+  background: var(--wash);
+  font-size: 11px;
+  color: var(--ink);
+}
+.pan-cell.center {
+  background: var(--red);
+  color: #fff;
+}
+.pan-ring {
+  position: relative;
+  width: min(260px, 84%);
+  aspect-ratio: 1;
+  margin: 6px auto 0;
+}
+.pan-node {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--paper-soft);
+  color: var(--ink-deep);
+  font-size: 12px;
+  transform: rotate(calc(var(--i) * 30deg)) translateY(-100px) rotate(calc(var(--i) * -30deg));
+}
+.pan-node.center {
+  background: var(--red);
+  color: #fff;
+}
+.pan-path {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: calc(100% - 30px);
+}
+.pan-path span {
+  padding: 8px 12px;
+  border: 1px solid var(--red);
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 13px;
+}
+.dimension-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.dimension-slider label {
+  font-size: 12px;
+  color: var(--muted);
+}
+.dimension-slider input {
+  flex: 1;
+  min-width: 180px;
+  accent-color: var(--teal);
+}
+.dimension-slider span {
+  min-width: 70px;
+  font-size: 12px;
+  color: var(--ink-deep);
+}
+.dimension-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 11px;
+  color: var(--muted);
+}
+.dimension-legend b {
+  color: var(--ink-deep);
+}
+@keyframes dimensionOrbit {
+  from { transform: rotateX(55deg) rotateZ(0deg); }
+  to { transform: rotateX(55deg) rotateZ(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dimension-stack.orbit {
+    animation: none;
+  }
+}
+@media (max-width: 520px) {
+  .dimension-stage {
+    height: 260px;
+  }
+  .dimension-stack {
+    height: 210px;
+  }
+  .pan-node {
+    width: 28px;
+    height: 28px;
+    margin: -14px;
+    transform: rotate(calc(var(--i) * 30deg)) translateY(-70px) rotate(calc(var(--i) * -30deg));
+  }
+}
