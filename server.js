@@ -112,6 +112,29 @@ function ollamaAvailable() {
   }
 }
 
+function ruleDeepReply(text) {
+  const tokens = Engine.parseTokens(text).slice(0, 6);
+  return tokens.length
+    ? "结构：" + tokens.join("、") + "。先把现实拆成可验证的动作，再用样本回填；这是本地规则深解，不是外部 AI 断语。"
+    : "暂时没读到干支结构。请再写一个具体生活问题，例如：客户不回复、钱卡住、想太多不动。";
+}
+
+function aiReply(text) {
+  if (ollamaAvailable()) {
+    const model = process.env.OLLAMA_MODEL || "qwen2.5:3b";
+    const prompt = "你是颐真书房的表达助手。把下面的生活问题翻译成结构语言：先拆结构，再给动作，再给验证。不要算命，不要断语，不要编原文。问题：" + text;
+    try {
+      const reply = execSync("ollama run " + model + " " + JSON.stringify(prompt), {
+        encoding: "utf8",
+        timeout: 60000,
+        maxBuffer: 2 * 1024 * 1024
+      }).trim();
+      return { engine: "ollama", reply };
+    } catch {}
+  }
+  return { engine: "rule", reply: ruleDeepReply(text) };
+}
+
 function buildBaziText(dt, gender) {
   const now = new Date();
   const match = String(dt || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?/);
@@ -168,11 +191,8 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body || "{}");
         const text = String(data.text || "").slice(0, 2000);
-        const tokens = Engine.parseTokens(text).slice(0, 6);
-        const reply = tokens.length
-          ? "结构：" + tokens.join("、") + "。先把现实拆成可验证的动作，再用样本回填；这是本地规则深解，不是外部 AI 断语。"
-          : "暂时没读到干支结构。请再写一个具体生活问题，例如：客户不回复、钱卡住、想太多不动。";
-        sendJson(res, 200, { ok: true, engine: "rule", ollamaReady: ollamaAvailable(), reply });
+        const result = aiReply(text);
+        sendJson(res, 200, { ok: true, engine: result.engine, ollamaReady: ollamaAvailable(), reply: result.reply });
       } catch {
         sendJson(res, 400, { error: "请求体不是有效 JSON。" });
       }
