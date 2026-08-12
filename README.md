@@ -36,6 +36,7 @@ node server.js
 公开部署步骤见 [docs/部署说明.md](docs/部署说明.md)。
 本地测试结果见 [docs/本地测试报告_2026-08-12.md](docs/本地测试报告_2026-08-12.md)。
 开发者入口见 [docs/开发者指南.md](docs/开发者指南.md)。
+English developer guide: [docs/DEVELOPER.md](docs/DEVELOPER.md).
 
 ## AI 层
 
