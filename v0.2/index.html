@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>颐真书房 · 内测版 v0.2</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+<style>
+  :root {
+    --bg: #e9ece4;
+    --paper: #faf7ef;
+    --ink: #252b27;
+    --muted: #6f6d61;
+    --line: #b7ab92;
+    --red: #9f3a31;
+    --amber: #8a5c2b;
+    --teal: #1f4a44;
+    --gold: #b08b4a;
+    --ink-deep: #1e2d2a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image: url("../assets/paper.svg");
+    background-size: 900px 900px;
+    color: var(--ink);
+    font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    letter-spacing: 0;
+  }
+  header {
+    padding: 14px 18px;
+    background: var(--ink-deep);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  .head-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 40px; height: 40px; }
+  .brand h1 { margin: 0; font-size: 18px; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
+  .links a { color: #c7d3cd; font-size: 12px; margin-left: 12px; text-decoration: none; }
+  main { width: min(100%, 1000px); margin: 0 auto; padding: 24px 18px 40px; }
+  .intro { padding: 14px; margin-bottom: 16px; background: var(--amber); color: #fff; font-size: 13px; line-height: 1.8; }
+  .card { padding: 16px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--red); }
+  .card h2 { margin: 0 0 8px; font-size: 22px; }
+  .card p { margin: 6px 0; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .tool { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .tool input { flex: 1; min-width: 220px; padding: 10px; font: inherit; border: 1px solid var(--line); background: #fffdf8; color: var(--ink); }
+  .tool button { padding: 10px 16px; font: inherit; border: 1px solid var(--red); background: var(--red); color: #fff; cursor: pointer; }
+  .out { margin-top: 12px; padding: 14px; background: #f4efe3; border-left: 3px solid var(--gold); font-size: 13px; line-height: 1.9; }
+  .symbols { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 8px; margin-top: 14px; }
+  .symbols button { padding: 10px; font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .symbols button:hover { border-color: var(--red); color: var(--red); }
+  .detail { margin-top: 14px; padding: 14px; background: var(--paper); border: 1px solid var(--line); }
+  .footnote { margin-top: 18px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="head-inner">
+      <div class="brand">
+        <img src="../assets/logo.svg" alt="颐真">
+        <div><h1>颐真书房 · 内测版 v0.2</h1><p>历史版本 · 只保留当时核心</p></div>
+      </div>
+      <div class="links">
+        <a href="../入口.html">版本入口</a>
+        <a href="../index.html">体验版 v0.3</a>
+        <a href="../prototype/index.html">试墨版</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="intro">这是历史内测版 v0.2，按当时范围独立保留：场景入口、干支目录、双符号对照、本地随录。它没有后来新增的组合盘、稽古页和 AI 深解。</div>
+    <div class="card">
+      <h2>从场景开始</h2>
+      <p>选一个你现在熟悉的情况，先看它像什么，再认识它叫什么。</p>
+      <div class="tool">
+        <input id="situation" placeholder="例如：项目刚启动、数据攒了很多、内容突然爆了">
+        <button id="go">用干支解释</button>
+      </div>
+      <div id="out" class="out">等待输入…</div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <h2>干支目录</h2>
+      <p>点一个符号，看它的历史内测深解。</p>
+      <div id="symbols" class="symbols"></div>
+      <div id="detail" class="detail">还没有选择符号。</div>
+    </div>
+    <p class="footnote">真实样本回填前，所有内容仍是拓展面候选。</p>
+  </main>
+  <script src="../assets/deep-data.js"></script>
+  <script src="../assets/jiazi-60.js"></script>
+  <script>
+    const GAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+    const ZHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const ALL = [...GAN, ...ZHI];
+    const MAP = {
+      子: "潜藏、输入：事情还没定型，正在往里进。",
+      寅: "生发、启动：新东西刚开始，还没跑通。",
+      辰: "大库、缓存：东西存得很多，但还没被用起来。",
+      午: "峰值、显象：热度到了最高点。",
+      申: "传输、规则：交接不顺，制度没理顺。",
+      酉: "精密、加工：一直在修细节，怕出错。",
+      戌: "收束、闭环：要把散的东西收进一个平台。",
+      亥: "源头、混沌：想法很多，但还没有结构。"
+    };
+    const out = document.getElementById("out");
+    const symbolsEl = document.getElementById("symbols");
+    const detailEl = document.getElementById("detail");
+
+    ALL.forEach(k => {
+      const b = document.createElement("button");
+      b.textContent = k;
+      b.addEventListener("click", () => show(k));
+      symbolsEl.appendChild(b);
+    });
+
+    function show(k) {
+      const d = DEEP_DATA[k] || {};
+      detailEl.innerHTML = `<b>${k}</b><p>${d.benyi || "待补"}</p><p>${d.tian || ""}</p><p>${d.di || ""}</p><p>${d.ren || ""}</p><p>用：${d.yong || "待补"}</p><p>过：${d.guo || "待补"}</p><p>验证：${d.verify || "待样本"}</p>`;
+    }
+
+    function explain() {
+      const text = document.getElementById("situation").value.trim();
+      if (!text) { out.textContent = "请写一个具体生活问题。"; return; }
+      const hit = Object.keys(MAP).find(k => MAP[k] && text.includes(k) ? false : false) || Object.keys(MAP).find(k => /启动|项目|开张|面试|入职/.test(text) && k === "寅") || Object.keys(MAP).find(k => /数据|库存|积压|存/.test(text) && k === "辰") || Object.keys(MAP).find(k => /爆|火|热搜|高峰/.test(text) && k === "午") || Object.keys(MAP).find(k => /流程|规则|制度|交接|卡/.test(text) && k === "申") || Object.keys(MAP).find(k => /打磨|细节|反复/.test(text) && k === "酉") || Object.keys(MAP).find(k => /平台|收口|闭环/.test(text) && k === "戌") || Object.keys(MAP).find(k => /想不通|迷茫|焦虑|想法/.test(text) && k === "亥") || "亥";
+      out.innerHTML = `象：${hit}<br>${MAP[hit] || DEEP_DATA[hit].benyi || "候选"}<br>真实样本回填前不作断言。`;
+    }
+
+    document.getElementById("go").addEventListener("click", explain);
+    document.getElementById("situation").addEventListener("keydown", e => { if (e.key === "Enter") explain(); });
+    show("子");
+  </script>
+</body>
+</html>

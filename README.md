@@ -73,6 +73,7 @@ samples.html             真实样本征集
 排盘/八字.html           八字排盘
 稽古.html                出处审计状态页
 prototype/index.html      试墨版：独立粗原型
+v0.2/index.html           内测版 v0.2：历史版本
 assets/                  logo、纸纹、云纹、星宫图背景、深解数据、组合引擎
 docs/                    十天干、十二地支、关系稽古、表达原则、进门文章
 docs/借鉴清单_2026-08-12.md 开源借鉴与技术来源记录
