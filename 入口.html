@@ -177,6 +177,37 @@
   }
   .stat-chip span { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); }
   .intro { margin: 0 0 20px; font-size: 13px; line-height: 1.8; color: rgba(247,242,230,.75); }
+  .intro.depth {
+    max-width: 720px;
+    margin: 18px auto 6px;
+    text-align: center;
+    color: rgba(247, 242, 230, .82);
+  }
+  .pathway {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+    gap: 10px;
+    margin: 20px 0 6px;
+  }
+  .path-step {
+    padding: 12px;
+    background: rgba(250, 247, 239, .9);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--red);
+    color: var(--ink);
+  }
+  .path-step b {
+    display: block;
+    margin-bottom: 5px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 15px;
+    color: var(--ink-deep);
+  }
+  .path-step span {
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -296,25 +327,44 @@
         <div class="stat-chip"><b>195</b><span>出处</span></div>
       </div>
     </section>
-    <p class="intro">这里把当前所有可进入的版本和功能摆出来。你想进哪个就点哪个，不用记网址。</p>
-    <div class="section-label">标准版</div>
+    <p class="intro depth">这不是功能超市。主线只有一条：先把生活问题翻译成结构，再回到原文与真实样本验证；其他功能都挂在主线上。</p>
+    <div class="pathway" aria-label="使用路径">
+      <div class="path-step"><b>入门</b><span>沙盘 · 自读</span></div>
+      <div class="path-step"><b>深读</b><span>术语 · 生活 · AI</span></div>
+      <div class="path-step"><b>排盘</b><span>八字 · 三式 · 黄历</span></div>
+      <div class="path-step"><b>验证</b><span>样本 · 稽古</span></div>
+      <div class="path-step"><b>收心</b><span>静观</span></div>
+    </div>
+    <div class="section-label">标准版 · 主线</div>
     <div class="cards one">
       <a class="card primary" href="index.html"><b>标准版 v0.3</b><span>当前唯一公开版本：沙盘、六十甲子、组合盘、互动、深解。</span><span class="tag">标准版</span><span class="en-name">Standard Edition v0.3</span></a>
     </div>
-    <div class="section-label">功能</div>
+    <div class="section-label">第一层 · 入门</div>
     <div class="cards">
-      <a class="card" href="稽古.html"><b>稽古状态</b><span>195 条出处审计，待复核 0。</span><span class="tag">审计</span><span class="en-name">Source Audit</span></a>
-      <a class="card" href="ai.html"><b>AI 深解</b><span>把生活问题翻译成结构语言。</span><span class="tag">本地规则</span><span class="en-name">Deep Reading</span></a>
-      <a class="card" href="huangli.html"><b>黄历</b><span>宜忌、冲煞、彭祖百忌，本地历法。</span><span class="tag">黄历</span><span class="en-name">Almanac</span></a>
+      <a class="card" href="learn.html"><b>自己解开自己</b><span>自读入门，知识公开。</span><span class="tag">自读</span><span class="en-name">Self Study</span></a>
+    </div>
+    <div class="section-label">第二层 · 深读</div>
+    <div class="cards">
       <a class="card" href="translator.html"><b>术语翻译工作台</b><span>173 个词条，黑话、人话、现代结构。</span><span class="tag">词典</span><span class="en-name">Term Translator</span></a>
       <a class="card" href="life.html"><b>生活衔接卡</b><span>28 组常见组合拆解。</span><span class="tag">生活</span><span class="en-name">Life Cards</span></a>
-      <a class="card" href="samples.html"><b>真实样本站</b><span>四句话交样本，本地草稿回填。</span><span class="tag">样本</span><span class="en-name">Sample Ledger</span></a>
+      <a class="card" href="ai.html"><b>AI 深解</b><span>把生活问题翻译成结构语言。</span><span class="tag">本地规则</span><span class="en-name">Deep Reading</span></a>
+    </div>
+    <div class="section-label">第三层 · 排盘</div>
+    <div class="cards">
       <a class="card" href="排盘/八字.html"><b>八字排盘</b><span>输入出生时间，排四柱结构。</span><span class="tag">排盘</span><span class="en-name">Bazi Chart</span></a>
       <a class="card" href="sanshi/index.html"><b>古三式入口</b><span>太乙、奇门、六壬内测。</span><span class="tag">三式</span><span class="en-name">Sanshi</span></a>
-      <a class="card" href="learn.html"><b>自己解开自己</b><span>自读入门，知识公开。</span><span class="tag">自读</span><span class="en-name">Self Study</span></a>
+      <a class="card" href="huangli.html"><b>黄历</b><span>宜忌、冲煞、彭祖百忌，本地历法。</span><span class="tag">黄历</span><span class="en-name">Almanac</span></a>
+    </div>
+    <div class="section-label">第四层 · 验证</div>
+    <div class="cards">
+      <a class="card" href="samples.html"><b>真实样本站</b><span>四句话交样本，本地草稿回填。</span><span class="tag">样本</span><span class="en-name">Sample Ledger</span></a>
+      <a class="card" href="稽古.html"><b>稽古状态</b><span>195 条出处审计，待复核 0。</span><span class="tag">审计</span><span class="en-name">Source Audit</span></a>
+    </div>
+    <div class="section-label">收心 · 静观</div>
+    <div class="cards one">
       <a class="card" href="静观.html"><b>静观 · 佛道参照</b><span>三分钟静观，三句可查原句。</span><span class="tag">静观</span><span class="en-name">Stillness</span></a>
     </div>
-    <div class="section-label">其他</div>
+    <div class="section-label">系统</div>
     <div class="cards">
       <a class="card" href="updates.html"><b>更新公告</b><span>版本记录与未来计划。</span><span class="tag">公告</span><span class="en-name">Changelog</span></a>
       <a class="card disabled" href="#"><b>正式版 v1</b><span>待真实样本与公开上线。</span><span class="tag">未开放</span><span class="en-name">Release v1</span></a>

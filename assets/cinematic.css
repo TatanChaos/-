@@ -12,6 +12,12 @@ select,
 textarea {
   touch-action: manipulation;
 }
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 h1[data-en]::after {
   content: "/ " attr(data-en);
   display: block;
