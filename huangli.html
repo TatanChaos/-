@@ -18,8 +18,14 @@
     --teal: #1f4a44;
     --gold: #b08b4a;
     --ink-deep: #1e2d2a;
+    --paper-soft: #fffdf8;
+    --wash: #f4efe3;
   }
   * { box-sizing: border-box; }
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
   body {
     margin: 0;
     min-height: 100vh;
@@ -30,68 +36,378 @@
     font-family: "PingFang SC", "Songti SC", "Noto Serif SC", "Microsoft YaHei", serif;
     letter-spacing: 0;
   }
-  header { padding: 12px 18px; background: var(--ink-deep); border-bottom: 3px solid var(--gold); color: var(--paper); display: flex; justify-content: space-between; gap: 12px; }
-  header h1 { margin: 0; font-size: 17px; }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 18px;
+    background: rgba(23, 34, 30, .72);
+    backdrop-filter: blur(12px);
+    border-bottom: 3px solid var(--gold);
+    color: var(--paper);
+  }
+  header h1 { margin: 0; font-size: 18px; }
   header p { margin: 2px 0 0; font-size: 12px; color: #c7d3cd; }
-  header a { color: #c7d3cd; font-size: 12px; text-decoration: none; border: 1px solid rgba(247,242,230,.28); padding: 6px 10px; }
-  main { width: min(100%, 820px); margin: 0 auto; padding: 24px 18px 40px; }
-  h2 { margin: 0 0 8px; font-size: 26px; }
-  .intro { margin: 0 0 18px; font-size: 13px; line-height: 1.8; color: var(--muted); }
-  .tool { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-  .tool input { flex: 1; min-width: 180px; padding: 10px; font: inherit; border: 1px solid var(--line); background: #fffdf8; color: var(--ink); }
-  .tool button { padding: 10px 16px; font: inherit; border: 1px solid var(--red); background: var(--red); color: #fff; cursor: pointer; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
-  .card { padding: 14px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--gold); }
-  .card b { display: block; margin-bottom: 6px; color: var(--ink-deep); }
-  .card span { font-size: 12px; line-height: 1.7; color: var(--muted); }
-  .note { margin-top: 16px; padding: 12px; background: #f2e6d2; border-left: 4px solid var(--amber); font-size: 12px; color: var(--muted); }
+  .header-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #c7d3cd;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(247, 242, 230, .28);
+    padding: 6px 10px;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1080px);
+    margin: 0 auto;
+    padding: 26px 18px 44px;
+  }
+  .almanac-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    gap: 14px;
+    align-items: start;
+  }
+  .panel {
+    background: var(--surface);
+    background-image: url("assets/paper.svg");
+    background-size: 500px 500px;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--gold);
+    border-radius: 2px;
+    box-shadow: 0 2px 10px rgba(30, 30, 20, .06);
+  }
+  .calendar-panel {
+    padding: 16px;
+    outline: 1px solid rgba(183, 171, 146, .36);
+    outline-offset: 4px;
+  }
+  .month-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .month-head h2 {
+    flex: 1;
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 22px;
+    color: var(--ink-deep);
+  }
+  .month-seal {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: var(--red);
+    color: #fff8ed;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 18px;
+  }
+  .month-head button {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    font: inherit;
+    font-size: 16px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    color: var(--teal);
+    cursor: pointer;
+  }
+  .week-row,
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .week-row span {
+    padding: 6px 0;
+    font-size: 11px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .day-cell {
+    min-height: 66px;
+    padding: 7px 6px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+  }
+  .day-cell:hover {
+    border-color: var(--teal);
+  }
+  .day-cell.today {
+    border-color: var(--red);
+  }
+  .day-cell.selected {
+    background: var(--teal-soft);
+    border-color: var(--teal);
+  }
+  .day-cell .day {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink-deep);
+  }
+  .day-cell .lunar {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .day-cell .gz {
+    display: block;
+    margin-top: 2px;
+    font-size: 9px;
+    color: var(--amber);
+  }
+  .detail-panel {
+    position: relative;
+    padding: 18px;
+  }
+  .detail-panel::before {
+    content: "历注";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+    background: var(--red);
+    color: #fff8ed;
+    font-size: 10px;
+    letter-spacing: .16em;
+  }
+  .detail-date {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .detail-date b {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 44px;
+    line-height: 1;
+    color: var(--red);
+  }
+  .detail-date div span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .detail-row {
+    margin-top: 12px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .detail-row b {
+    color: var(--ink-deep);
+  }
+  .tag-section h3 {
+    margin: 14px 0 8px;
+    font-size: 13px;
+    color: var(--ink-deep);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    background: var(--paper-soft);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .chip.good {
+    border-color: #8db5a5;
+    background: var(--teal-soft);
+    color: #155149;
+  }
+  .chip.bad {
+    border-color: #dfb5ad;
+    background: var(--red-soft);
+    color: #822f29;
+  }
+  .note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--wash);
+    border-left: 4px solid var(--amber);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  @media (max-width: 860px) {
+    .almanac-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .day-cell {
+      min-height: 54px;
+      padding: 5px 4px;
+    }
+    .day-cell .day {
+      font-size: 14px;
+    }
+    .day-cell .gz {
+      display: none;
+    }
+    .detail-date b {
+      font-size: 36px;
+    }
+  }
 </style>
 </head>
 <body class="theme-huangli">
   <header>
-    <div><h1 data-en="Almanac">黄历 · 颐真书房</h1><p>宜忌、冲煞、彭祖百忌，候选研究用</p></div>
+    <div><h1 data-en="Almanac">黄历 · 颐真书房</h1><p>月历 + 宜忌，候选研究用</p></div>
     <div class="header-links">
       <a href="入口.html">版本入口</a>
       <a href="静观.html">静观</a>
     </div>
   </header>
   <main>
-    <h2>今日黄历</h2>
-    <p class="intro">用 lunar-typescript 本地历法计算，不联网、不上传。只作文化结构研究，不代替择日建议。</p>
-    <div class="tool">
-      <input type="date" id="date">
-      <button id="go">查黄历</button>
+    <div class="almanac-layout">
+      <section class="panel calendar-panel" aria-label="月历">
+        <div class="month-head">
+          <span class="month-seal" aria-hidden="true">历</span>
+          <button type="button" id="prevMonth" aria-label="上个月">‹</button>
+          <h2 id="monthTitle">加载中</h2>
+          <button type="button" id="nextMonth" aria-label="下个月">›</button>
+          <button type="button" id="todayBtn">今天</button>
+        </div>
+        <div class="week-row">
+          <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+        </div>
+        <div class="month-grid" id="monthGrid"><div class="day-cell">加载中</div></div>
+      </section>
+      <section class="panel detail-panel" id="detailPanel" aria-live="polite">
+        <div class="detail-date">
+          <b id="detailDay">—</b>
+          <div><span id="detailWeek">—</span><span id="detailLunar">加载中…</span></div>
+        </div>
+        <div class="detail-row"><b>日干支</b>：<span id="detailGanZhi">—</span></div>
+        <div class="tag-section"><h3>宜</h3><div class="chips" id="detailYi"><span class="chip">—</span></div></div>
+        <div class="tag-section"><h3>忌</h3><div class="chips" id="detailJi"><span class="chip">—</span></div></div>
+        <div class="detail-row"><b>吉神</b>：<span id="detailJiShen">—</span></div>
+        <div class="detail-row"><b>凶煞</b>：<span id="detailXiongSha">—</span></div>
+        <div class="detail-row"><b>冲煞</b>：<span id="detailChong">—</span></div>
+        <div class="detail-row"><b>彭祖百忌</b>：<span id="detailPengZu">—</span></div>
+        <div class="detail-row"><b>方位</b>：<span id="detailPositions">—</span></div>
+      </section>
     </div>
-    <div class="cards" id="out"><div class="card"><b>加载中</b><span>正在读取…</span></div></div>
-    <div class="note">黄历宜忌是通行历法口径，流派差异仍待复核；真实样本回填前不作为决策依据。</div>
+    <div class="note">宜忌是历法口径的通行标签，不是命令；流派差异仍待复核，真实样本回填前不用于决策。</div>
   </main>
   <script>
-    const dateInput = document.getElementById("date");
-    const out = document.getElementById("out");
-    dateInput.value = new Date().toISOString().slice(0, 10);
-    async function load() {
-      out.innerHTML = '<div class="card"><b>加载中</b><span>正在读取…</span></div>';
-      try {
-        const res = await fetch("/api/huangli?date=" + encodeURIComponent(dateInput.value));
-        const d = await res.json();
-        out.innerHTML = `
-          <div class="card"><b>农历</b><span>${d.lunar || ""}</span></div>
-          <div class="card"><b>日干支</b><span>${d.dayGanZhi || ""}</span></div>
-          <div class="card"><b>宜</b><span>${(d.yi || []).join("、") || "暂无"}</span></div>
-          <div class="card"><b>忌</b><span>${(d.ji || []).join("、") || "暂无"}</span></div>
-          <div class="card"><b>吉神</b><span>${(d.jiShen || []).join("、") || "暂无"}</span></div>
-          <div class="card"><b>凶煞</b><span>${(d.xiongSha || []).join("、") || "暂无"}</span></div>
-          <div class="card"><b>彭祖百忌</b><span>${d.pengZuGan || ""}；${d.pengZuZhi || ""}</span></div>
-          <div class="card"><b>冲煞</b><span>${d.chong || ""} · 煞${d.sha || ""}</span></div>
-          <div class="card"><b>方位</b><span>${Object.entries(d.positions || {}).map(([k,v]) => k + "：" + v).join("；")}</span></div>
-        `;
-      } catch {
-        out.innerHTML = '<div class="card"><b>读取失败</b><span>请用服务端模式打开。</span></div>';
+    (function () {
+      var current = new Date();
+      var selectedDate = new Date().toISOString().slice(0, 10);
+      var monthTitle = document.getElementById("monthTitle");
+      var monthGrid = document.getElementById("monthGrid");
+      var weekNames = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+      function pad(n) { return String(n).padStart(2, "0"); }
+      function monthParam(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1); }
+      function setText(id, text) { document.getElementById(id).textContent = text || "—"; }
+      function setChips(id, list) {
+        var wrap = document.getElementById(id);
+        var items = list && list.length ? list : ["暂无"];
+        wrap.innerHTML = items.map(function (item) {
+          return '<span class="chip' + (id === "detailYi" ? " good" : id === "detailJi" ? " bad" : "") + '">' + item + "</span>";
+        }).join("");
       }
-    }
-    document.getElementById("go").addEventListener("click", load);
-    dateInput.addEventListener("change", load);
-    load();
+      async function loadMonth() {
+        try {
+          var res = await fetch("/api/huangli/month?month=" + monthParam(current));
+          if (!res.ok) throw new Error("month error");
+          var data = await res.json();
+          monthTitle.textContent = data.year + " 年 " + data.month + " 月";
+          var firstWeekday = new Date(data.year, data.month - 1, 1).getDay();
+          var html = "";
+          for (var i = 0; i < firstWeekday; i += 1) html += '<div class="day-cell" style="background:transparent;border:0;cursor:default"></div>';
+          data.days.forEach(function (d) {
+            var classes = ["day-cell"];
+            if (d.date === data.today) classes.push("today");
+            if (d.date === selectedDate) classes.push("selected");
+            html += '<button type="button" class="' + classes.join(" ") + '" data-date="' + d.date + '">' +
+              '<span class="day">' + d.day + '</span>' +
+              '<span class="lunar">' + d.lunarDay + "</span>" +
+              '<span class="gz">' + d.dayGanZhi + "</span></button>";
+          });
+          monthGrid.innerHTML = html;
+          monthGrid.querySelectorAll(".day-cell[data-date]").forEach(function (cell) {
+            cell.addEventListener("click", function () {
+              selectedDate = cell.getAttribute("data-date");
+              monthGrid.querySelectorAll(".day-cell").forEach(function (c) { c.classList.remove("selected"); });
+              cell.classList.add("selected");
+              loadDay();
+            });
+          });
+          if (!data.days.some(function (d) { return d.date === selectedDate; })) {
+            selectedDate = data.today;
+            loadDay();
+          }
+        } catch {
+          monthGrid.innerHTML = '<div class="day-cell">月历读取失败，请用本地服务端模式打开。</div>';
+        }
+      }
+      async function loadDay() {
+        try {
+          var res = await fetch("/api/huangli?date=" + encodeURIComponent(selectedDate));
+          if (!res.ok) throw new Error("day error");
+          var d = await res.json();
+          var dt = new Date(d.date + "T00:00:00");
+          setText("detailDay", String(dt.getDate()));
+          setText("detailWeek", weekNames[dt.getDay()] + " · " + d.date);
+          setText("detailLunar", d.lunar || "");
+          setText("detailGanZhi", d.dayGanZhi || "");
+          setChips("detailYi", d.yi || []);
+          setChips("detailJi", d.ji || []);
+          setText("detailJiShen", (d.jiShen || []).join("、"));
+          setText("detailXiongSha", (d.xiongSha || []).join("、"));
+          setText("detailChong", (d.chong || "") + " · 煞" + (d.sha || ""));
+          setText("detailPengZu", (d.pengZuGan || "") + "；" + (d.pengZuZhi || ""));
+          setText("detailPositions", Object.entries(d.positions || {}).map(function (kv) { return kv[0] + "：" + kv[1]; }).join("；"));
+        } catch {
+          setText("detailLunar", "读取失败，请用本地服务端模式打开。");
+        }
+      }
+      document.getElementById("prevMonth").addEventListener("click", function () {
+        current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+        loadMonth();
+      });
+      document.getElementById("nextMonth").addEventListener("click", function () {
+        current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+        loadMonth();
+      });
+      document.getElementById("todayBtn").addEventListener("click", function () {
+        current = new Date();
+        selectedDate = new Date().toISOString().slice(0, 10);
+        loadMonth();
+        loadDay();
+      });
+      loadMonth();
+      loadDay();
+    })();
   </script>
   <script src="assets/cinematic.js"></script>
 </body>
