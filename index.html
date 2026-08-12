@@ -88,7 +88,8 @@
     flex-wrap: wrap;
     gap: 6px;
   }
-  .module-nav button {
+  .module-nav button,
+  .module-nav a {
     font: inherit;
     font-size: 12px;
     padding: 6px 9px;
@@ -96,8 +97,10 @@
     border: 1px solid var(--line);
     background: var(--surface);
     color: var(--ink);
+    text-decoration: none;
   }
-  .module-nav button:hover { border-color: var(--teal); color: #0b4f4a; }
+  .module-nav button:hover,
+  .module-nav a:hover { border-color: var(--teal); color: #0b4f4a; }
   .version-chip {
     border: 1px solid var(--gold);
     color: var(--gold);
@@ -1855,10 +1858,10 @@
       </div>
     </div>
     <nav class="module-nav" aria-label="独立模块">
-      <button type="button" data-module="jiazi">六十甲子</button>
-      <button type="button" data-module="combination">组合盘</button>
-      <button type="button" data-module="corpus">十天干 · 十二地支</button>
-      <button type="button" data-module="interact">任意干支互动</button>
+      <a href="index.html?module=jiazi">六十甲子</a>
+      <a href="index.html?module=combination">组合盘</a>
+      <a href="index.html?module=corpus">十天干 · 十二地支</a>
+      <a href="index.html?module=interact">任意干支互动</a>
     </nav>
     <div class="status"><span class="dot"></span><span class="version-chip">体验版 v0.3</span><span>六合、三合、六冲、六害、三刑 · 象数初笺</span><span class="count-badge" id="noteCount">0</span></div>
   </header>
@@ -3625,6 +3628,13 @@
       situationInput.value = initialSituation;
       explainSituation();
     }
+  }
+  const moduleParam = urlParams.get("module");
+  if (["jiazi", "interact", "combination", "corpus"].includes(moduleParam)) {
+    detailTab = moduleParam;
+    showWorkspace();
+    renderDetail();
+    persistState();
   }
   function openNotesFromLink() {
     chooseScene(SCENARIOS[0]);
