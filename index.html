@@ -272,6 +272,115 @@
     color: var(--muted);
     line-height: 1.5;
   }
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: #0b5f58;
+    font-weight: 700;
+  }
+  .notes {
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .notes summary {
+    padding: 9px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--teal);
+    user-select: none;
+  }
+  .note-form {
+    display: grid;
+    gap: 8px;
+    padding: 0 10px 10px;
+  }
+  .note-form textarea {
+    width: 100%;
+    min-height: 64px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: #fff;
+    line-height: 1.5;
+  }
+  .note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .note-btn {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .note-btn.primary {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .note-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 10px 10px;
+    display: grid;
+    gap: 8px;
+    max-height: 240px;
+    overflow: auto;
+  }
+  .note-item {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 30px 8px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: #fff;
+  }
+  .note-item.empty {
+    color: var(--muted);
+    border-style: dashed;
+  }
+  .note-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .note-del {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .note-del:hover { color: var(--red); background: var(--red-soft); }
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; }
     .symbol-buttons { grid-template-columns: repeat(4, 1fr); }
@@ -279,9 +388,11 @@
   }
   @media (max-width: 520px) {
     .topbar { flex-direction: column; align-items: flex-start; }
-    .symbol-buttons { grid-template-columns: repeat(3, 1fr); }
+    .status { white-space: normal; }
+    .symbol-buttons { grid-template-columns: repeat(2, 1fr); }
     .row { grid-template-columns: 70px minmax(0, 1fr); }
     .detail-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .detail-head h2 { font-size: 20px; }
   }
 </style>
 </head>
@@ -294,7 +405,7 @@
         <p>十二地支 · 拓展面候选 · 不做计算依据</p>
       </div>
     </div>
-    <div class="status"><span class="dot"></span>六合连线 · 三合群组 · 现代系统映射</div>
+    <div class="status"><span class="dot"></span><span>六合连线 · 三合群组 · 现代系统映射</span><span class="count-badge" id="noteCount">0</span></div>
   </header>
   <main class="layout">
   <aside class="symbol-list" aria-label="地支列表">
@@ -321,6 +432,17 @@
           <span><i style="background:#5b7f4f"></i>三刑</span>
           <span><i style="background:#b43a2f"></i>当前符号</span>
         </div>
+        <details class="notes" id="notesPanel">
+          <summary>本地样本记录 · <span id="notesSummary">0 条草稿</span></summary>
+          <form class="note-form" id="noteForm">
+            <textarea id="noteInput" rows="3" placeholder="记下现实观察：时间、场景、现象、结果"></textarea>
+            <div class="note-actions">
+              <button type="submit" class="note-btn primary">记录当前符号</button>
+              <button type="button" class="note-btn" id="noteClear">清空</button>
+            </div>
+          </form>
+          <ul class="note-list" id="noteList"></ul>
+        </details>
       </div>
       <div class="footnote">
         本页面把传统符号翻译成现代系统语言，全部按“拓展面候选”处理；可验证假设需要真实数据回填，不构成物理或医学结论。
@@ -420,6 +542,8 @@
   let selectedZhi = "戌";
   let selectedGan = "甲";
   let detailTab = "overview";
+  const STATE_KEY = "symbol-sandbox-state-v1";
+  const NOTE_KEY = "symbol-sandbox-notes-v1";
 
   function pos(zhi) {
     const i = ZHI.indexOf(zhi);
@@ -445,6 +569,78 @@
     return mode === "zhi" ? DATA[selectedZhi] : GAN_DATA[selectedGan];
   }
 
+  function restoreState() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STATE_KEY) || "null");
+      if (!s) return;
+      if (s.mode === "gan" || s.mode === "zhi") mode = s.mode;
+      if (ZHI.includes(s.selectedZhi)) selectedZhi = s.selectedZhi;
+      if (GAN.includes(s.selectedGan)) selectedGan = s.selectedGan;
+      if (["overview", "structure", "system", "relation", "verify", "source"].includes(s.detailTab)) detailTab = s.detailTab;
+      if (s.activeRel) {
+        Object.keys(activeRel).forEach(key => {
+          if (typeof s.activeRel[key] === "boolean") activeRel[key] = s.activeRel[key];
+        });
+      }
+    } catch {}
+  }
+
+  function persistState() {
+    try {
+      localStorage.setItem(STATE_KEY, JSON.stringify({ mode, selectedZhi, selectedGan, detailTab, activeRel }));
+    } catch {}
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function formatTime(iso) {
+    try {
+      return new Date(iso).toLocaleString("zh-CN", { hour12: false });
+    } catch {
+      return iso;
+    }
+  }
+
+  function loadNotes() {
+    try {
+      return JSON.parse(localStorage.getItem(NOTE_KEY) || "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function saveNotes(notes) {
+    try {
+      localStorage.setItem(NOTE_KEY, JSON.stringify(notes));
+    } catch {}
+    renderNotes();
+  }
+
+  function renderNotes() {
+    const notes = loadNotes();
+    const list = document.getElementById("noteList");
+    const summary = document.getElementById("notesSummary");
+    const count = document.getElementById("noteCount");
+    if (!list) return;
+    summary.textContent = notes.length + " 条草稿";
+    if (count) count.textContent = notes.length;
+    list.innerHTML = notes.map(n => `
+      <li class="note-item">
+        <div class="note-meta">${esc(n.mode === "gan" ? "天干" : "地支")} ${esc(n.symbol)} · ${esc(formatTime(n.at))}</div>
+        <div>${esc(n.text)}</div>
+        <button type="button" class="note-del" data-id="${n.id}" aria-label="删除这条记录">×</button>
+      </li>
+    `).join("") || '<li class="note-item empty">还没有记录</li>';
+    list.querySelectorAll(".note-del").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.getAttribute("data-id"));
+        saveNotes(loadNotes().filter(n => n.id !== id));
+      });
+    });
+  }
+
   function renderModeButtons() {
     document.querySelectorAll(".mode-btn").forEach(btn => {
       btn.setAttribute("aria-pressed", String(btn.getAttribute("data-mode") === mode));
@@ -456,6 +652,7 @@
         renderRelControls();
         renderWheel();
         renderDetail();
+        persistState();
       });
     });
   }
@@ -495,6 +692,7 @@
         activeRel[key] = !activeRel[key];
         renderRelControls();
         renderWheel();
+        persistState();
       });
       wrap.appendChild(b);
     });
@@ -611,13 +809,18 @@
       ["verify", "验证"],
       ["source", "原文"]
     ];
+    const sourceDoc = mode === "zhi" ? "十二地支详解_2026-08-10.md" : "十天干详解_2026-08-10.md";
+    const isLocal = location.hostname === "127.0.0.1" || location.hostname === "localhost" || location.hostname === "0.0.0.0";
+    const sourceLinks = isLocal
+      ? `<a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/" + sourceDoc)}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a> · <a href="../../view.html?path=${encodeURIComponent("颐真书房/术数/符号跨域映射工作台_2026-08-10.md")}" target="_blank">符号跨域工作台</a>`
+      : `<a href="docs/${sourceDoc.replace(/_2026-08-10/, "")}" target="_blank">${mode === "zhi" ? "十二地支详解" : "十天干详解"}</a>`;
     const section = {
       overview: `<div class="rows">${metaHTML}<div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       structure: `<div class="rows"><div class="row"><div class="label">结构功能</div><div class="value">${d.func}</div></div><div class="row"><div class="label">象意</div><div class="value">${d.edge}</div></div></div>`,
       system: `<div class="rows"><div class="row"><div class="label">现代系统</div><div class="value">${d.system}</div></div><div class="row"><div class="label">现实例子</div><div class="value">${example}</div></div><div class="row"><div class="label">可验证假设</div><div class="value">${d.hypothesis}</div></div></div>`,
       relation: `<div class="rows">${relationHTML}<div class="row"><div class="label">含义</div><div class="value">${mode === "zhi" ? "六合=协作；三合=同盟；六冲=对立；六害=暗中消耗；三刑=结构性摩擦" : "五合=协作/化气，需看全局是否成化"}</div></div></div>`,
       verify: `<div class="rows"><div class="row"><div class="label">验证方法</div><div class="value">${verify}</div></div><div class="row"><div class="label">状态</div><div class="value">待真实样本回填，未回填前不视为已验</div></div></div>`,
-      source: `<div class="rows"><div class="row"><div class="label">本地底稿</div><div class="value">十二地支详解 / 十天干详解</div></div><div class="row"><div class="label">原文状态</div><div class="value">待补原文锚定</div></div><div class="row"><div class="label">建议</div><div class="value">逐条查《三命通会》《滴天髓》《渊海子平》等，标版本后再进正式体系</div></div></div>`
+      source: `<div class="rows"><div class="row"><div class="label">本地底稿</div><div class="value">${sourceLinks}</div></div><div class="row"><div class="label">原文状态</div><div class="value">待补原文锚定，需标版本后再进正式体系</div></div><div class="row"><div class="label">建议</div><div class="value">逐条查《三命通会》《滴天髓》《渊海子平》等，标版本后再进正式体系</div></div></div>`
     }[detailTab];
     el.innerHTML = `
       <div class="detail-head">
@@ -641,6 +844,7 @@
   function switchDetail(tab) {
     detailTab = tab;
     renderDetail();
+    persistState();
   }
 
   function select(z) {
@@ -652,13 +856,29 @@
     });
     renderDetail();
     highlightWheel();
+    persistState();
   }
 
+  restoreState();
   renderModeButtons();
   renderButtons();
   renderRelControls();
   renderWheel();
   renderDetail();
+  document.getElementById("noteForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("noteInput");
+    const text = input.value.trim();
+    if (!text) return;
+    const notes = loadNotes();
+    notes.unshift({ id: Date.now(), at: new Date().toISOString(), mode, symbol: currentSelected(), text });
+    saveNotes(notes);
+    input.value = "";
+  });
+  document.getElementById("noteClear").addEventListener("click", () => {
+    if (confirm("清空本地样本记录？")) saveNotes([]);
+  });
+  renderNotes();
 </script>
 </body>
 </html>
